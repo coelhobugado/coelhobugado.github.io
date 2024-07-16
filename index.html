@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pollyanna Make & Hair - Maquiadora Profissional em Goiânia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;700&family=Cinzel&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF69B4;
+            --secondary-color: #FFC0CB;
+            --accent-color: #FFD700;
+            --text-color: #333;
+            --background-color: #FFF0F5;
+            --card-background: #FFFFFF;
+            --transition-speed: 0.3s;
+        }
+
+        .dark-theme {
+            --primary-color: #FF1493;
+            --secondary-color: #FF69B4;
+            --accent-color: #FFD700;
+            --text-color: #F8F8F8; 
+            --background-color: #111; 
+            --card-background: #222; 
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            transition: background var(--transition-speed);
+        }
+
+        .logo-container {
+            margin-bottom: 1rem;
+        }
+
+        .logo-container svg {
+            width: 250px;
+            height: auto;
+        }
+
+        .tagline {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service {
+            background-color: var(--card-background);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s, background-color var(--transition-speed);
+        }
+
+        .service:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            transition: color var(--transition-speed);
+        }
+
+        .open-bar {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .gallery {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .modal.show .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cta {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            transition: background var(--transition-speed);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s, background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+            text-decoration: none;
+            transition: color var(--transition-speed);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .theme-toggle:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .wrapper {
+                padding: 10px;
+            }
+
+            .logo-container svg {
+                width: 200px;
+            }
+
+            .services {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">🌓</button>
+    <div class="wrapper">
+        <header>
+            <div class="logo-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+                    <defs>
+                        <style>
+                            .script-text { font-family: 'Great Vibes', cursive; fill: var(--accent-color); }
+                            .serif-text { font-family: 'Cinzel', serif; fill: var(--accent-color); }
+                            .large-text { font-size: 24px; }
+                            .small-text { font-size: 14px; }
+                        </style>
+                    </defs>
+                    
+                    <circle cx="150" cy="80" r="50" fill="none" stroke="var(--accent-color)" stroke-width="2"/>
+                    <text x="150" y="95" text-anchor="middle" class="script-text" font-size="60">PJ</text>
+                    <path d="M95 80 Q110 70, 125 80" fill="none" stroke="var(--accent-color)" stroke-width="2"/>
+                    <path d="M175 80 Q190 90, 205 80" fill="none" stroke="var(--accent-color)" stroke-width="2"/>
+                    <text x="150" y="150" text-anchor="middle" class="serif-text large-text">POLLYANNA JHEIMY</text>
+                    <text x="150" y="175" text-anchor="middle" class="serif-text small-text">STUDIO BEAUTY</text>
+                </svg>
+            </div>
+            <p class="tagline">Maquiadora Profissional em Goiânia</p>
+        </header>
+
+        <div class="services">
+            <div class="service">
+                <div class="service-icon">💄</div>
+                <h3>Maquiagem Profissional</h3>
+                <p>Realce sua beleza natural com técnicas avançadas e produtos premium.</p>
+            </div>
+            <div class="service">
+                <div class="service-icon">💇‍♀️</div>
+                <h3>Penteados Exclusivos</h3>
+                <p>Transforme seu visual com penteados elegantes para qualquer ocasião.</p>
+            </div>
+            <div class="service">
+                <div class="service-icon">🏠</div>
+                <h3>Atendimento VIP</h3>
+                <p>Experimente nosso serviço de beleza personalizado em domicílio.</p>
+            </div>
+        </div>
+
+        <div class="open-bar" id="galleryToggle">
+            Ver Galeria de Penteados
+        </div>
+
+        <div class="gallery" id="gallery">
+            <div class="gallery-item">
+                <img src="https://i.ibb.co/ysjNgSj/img1753-2.jpg" alt="Penteado Elegante" loading="lazy">
+                <h3>Penteado Elegante</h3>
+            </div>
+            <div class="gallery-item">
+                <img src="https://i.ibb.co/pwpGy2v/img1224.jpg" alt="Penteado Moderno" loading="lazy">
+                <h3>Penteado Moderno</h3>
+            </div>
+        </div>
+
+        <div id="imageModal" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="modalImg" alt="Imagem ampliada">
+        </div>
+
+        <section class="cta">
+            <h2>Agende sua transformação agora!</h2>
+            <a href="https://wa.me/5562994359378" class="btn">WhatsApp</a>
+        </section>
+
+        <footer>
+            <p>© 2024 Pollyanna Make & Hair. Todos os direitos reservados.</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/pollyannamakehair" target="_blank" rel="noopener noreferrer">📸 Instagram</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const gallery = document.getElementById('gallery');
+        const galleryToggle = document.getElementById('galleryToggle');
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        const closeBtn = modal.querySelector('.close');
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            themeToggle.textContent = document.body.classList.contains('dark-theme') ? '☀️' : '🌓';
+        }
+
+        function toggleGallery() {
+            gallery.style.display = gallery.style.display === 'none' || gallery.style.display === '' ? 'grid' : 'none';
+            galleryToggle.textContent = gallery.style.display === 'none' ? 'Ver Galeria de Penteados' : 'Fechar Galeria';
+        }
+
+        function openModal(imgSrc) { 
+            modalImg.src = imgSrc;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            modal.classList.remove('show');
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        galleryToggle.addEventListener('click', toggleGallery);
+        closeBtn.addEventListener('click', closeModal);
+
+        document.querySelectorAll('.gallery-item img').forEach(img => {
+            img.addEventListener('click', () => openModal(img.src)); 
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
