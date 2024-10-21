@@ -3,377 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pollyanna Make & Hair - Maquiadora Profissional em Goiânia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;700&family=Cinzel&family=Great+Vibes&display=swap" rel="stylesheet">
+    <title>Notícias de Última Hora - Voos Cancelados</title>
     <style>
         :root {
-            --primary-color: #FF69B4;
-            --secondary-color: #FFC0CB;
-            --accent-color: #FFD700;
+            --primary-color: #1a5f7a;
+            --secondary-color: #e63946;
+            --accent-color: #f4a261;
             --text-color: #333;
-            --background-color: #FFF0F5;
-            --card-background: #FFFFFF;
-            --transition-speed: 0.3s;
-        }
-
-        .dark-theme {
-            --primary-color: #FF1493;
-            --secondary-color: #FF69B4;
-            --accent-color: #FFD700;
-            --text-color: #F8F8F8; 
-            --background-color: #111; 
-            --card-background: #222; 
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --bg-color: #f1faee;
+            --alert-bg: #ffd6a5;
+            --alert-text: #cc5803;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            transition: background-color var(--transition-speed), color var(--transition-speed);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
-        .wrapper {
+        .container {
+            width: 90%;
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 20px auto;
+            overflow: hidden;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 12px;
         }
 
         header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
             text-align: center;
-            padding: 2rem 0;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            transition: background var(--transition-speed);
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .logo-container {
-            margin-bottom: 1rem;
-        }
-
-        .logo-container svg {
-            width: 250px;
-            height: auto;
-        }
-
-        .tagline {
-            font-style: italic;
-            font-size: 1.2rem;
-            margin-top: 0.5rem;
-        }
-
-        .services {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .service {
-            background-color: var(--card-background);
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s, background-color var(--transition-speed);
-        }
-
-        .service:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .service-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-            transition: color var(--transition-speed);
-        }
-
-        .open-bar {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            padding: 1rem;
-            margin-top: 1.5rem;
-            border-radius: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color var(--transition-speed), color var(--transition-speed);
-        }
-
-        .gallery {
-            display: none;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .gallery-item img:hover {
-            transform: scale(1.05);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .modal.show {
+        .article-meta {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            opacity: 1;
+            margin-bottom: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
         }
 
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 0.3s, transform 0.3s;
+        .article-image {
+            width: 100%;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-        .modal.show .modal-content {
-            opacity: 1;
-            transform: scale(1);
+        h2 {
+            color: #e63946; /* Título da matéria em vermelho */
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            font-size: 2.2rem;
+            margin-top: 0;
         }
 
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+            text-indent: 1em;
+            line-height: 1.8;
+        }
+
+        .alert {
+            background-color: var(--alert-bg);
+            border: 2px solid var(--alert-text);
+            color: var(--alert-text);
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
             font-weight: bold;
-            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .cta {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            border-radius: 15px;
-            margin-top: 2rem;
-            transition: background var(--transition-speed);
+        ul {
+            background-color: #e9ecef;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .btn {
-            display: inline-block;
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: transform 0.3s, box-shadow 0.3s, background-color var(--transition-speed), color var(--transition-speed);
+        li {
+            margin-bottom: 10px;
         }
 
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        strong {
+            color: var(--secondary-color);
         }
 
-        footer {
-            text-align: center;
-            padding: 2rem 0;
-            margin-top: 2rem;
-        }
-
-        .social-links a {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            margin: 0 0.5rem;
-            text-decoration: none;
-            transition: color var(--transition-speed);
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--accent-color);
-            color: var(--text-color);
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 1000;
-            transition: background-color var(--transition-speed), color var(--transition-speed);
-        }
-
-        .theme-toggle:hover {
-            opacity: 0.9;
-        }
-
-        @media (max-width: 768px) {
-            .wrapper {
-                padding: 10px;
+        @media(max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 20px;
             }
-
-            .logo-container svg {
-                width: 200px;
+            header h1 {
+                font-size: 2.2rem;
             }
-
-            .services {
-                grid-template-columns: 1fr;
-            }
-
-            .gallery {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-
-            .theme-toggle {
-                top: 10px;
-                right: 10px;
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
+            h2 {
+                font-size: 1.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">🌓</button>
-    <div class="wrapper">
-        <header>
-            <div class="logo-container">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
-                    <defs>
-                        <style>
-                            .script-text { font-family: 'Great Vibes', cursive; fill: var(--accent-color); }
-                            .serif-text { font-family: 'Cinzel', serif; fill: var(--accent-color); }
-                            .large-text { font-size: 24px; }
-                            .small-text { font-size: 14px; }
-                        </style>
-                    </defs>
-                    
-                    <circle cx="150" cy="80" r="50" fill="none" stroke="var(--accent-color)" stroke-width="2"/>
-                    <text x="150" y="95" text-anchor="middle" class="script-text" font-size="60">PJ</text>
-                    <path d="M95 80 Q110 70, 125 80" fill="none" stroke="var(--accent-color)" stroke-width="2"/>
-                    <path d="M175 80 Q190 90, 205 80" fill="none" stroke="var(--accent-color)" stroke-width="2"/>
-                    <text x="150" y="150" text-anchor="middle" class="serif-text large-text">POLLYANNA JHEIMY</text>
-                    <text x="150" y="175" text-anchor="middle" class="serif-text small-text">STUDIO BEAUTY</text>
-                </svg>
-            </div>
-            <p class="tagline">Maquiadora Profissional em Goiânia</p>
-        </header>
-
-        <div class="services">
-            <div class="service">
-                <div class="service-icon">💄</div>
-                <h3>Maquiagem Profissional</h3>
-                <p>Realce sua beleza natural com técnicas avançadas e produtos premium.</p>
-            </div>
-            <div class="service">
-                <div class="service-icon">💇‍♀️</div>
-                <h3>Penteados Exclusivos</h3>
-                <p>Transforme seu visual com penteados elegantes para qualquer ocasião.</p>
-            </div>
-            <div class="service">
-                <div class="service-icon">🏠</div>
-                <h3>Atendimento VIP</h3>
-                <p>Experimente nosso serviço de beleza personalizado em domicílio.</p>
-            </div>
+    <header>
+        <div class="container">
+            <h1>Notícias de Última Hora</h1>
         </div>
+    </header>
 
-        <div class="open-bar" id="galleryToggle">
-            Ver Galeria de Penteados
-        </div>
-
-        <div class="gallery" id="gallery">
-            <div class="gallery-item">
-                <img src="https://i.ibb.co/ysjNgSj/img1753-2.jpg" alt="Penteado Elegante" loading="lazy">
-                <h3>Penteado Elegante</h3>
+    <div class="container">
+        <article>
+            <h2>Voos para Lisboa Cancelados Devido a Condições Climáticas Extremas</h2>
+            <div class="article-meta">
+                <span><strong>Publicado em: 21:01 de outubro de 2024, 18:30</strong></span>
+                <span>Atualizado em: <span id="data-atualizacao"></span></span>
             </div>
-            <div class="gallery-item">
-                <img src="https://i.ibb.co/pwpGy2v/img1224.jpg" alt="Penteado Moderno" loading="lazy">
-                <h3>Penteado Moderno</h3>
+            <img src="/api/placeholder/800/450" alt="Avião da LATAM no aeroporto" class="article-image">
+            <div class="alert">
+                <strong>Atualização:</strong> Todos os voos com destino a Lisboa estão suspensos de 7 de novembro até data indeterminada. Passageiros devem contatar suas companhias aéreas para mais informações.
             </div>
-        </div>
-
-        <div id="imageModal" class="modal">
-            <span class="close">&times;</span>
-            <img class="modal-content" id="modalImg" alt="Imagem ampliada">
-        </div>
-
-        <section class="cta">
-            <h2>Agende sua transformação agora!</h2>
-            <a href="https://wa.me/5562994359378" class="btn">WhatsApp</a>
-        </section>
-
-        <footer>
-            <p>© 2024 Pollyanna Make & Hair. Todos os direitos reservados.</p>
-            <div class="social-links">
-                <a href="https://www.instagram.com/pollyannamakehair" target="_blank" rel="noopener noreferrer">📸 Instagram</a>
-            </div>
-        </footer>
+            <p>Severas condições meteorológicas atingiram a costa portuguesa, forçando o cancelamento de todos os voos com destino a Lisboa a partir de 7 de novembro, com previsão de durar pelo menos até o dia 8 do outro ano, e possivelmente se estendendo por tempo indeterminado.</p>
+            <p>As companhias aéreas, incluindo a LATAM Airlines, anunciaram que estão trabalhando para reacomodar os passageiros em voos futuros assim que possível.</p>
+            <p>Recomendações para passageiros incluem entrar em contato com suas companhias e verificar hospedagem com descontos especiais para afetados.</p>
+            <p>Autoridades meteorológicas alertam que a tempestade pode afetar a região por vários dias.</p>
+            <p>Aeroportos estão implementando medidas emergenciais e convocando funcionários extras para ajudar.</p>
+            <p>Muitas opções de entretenimento e acomodação estão sendo organizadas para os passageiros.</p>
+            <p>Acompanharemos a situação de perto e forneceremos atualizações regulares sobre os voos e condições meteorológicas.</p>
+            <p>Reiteramos a importância de seguir as orientações e manter a calma durante este período.</p>
+            <p>Informações adicionais sobre assistência e planos de viagem serão publicadas em breve.</p>
+            <p>Agradecemos a compreensão de todos os viajantes afetados por esta situação.</p>
+        </article>
     </div>
 
     <script>
-        const themeToggle = document.getElementById('themeToggle');
-        const gallery = document.getElementById('gallery');
-        const galleryToggle = document.getElementById('galleryToggle');
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImg');
-        const closeBtn = modal.querySelector('.close');
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-theme');
-            themeToggle.textContent = document.body.classList.contains('dark-theme') ? '☀️' : '🌓';
-        }
-
-        function toggleGallery() {
-            gallery.style.display = gallery.style.display === 'none' || gallery.style.display === '' ? 'grid' : 'none';
-            galleryToggle.textContent = gallery.style.display === 'none' ? 'Ver Galeria de Penteados' : 'Fechar Galeria';
-        }
-
-        function openModal(imgSrc) { 
-            modalImg.src = imgSrc;
-            modal.classList.add('show');
-        }
-
-        function closeModal() {
-            modal.classList.remove('show');
-        }
-
-        themeToggle.addEventListener('click', toggleTheme);
-        galleryToggle.addEventListener('click', toggleGallery);
-        closeBtn.addEventListener('click', closeModal);
-
-        document.querySelectorAll('.gallery-item img').forEach(img => {
-            img.addEventListener('click', () => openModal(img.src)); 
-        });
-
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            var dataAtual = new Date();
+            var dataFormatada = dataAtual.toLocaleDateString('pt-BR', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('data-atualizacao').textContent = dataFormatada;
         });
     </script>
 </body>
