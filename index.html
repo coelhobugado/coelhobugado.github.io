@@ -3,322 +3,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acerte o Coelho</title>
+    <title>Aniversários Caninos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/pt-br.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --hole-size: clamp(60px, 10vw, 100px);
-            --primary-color: #4CAF50;
-            --secondary-color: #45a049;
-            --background-color: linear-gradient(135deg, #a8e063, #56ab2f);
-            --rabbit-color: #FF6347;
+            --primary-color: #6a1b9a;
+            --secondary-color: #8e24aa;
+            --background-color: #121212;
+            --card-background: #1e1e1e;
+            --text-color: #ffffff;
+            --highlight-color: #ffd54f;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --accent-color-1: #00bcd4;
+            --accent-color-2: #4caf50;
+            --accent-color-3: #f44336;
+            --accent-color-4: #ff9800;
         }
+        
         body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
             margin: 0;
-            background: var(--background-color);
-            overflow: hidden;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.6;
         }
-        .game-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
         }
-        h1 {
-            color: #333;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        .game-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-        .hole {
-            width: var(--hole-size);
-            height: var(--hole-size);
-            background-color: #654321;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            cursor: pointer;
-            overflow: hidden;
-            transition: all 0.1s ease;
-            box-shadow: inset 0 5px 10px rgba(0,0,0,0.5);
-            position: relative;
-        }
-        .hole:active {
-            transform: scale(0.95);
-        }
-        .rabbit {
-            font-size: calc(var(--hole-size) * 0.6);
-            transform: translateY(100%);
-            transition: transform 0.1s ease-out;
-            color: var(--rabbit-color);
-            position: absolute;
-            bottom: 0;
-        }
-        .rabbit.show {
-            transform: translateY(0);
-        }
-        .rabbit.hit {
-            animation: pop 0.3s ease-out;
-        }
-        .score, .high-score {
-            font-size: clamp(1rem, 3vw, 1.5rem);
-            margin-top: 20px;
-            color: #333;
-        }
-        .timer-container {
-            width: 100%;
-            height: 20px;
-            background-color: #ddd;
-            border-radius: 10px;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-        .timer-bar {
-            width: 100%;
-            height: 100%;
-            background-color: var(--primary-color);
-            transition: width 1s linear;
-        }
-        .btn {
-            background-color: var(--primary-color);
-            border: none;
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 15px 32px;
             text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-            margin: 20px 2px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: background-color 0.3s;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
         }
-        .btn:hover {
-            background-color: var(--secondary-color);
+        
+        h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        .end-screen {
-            position: fixed;
+        
+        #currentDate {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            font-weight: 300;
+        }
+        
+        .paw-background {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
+            opacity: 0.1;
+            z-index: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
         }
-        .end-screen.show {
-            opacity: 1;
-            pointer-events: all;
+        
+        .paw-background::before,
+        .paw-background::after {
+            content: '🐾';
+            font-size: 8rem;
+            position: absolute;
+            animation: float 10s infinite;
         }
-        .end-screen-content {
-            background-color: white;
+        
+        .paw-background::before {
+            top: 10%;
+            left: 10%;
+            animation-delay: -5s;
+        }
+        
+        .paw-background::after {
+            bottom: 10%;
+            right: 10%;
+        }
+        
+        .next-birthday {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 20px;
             padding: 30px;
-            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px var(--shadow-color);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
         }
-        @keyframes pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        
+        .next-birthday:hover {
+            transform: translateY(-5px);
         }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        
+        .next-birthday h2 {
+            margin-top: 0;
+            color: var(--highlight-color);
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .next-birthday-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .next-birthday-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .next-birthday-name {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--highlight-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .countdown {
+            font-size: 1.8rem;
+            margin-top: 1rem;
+            font-weight: bold;
+            color: var(--text-color);
+            background-color: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 50px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        
+        .countdown:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .dog-icon {
+            font-size: 8rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .dog-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .dog-card {
+            background-color: var(--card-background);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        
+        .dog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px var(--shadow-color);
+        }
+        
+        .dog-card:nth-child(4n+1) { border-color: var(--accent-color-1); }
+        .dog-card:nth-child(4n+2) { border-color: var(--accent-color-2); }
+        .dog-card:nth-child(4n+3) { border-color: var(--accent-color-3); }
+        .dog-card:nth-child(4n+4) { border-color: var(--accent-color-4); }
+        
+        .dog-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--highlight-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dog-name::before {
+            content: '🐾';
+            margin-right: 10px;
+            font-size: 1.5em;
+            animation: pawPrint 2s infinite;
+        }
+        
+        .birthday-info {
+            font-size: 1.1rem;
+        }
+        
+        .birthday-info p {
+            margin: 10px 0;
+        }
+        
+        @keyframes pawPrint {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+            50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .dog-list {
+                grid-template-columns: 1fr;
+            }
+            .next-birthday-content {
+                flex-direction: column;
+            }
+            .next-birthday-info, .dog-icon {
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Acerte o Coelho</h1>
-        <div class="game-board" id="gameBoard"></div>
-        <div class="score">Pontuação: <span id="score">0</span></div>
-        <div class="high-score">Recorde: <span id="highScore">0</span></div>
-        <div class="timer-container">
-            <div class="timer-bar" id="timerBar"></div>
-        </div>
-        <button class="btn" id="startBtn">Iniciar Jogo</button>
-    </div>
-
-    <div class="end-screen" id="endScreen">
-        <div class="end-screen-content">
-            <h2>Fim de Jogo!</h2>
-            <p>Sua pontuação: <span id="finalScore"></span></p>
-            <p id="recordMessage"></p>
-            <button class="btn" id="playAgainBtn">Jogar Novamente</button>
-        </div>
+    <header>
+        <div class="paw-background"></div>
+        <h1>🎂 Aniversários Caninos 🐾</h1>
+        <div id="currentDate"></div>
+    </header>
+    <div class="container">
+        <div class="next-birthday" id="nextBirthday"></div>
+        <div class="dog-list" id="dogList"></div>
     </div>
 
     <script>
-        const gameBoard = document.getElementById('gameBoard');
-        const scoreElement = document.getElementById('score');
-        const highScoreElement = document.getElementById('highScore');
-        const timerBar = document.getElementById('timerBar');
-        const startBtn = document.getElementById('startBtn');
-        const endScreen = document.getElementById('endScreen');
-        const finalScoreElement = document.getElementById('finalScore');
-        const recordMessageElement = document.getElementById('recordMessage');
-        const playAgainBtn = document.getElementById('playAgainBtn');
+        moment.locale('pt-br');
 
-        let score = 0;
-        let highScore = localStorage.getItem('highScore') || 0;
-        let lastHole;
-        let timeUp = false;
-        let timer;
-        let difficulty = 1;
-        let gameTime = 30;
+        const dogs = [
+            { name: "Fluflu", birthDate: "2012-05-15" },
+            { name: "Bob", birthDate: "2007-12-14" },
+            { name: "Bob Junior", birthDate: "2021-07-16" },
+            { name: "Marronzinha", birthDate: "2016-03-30" },
+            { name: "Doce de Leite", birthDate: "2020-03-13" },
+            { name: "Cafézinho", birthDate: "2020-03-13" },
+            { name: "Chocolate", birthDate: "2020-03-13" },
+            { name: "Mascarado", birthDate: "2020-03-13" },
+            { name: "Pretinha", birthDate: "2018-02-01" }, 
+            { name: "Billy", birthDate: "2015-10-20" }
+        ];
 
-        highScoreElement.textContent = highScore;
-
-        const holes = [];
-        const rabbits = [];
-
-        function createGameBoard() {
-            gameBoard.innerHTML = '';
-            holes.length = 0;
-            rabbits.length = 0;
-            for (let i = 0; i < 9; i++) {
-                const hole = document.createElement('div');
-                hole.classList.add('hole');
-                const rabbit = document.createElement('div');
-                rabbit.classList.add('rabbit');
-                rabbit.textContent = '🐰';
-                hole.appendChild(rabbit);
-                gameBoard.appendChild(hole);
-                holes.push(hole);
-                rabbits.push(rabbit);
-                hole.addEventListener('mousedown', whack);
-                hole.addEventListener('touchstart', whack);
+        function getNextBirthday(birthDate) {
+            const today = moment();
+            let nextBirthday = moment(birthDate).year(today.year());
+            if (nextBirthday.isSameOrBefore(today)) {
+                nextBirthday = nextBirthday.add(1, 'year');
             }
+            return nextBirthday;
         }
 
-        function randomTime(min, max) {
-            return Math.round(Math.random() * (max - min) + min) / difficulty;
+        function calculateAge(birthDate) {
+            const today = moment();
+            const birth = moment(birthDate);
+            const age = today.diff(birth, 'years');
+            const nextBirthday = getNextBirthday(birthDate);
+            const monthsUntilBirthday = nextBirthday.diff(today, 'months') % 12;
+            return `${age} anos${monthsUntilBirthday > 0 ? ` e ${monthsUntilBirthday} ${monthsUntilBirthday === 1 ? 'mês' : 'meses'}` : ''}`;
         }
 
-        function randomHole(holes) {
-            const index = Math.floor(Math.random() * holes.length);
-            const hole = holes[index];
-            if (hole === lastHole) {
-                return randomHole(holes);
-            }
-            lastHole = hole;
-            return hole;
+        function formatTimeUntil(duration) {
+            const days = duration.days();
+            const months = duration.months(); // Obter meses da duração
+            const hours = duration.hours();
+            const minutes = duration.minutes();
+
+            let result = '';
+            if (months > 0) result += `${months} ${months === 1 ? 'mês' : 'meses'} `; 
+            if (days > 0) result += `${days} ${days === 1 ? 'dia' : 'dias'} `;
+            if (hours > 0) result += `${hours} ${hours === 1 ? 'hora' : 'horas'} `;
+            result += `${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
+            return result.trim();
         }
 
-        function showRabbit() {
-            const time = randomTime(500, 1500);
-            const hole = randomHole(holes);
-            const rabbit = hole.querySelector('.rabbit');
-            rabbit.classList.add('show');
-            setTimeout(() => {
-                rabbit.classList.remove('show');
-                if (!timeUp) showRabbit();
-            }, time);
-        }
+        function updateDogList() {
+            const dogList = document.getElementById('dogList');
+            dogList.innerHTML = '';
+            
+            dogs.forEach((dog, index) => {
+                const birthDate = moment(dog.birthDate);
+                const age = calculateAge(dog.birthDate);
+                const nextBirthday = getNextBirthday(dog.birthDate);
+                const timeUntil = moment.duration(nextBirthday.diff(moment()));
+                
+                const dogCard = document.createElement('div');
+                dogCard.className = 'dog-card';
+                dogCard.innerHTML = `
+                    <div class="dog-name">${dog.name}</div>
+                    <div class="birthday-info">
+                        <p>Data de nascimento: ${birthDate.format('DD/MM/YYYY')}</p>
+                        <p>Idade: ${age}</p>
+                        <p>Próximo aniversário: ${nextBirthday.format('DD/MM/YYYY')}</p>
+                        <p>Tempo até o aniversário: ${formatTimeUntil(timeUntil)}</p>
+                    </div>
+                `;
+                dogList.appendChild(dogCard);
 
-        function startGame() {
-            resetGame();
-            createGameBoard();
-            showRabbit();
-            startTimer();
-            startBtn.disabled = true;
-        }
-
-        function resetGame() {
-            score = 0;
-            scoreElement.textContent = '0';
-            timeUp = false;
-            difficulty = 1;
-            gameTime = 30;
-            timerBar.style.width = '100%';
-        }
-
-        function startTimer() {
-            let timeLeft = gameTime;
-            timer = setInterval(() => {
-                timeLeft--;
-                const progress = (timeLeft / gameTime) * 100;
-                timerBar.style.width = `${progress}%`;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    endGame();
+                // Check if it's the dog's birthday today
+                if (nextBirthday.isSame(moment(), 'day')) {
+                    celebrateBirthday(dog.name);
                 }
-            }, 1000);
+            });
         }
 
-        function endGame() {
-            timeUp = true;
-            startBtn.disabled = false;
-            showEndScreen();
+        function updateNextBirthday() {
+            const today = moment();
+            let nextDog = null;
+            let minDuration = moment.duration(100, 'years');
+
+            dogs.forEach(dog => {
+                const nextBirthday = getNextBirthday(dog.birthDate);
+                const duration = moment.duration(nextBirthday.diff(today));
+                if (duration < minDuration) {
+                    minDuration = duration;
+                    nextDog = { name: dog.name, birthday: nextBirthday, duration: duration };
+                }
+            });
+
+            const nextBirthdayElement = document.getElementById('nextBirthday');
+            nextBirthdayElement.innerHTML = `
+                <h2>Próximo Aniversário</h2>
+                <div class="next-birthday-content">
+                    <div class="next-birthday-info">
+                        <div class="next-birthday-name">${nextDog.name}</div>
+                        <p>${nextDog.birthday.format('DD/MM/YYYY')}</p>
+                        <div class="countdown">Faltam: ${formatTimeUntil(nextDog.duration)}</div>
+                    </div>
+                    <div class="dog-icon">🐶</div>
+                </div>
+            `;
         }
 
-        function showEndScreen() {
-            finalScoreElement.textContent = score;
-            updateHighScore();
-            endScreen.classList.add('show');
+        function updateCurrentDate() {
+            const currentDateElement = document.getElementById('currentDate');
+            currentDateElement.textContent = moment().format('dddd, D [de] MMMM [de] YYYY');
         }
 
-        function updateHighScore() {
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('highScore', highScore);
-                highScoreElement.textContent = highScore;
-                recordMessageElement.textContent = "Novo recorde! Parabéns!";
-            } else if (score === highScore) {
-                recordMessageElement.textContent = "Você igualou o recorde atual!";
-            } else {
-                recordMessageElement.textContent = `O recorde atual é ${highScore}. Continue tentando!`;
-            }
+        function celebrateBirthday(dogName) {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            alert(`Hoje é o aniversário de ${dogName}! 🎉🐶`);
         }
 
-        function whack(e) {
-            if (!e.isTrusted) return;
-            const rabbit = this.querySelector('.rabbit');
-            if (rabbit.classList.contains('show')) {
-                score++;
-                scoreElement.textContent = score;
-                rabbit.classList.remove('show');
-                rabbit.classList.add('hit');
-                setTimeout(() => rabbit.classList.remove('hit'), 300);
-                increaseDifficulty();
-            } else {
-                this.classList.add('shake');
-                setTimeout(() => this.classList.remove('shake'), 500);
-            }
+        function init() {
+            updateCurrentDate();
+            updateNextBirthday();
+            updateDogList();
         }
 
-        function increaseDifficulty() {
-            difficulty = Math.min(difficulty + 0.1, 3);
-        }
-
-        startBtn.addEventListener('click', startGame);
-        playAgainBtn.addEventListener('click', () => {
-            endScreen.classList.remove('show');
-            startGame();
-        });
-
-        createGameBoard();
+        init();
+        setInterval(init, 60000); // Atualiza a cada minuto
     </script>
 </body>
 </html>
