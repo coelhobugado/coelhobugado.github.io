@@ -21,8 +21,10 @@
             --accent-color-2: #4caf50;
             --accent-color-3: #f44336;
             --accent-color-4: #ff9800;
+            --memorial-primary: #757575;
+            --memorial-secondary: #424242;
+            --memorial-accent: #9e9e9e;
         }
-        
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--background-color);
@@ -31,13 +33,11 @@
             color: var(--text-color);
             line-height: 1.6;
         }
-        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
         header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -48,20 +48,46 @@
             position: relative;
             overflow: hidden;
         }
-        
+        .memorial-card {
+            background: linear-gradient(135deg, var(--memorial-primary), var(--memorial-secondary));
+            border: 2px solid var(--memorial-accent);
+            position: relative;
+        }
+        .memorial-card::before {
+            content: '🌈';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+        .memorial-card .dog-name::before {
+            content: '👼';
+        }
+        .memorial-card .birthday-info {
+            border-left: 3px solid var(--memorial-accent);
+            padding-left: 1rem;
+            margin: 1rem 0;
+        }
+        .memorial-text {
+            font-style: italic;
+            color: #e0e0e0;
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-top: 1px solid var(--memorial-accent);
+        }
         h1 {
             margin: 0;
             font-size: 3rem;
             font-weight: 600;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        
         #currentDate {
             font-size: 1.2rem;
             margin-top: 0.5rem;
             font-weight: 300;
         }
-        
         .paw-background {
             position: absolute;
             top: 0;
@@ -72,26 +98,6 @@
             z-index: 0;
             pointer-events: none;
         }
-        
-        .paw-background::before,
-        .paw-background::after {
-            content: '🐾';
-            font-size: 8rem;
-            position: absolute;
-            animation: float 10s infinite;
-        }
-        
-        .paw-background::before {
-            top: 10%;
-            left: 10%;
-            animation-delay: -5s;
-        }
-        
-        .paw-background::after {
-            bottom: 10%;
-            right: 10%;
-        }
-        
         .next-birthday {
             background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
             color: white;
@@ -104,86 +110,60 @@
             overflow: hidden;
             transition: transform 0.3s ease;
         }
-        
         .next-birthday:hover {
             transform: translateY(-5px);
         }
-        
         .next-birthday h2 {
             margin-top: 0;
             color: var(--highlight-color);
             font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        
         .next-birthday-content {
             display: flex;
             justify-content: space-around;
             align-items: center;
             flex-wrap: wrap;
         }
-        
-        .next-birthday-info {
-            flex: 1;
-            min-width: 200px;
-        }
-        
         .next-birthday-name {
             font-size: 3rem;
             font-weight: bold;
-            margin-bottom: 10px;
             color: var(--highlight-color);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        
         .countdown {
             font-size: 1.8rem;
             margin-top: 1rem;
             font-weight: bold;
-            color: var(--text-color);
             background-color: rgba(255,255,255,0.1);
             padding: 15px;
             border-radius: 50px;
             display: inline-block;
-            transition: background-color 0.3s ease;
         }
-        
-        .countdown:hover {
-            background-color: rgba(255,255,255,0.2);
-        }
-        
         .dog-icon {
             font-size: 8rem;
             animation: float 3s ease-in-out infinite;
         }
-        
         .dog-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 30px;
         }
-        
         .dog-card {
             background-color: var(--card-background);
             border-radius: 20px;
             padding: 25px;
             box-shadow: 0 10px 20px var(--shadow-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
             position: relative;
             overflow: hidden;
             border: 2px solid transparent;
         }
-        
         .dog-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px var(--shadow-color);
         }
-        
-        .dog-card:nth-child(4n+1) { border-color: var(--accent-color-1); }
-        .dog-card:nth-child(4n+2) { border-color: var(--accent-color-2); }
-        .dog-card:nth-child(4n+3) { border-color: var(--accent-color-3); }
-        .dog-card:nth-child(4n+4) { border-color: var(--accent-color-4); }
-        
+        .dog-card:nth-child(4n+1):not(.memorial-card) { border-color: var(--accent-color-1); }
+        .dog-card:nth-child(4n+2):not(.memorial-card) { border-color: var(--accent-color-2); }
+        .dog-card:nth-child(4n+3):not(.memorial-card) { border-color: var(--accent-color-3); }
+        .dog-card:nth-child(4n+4):not(.memorial-card) { border-color: var(--accent-color-4); }
         .dog-name {
             font-size: 2rem;
             font-weight: bold;
@@ -192,34 +172,16 @@
             display: flex;
             align-items: center;
         }
-        
         .dog-name::before {
             content: '🐾';
             margin-right: 10px;
             font-size: 1.5em;
-            animation: pawPrint 2s infinite;
         }
-        
-        .birthday-info {
-            font-size: 1.1rem;
-        }
-        
-        .birthday-info p {
-            margin: 10px 0;
-        }
-        
-        @keyframes pawPrint {
-            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
-            50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-        }
-        
         @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
         }
-        
         @media (max-width: 768px) {
             .dog-list {
                 grid-template-columns: 1fr;
@@ -227,7 +189,7 @@
             .next-birthday-content {
                 flex-direction: column;
             }
-            .next-birthday-info, .dog-icon {
+            .next-birthday-info {
                 margin-bottom: 20px;
             }
         }
@@ -249,101 +211,132 @@
 
         const dogs = [
             { name: "Fluflu", birthDate: "2012-05-15" },
-            { name: "Bob", birthDate: "2007-12-14" },
+            { 
+                name: "Bob", 
+                birthDate: "2007-12-14",
+                deathDate: "2024-11-15",
+                isMemorial: true,
+                memorialText: "Sempre em nossos corações (2007-2023) 🌈"
+            },
             { name: "Bob Junior", birthDate: "2021-07-16" },
             { name: "Marronzinha", birthDate: "2016-03-30" },
             { name: "Doce de Leite", birthDate: "2020-03-13" },
             { name: "Cafézinho", birthDate: "2020-03-13" },
             { name: "Chocolate", birthDate: "2020-03-13" },
             { name: "Mascarado", birthDate: "2020-03-13" },
-            { name: "Pretinha", birthDate: "2018-02-01" }, 
+            { name: "Pretinha", birthDate: "2018-02-01" },
             { name: "Billy", birthDate: "2015-10-20" }
         ];
 
-        function getNextBirthday(birthDate) {
-            const today = moment();
-            let nextBirthday = moment(birthDate).year(today.year());
-            if (nextBirthday.isSameOrBefore(today)) {
-                nextBirthday = nextBirthday.add(1, 'year');
+        class DogBirthdayManager {
+            static getNextBirthday(birthDate) {
+                const today = moment();
+                let nextBirthday = moment(birthDate).year(today.year());
+                return nextBirthday.isSameOrBefore(today) ? nextBirthday.add(1, 'year') : nextBirthday;
             }
-            return nextBirthday;
-        }
 
-        function calculateAge(birthDate) {
-            const today = moment();
-            const birth = moment(birthDate);
-            const age = today.diff(birth, 'years');
-            const nextBirthday = getNextBirthday(birthDate);
-            const monthsUntilBirthday = nextBirthday.diff(today, 'months') % 12;
-            return `${age} anos${monthsUntilBirthday > 0 ? ` e ${monthsUntilBirthday} ${monthsUntilBirthday === 1 ? 'mês' : 'meses'}` : ''}`;
-        }
+            static calculateAge(birthDate, deathDate = null) {
+                const endDate = deathDate ? moment(deathDate) : moment();
+                const birth = moment(birthDate);
+                const age = endDate.diff(birth, 'years');
+                const months = endDate.diff(birth.add(age, 'years'), 'months');
+                return `${age} anos${months > 0 ? ` e ${months} ${months === 1 ? 'mês' : 'meses'}` : ''}`;
+            }
 
-        function formatTimeUntil(duration) {
-            const days = duration.days();
-            const months = duration.months(); // Obter meses da duração
-            const hours = duration.hours();
-            const minutes = duration.minutes();
+            static formatTimeUntil(duration) {
+                const units = [
+                    { unit: 'months', label: ['mês', 'meses'] },
+                    { unit: 'days', label: ['dia', 'dias'] },
+                    { unit: 'hours', label: ['hora', 'horas'] },
+                    { unit: 'minutes', label: ['minuto', 'minutos'] }
+                ];
 
-            let result = '';
-            if (months > 0) result += `${months} ${months === 1 ? 'mês' : 'meses'} `; 
-            if (days > 0) result += `${days} ${days === 1 ? 'dia' : 'dias'} `;
-            if (hours > 0) result += `${hours} ${hours === 1 ? 'hora' : 'horas'} `;
-            result += `${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
-            return result.trim();
+                return units
+                    .map(({ unit, label }) => {
+                        const value = duration[unit]();
+                        return value > 0 ? `${value} ${value === 1 ? label[0] : label[1]}` : '';
+                    })
+                    .filter(Boolean)
+                    .join(' ');
+            }
+
+            static createDogCard(dog) {
+                const card = document.createElement('div');
+                card.className = `dog-card ${dog.isMemorial ? 'memorial-card' : ''}`;
+                
+                const birthDate = moment(dog.birthDate);
+                const age = this.calculateAge(dog.birthDate, dog.deathDate);
+                
+                let birthdayInfo = '';
+                if (!dog.isMemorial) {
+                    const nextBirthday = this.getNextBirthday(dog.birthDate);
+                    const timeUntil = moment.duration(nextBirthday.diff(moment()));
+                    birthdayInfo = `
+                        <p>Próximo aniversário: ${nextBirthday.format('DD/MM/YYYY')}</p>
+                        <p>Tempo até o aniversário: ${this.formatTimeUntil(timeUntil)}</p>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="dog-name">${dog.name}</div>
+                    <div class="birthday-info">
+                        <p>Data de nascimento: ${birthDate.format('DD/MM/YYYY')}</p>
+                        <p>Idade: ${age}</p>
+                        ${birthdayInfo}
+                        ${dog.isMemorial ? `<div class="memorial-text">${dog.memorialText}</div>` : ''}
+                    </div>
+                `;
+
+                return card;
+            }
         }
 
         function updateDogList() {
             const dogList = document.getElementById('dogList');
             dogList.innerHTML = '';
-            
-            dogs.forEach((dog, index) => {
-                const birthDate = moment(dog.birthDate);
-                const age = calculateAge(dog.birthDate);
-                const nextBirthday = getNextBirthday(dog.birthDate);
-                const timeUntil = moment.duration(nextBirthday.diff(moment()));
-                
-                const dogCard = document.createElement('div');
-                dogCard.className = 'dog-card';
-                dogCard.innerHTML = `
-                    <div class="dog-name">${dog.name}</div>
-                    <div class="birthday-info">
-                        <p>Data de nascimento: ${birthDate.format('DD/MM/YYYY')}</p>
-                        <p>Idade: ${age}</p>
-                        <p>Próximo aniversário: ${nextBirthday.format('DD/MM/YYYY')}</p>
-                        <p>Tempo até o aniversário: ${formatTimeUntil(timeUntil)}</p>
-                    </div>
-                `;
-                dogList.appendChild(dogCard);
 
-                // Check if it's the dog's birthday today
-                if (nextBirthday.isSame(moment(), 'day')) {
-                    celebrateBirthday(dog.name);
-                }
+            const livingDogs = dogs.filter(dog => !dog.isMemorial);
+            const sortedDogs = livingDogs.sort((a, b) => {
+                const nextBirthdayA = DogBirthdayManager.getNextBirthday(a.birthDate);
+                const nextBirthdayB = DogBirthdayManager.getNextBirthday(b.birthDate);
+                return nextBirthdayA.diff(nextBirthdayB);
+            });
+
+            sortedDogs.forEach(dog => {
+                const card = DogBirthdayManager.createDogCard(dog);
+                dogList.appendChild(card);
+            });
+
+            dogs.filter(dog => dog.isMemorial).forEach(dog => {
+                const card = DogBirthdayManager.createDogCard(dog);
+                dogList.appendChild(card);
             });
         }
 
         function updateNextBirthday() {
             const today = moment();
-            let nextDog = null;
-            let minDuration = moment.duration(100, 'years');
+            const livingDogs = dogs.filter(dog => !dog.isMemorial);
+            
+            if (livingDogs.length === 0) {
+                document.getElementById('nextBirthday').innerHTML = "<h2>Não há mais aniversários para celebrar.</h2>";
+                return;
+            }
 
-            dogs.forEach(dog => {
-                const nextBirthday = getNextBirthday(dog.birthDate);
+            const nextDog = livingDogs.reduce((nearest, dog) => {
+                const nextBirthday = DogBirthdayManager.getNextBirthday(dog.birthDate);
                 const duration = moment.duration(nextBirthday.diff(today));
-                if (duration < minDuration) {
-                    minDuration = duration;
-                    nextDog = { name: dog.name, birthday: nextBirthday, duration: duration };
-                }
-            });
+                
+                return (!nearest || duration < nearest.duration) ? 
+                    { name: dog.name, birthday: nextBirthday, duration } : nearest;
+            }, null);
 
-            const nextBirthdayElement = document.getElementById('nextBirthday');
-            nextBirthdayElement.innerHTML = `
+            document.getElementById('nextBirthday').innerHTML = `
                 <h2>Próximo Aniversário</h2>
                 <div class="next-birthday-content">
                     <div class="next-birthday-info">
                         <div class="next-birthday-name">${nextDog.name}</div>
                         <p>${nextDog.birthday.format('DD/MM/YYYY')}</p>
-                        <div class="countdown">Faltam: ${formatTimeUntil(nextDog.duration)}</div>
+                        <div class="countdown">Faltam: ${DogBirthdayManager.formatTimeUntil(nextDog.duration)}</div>
                     </div>
                     <div class="dog-icon">🐶</div>
                 </div>
@@ -351,18 +344,7 @@
         }
 
         function updateCurrentDate() {
-            const currentDateElement = document.getElementById('currentDate');
-            currentDateElement.textContent = moment().format('dddd, D [de] MMMM [de] YYYY');
-        }
-
-        function celebrateBirthday(dogName) {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-
-            alert(`Hoje é o aniversário de ${dogName}! 🎉🐶`);
+            document.getElementById('currentDate').textContent = moment().format('dddd, D [de] MMMM [de] YYYY');
         }
 
         function init() {
