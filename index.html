@@ -84,6 +84,8 @@
             font-size: clamp(1.1rem, 3vw, 1.6rem);
             margin: 15px 0 30px;
             font-style: italic;
+			text-align: center;
+			width: 100%;
             opacity: 0.9;
         }
 
@@ -141,7 +143,7 @@
 
         .image-container {
             width: 100%;
-            height: 0;
+            height: auto;
             padding-bottom: 56.25%;
             position: relative;
             margin: 30px 0;
@@ -200,7 +202,7 @@
         p {
             font-size: clamp(1rem, 2vw, 1.1rem);
             margin-bottom: 20px;
-            text-align: justify;
+            text-align: left;
         }
 
         ul, ol {
@@ -430,6 +432,7 @@
             max-height: 0;
             overflow: hidden;
             transition: var(--transition);
+			text-align: left;
         }
 
         .faq-item.active .faq-question {
@@ -447,7 +450,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
             margin: 30px 0;
-            align-items: center;
+            align-items: start;
         }
 
         footer {
@@ -650,6 +653,7 @@
         @media (max-width: 992px) {
             .container {
                 padding: var(--spacing-md);
+				overflow: hidden;
             }
 
             header {
@@ -721,7 +725,6 @@
         <p class="subtitle">A Professional Guide to Impeccable Gardens in the Heart of Switzerland</p>
         <div class="theme-controls">
             <button id="theme-toggle"><i class="fas fa-moon"></i> Toggle Dark Mode</button>
-            <button id="accessibility-toggle"><i class="fas fa-universal-access"></i> Increase Font Size</button>
         </div>
     </header>
 
@@ -976,12 +979,6 @@
             body.classList.toggle('dark-theme');
             themeToggle.querySelector('i').classList.toggle('fa-sun');
             themeToggle.querySelector('i').classList.toggle('fa-moon');
-        });
-
-        // Accessibility - Increase Font Size
-        const accessibilityToggle = document.getElementById('accessibility-toggle');
-        accessibilityToggle.addEventListener('click', () => {
-            body.style.fontSize = body.style.fontSize === '1.2rem' ? '1rem' : '1.2rem';
         });
 
         // FAQ Toggle
