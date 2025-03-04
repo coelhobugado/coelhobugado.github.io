@@ -1,360 +1,1011 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aniversários Caninos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/pt-br.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <title>Find the Best Gardeners in Geneva: A Professional Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #6a1b9a;
-            --secondary-color: #8e24aa;
-            --background-color: #121212;
-            --card-background: #1e1e1e;
-            --text-color: #ffffff;
-            --highlight-color: #ffd54f;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --accent-color-1: #00bcd4;
-            --accent-color-2: #4caf50;
-            --accent-color-3: #f44336;
-            --accent-color-4: #ff9800;
-            --memorial-primary: #757575;
-            --memorial-secondary: #424242;
-            --memorial-accent: #9e9e9e;
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            color: var(--text-color);
-            line-height: 1.6;
         }
+
+        :root {
+            --primary-color: #2E7D32;
+            --secondary-color: #66BB6A;
+            --dark-color: #1B5E20;
+            --light-color: #f9f9f9;
+            --text-color: #333;
+            --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s ease;
+            --spacing-sm: 10px;
+            --spacing-md: 20px;
+            --spacing-lg: 40px;
+            --border-radius: 15px;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            background: var(--light-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: var(--spacing-lg) var(--spacing-md);
         }
+
         header {
+            text-align: center;
+            padding: 80px var(--spacing-md);
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            text-align: center;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px var(--shadow-color);
+            box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
         }
-        .memorial-card {
-            background: linear-gradient(135deg, var(--memorial-primary), var(--memorial-secondary));
-            border: 2px solid var(--memorial-accent);
-            position: relative;
-        }
-        .memorial-card::before {
-            content: '🌈';
+
+        header::before {
+            content: '';
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 2rem;
-            opacity: 0.5;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') center/cover;
+            opacity: 0.15;
+            z-index: 0;
+            animation: zoomBg 30s infinite alternate;
         }
-        .memorial-card .dog-name::before {
-            content: '👼';
+
+        @keyframes zoomBg {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
         }
-        .memorial-card .birthday-info {
-            border-left: 3px solid var(--memorial-accent);
-            padding-left: 1rem;
-            margin: 1rem 0;
+
+        header h1, header p, header .theme-controls {
+            position: relative;
+            z-index: 1;
         }
-        .memorial-text {
-            font-style: italic;
-            color: #e0e0e0;
-            text-align: center;
-            margin-top: 1rem;
-            padding: 0.5rem;
-            border-top: 1px solid var(--memorial-accent);
-        }
+
         h1 {
-            margin: 0;
-            font-size: 3rem;
-            font-weight: 600;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: var(--spacing-md);
+            letter-spacing: 1px;
         }
-        #currentDate {
-            font-size: 1.2rem;
-            margin-top: 0.5rem;
-            font-weight: 300;
+
+        .subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            margin: 15px 0 30px;
+            font-style: italic;
+            opacity: 0.9;
         }
-        .paw-background {
+
+        .theme-controls {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        section {
+            background: white;
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-lg);
+            animation: fadeIn 0.8s ease-in;
+            transition: var(--transition);
+            transform: translateZ(0);
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .image-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+            margin: 30px 0;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .image-container img {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.1;
-            z-index: 0;
-            pointer-events: none;
+            object-fit: cover;
+            transition: transform 0.5s ease;
         }
-        .next-birthday {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            color: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 20px var(--shadow-color);
+
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .caption {
+            font-size: 0.9rem;
+            font-style: italic;
             text-align: center;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            margin: 25px 0 15px;
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.1rem);
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            list-style-position: inside;
+            margin-bottom: 25px;
+            padding-left: 15px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        ul li, ol li {
+            padding: 8px 0;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            position: relative;
+        }
+
+        ul li::before {
+            content: '✔';
+            color: var(--secondary-color);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .benefit-card {
+            background: rgba(102, 187, 106, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .benefit-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .benefit-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .testimonial {
+            font-style: italic;
+            position: relative;
+            padding: 20px 30px;
+            margin: 30px 0;
+            background: rgba(102, 187, 106, 0.05);
+            border-radius: 10px;
+        }
+
+        .testimonial::before {
+            content: '"';
+            font-size: 4rem;
+            position: absolute;
+            left: 10px;
+            top: -10px;
+            color: var(--secondary-color);
+            opacity: 0.3;
+        }
+
+        .testimonial-author {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .cta {
+            text-align: center;
+            background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
+            padding: 40px;
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s ease;
         }
-        .next-birthday:hover {
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1557429287-b2e26467fc2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') center/cover;
+            opacity: 0.07;
+            z-index: 0;
+        }
+
+        .cta > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta button {
+            padding: 15px 40px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        .cta button:hover {
+            background: var(--dark-color);
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 30px auto 0;
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+        }
+
+        .seasonal-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .season {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .season:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .season i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .season h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .season-spring {
+            background: linear-gradient(to bottom right, #e1f5fe, #b3e5fc);
+        }
+
+        .season-summer {
+            background: linear-gradient(to bottom right, #fffde7, #fff9c4);
+        }
+
+        .season-autumn {
+            background: linear-gradient(to bottom right, #fff3e0, #ffe0b2);
+        }
+
+        .season-winter {
+            background: linear-gradient(to bottom right, #e8eaf6, #c5cae9);
+        }
+
+        .faq {
+            margin: 30px 0;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 15px;
+            background: #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background: #e9e9e9;
+        }
+
+        .faq-answer {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .faq-item.active .faq-question {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 15px;
+            max-height: 500px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+            align-items: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--primary-color);
+            color: white;
+            position: relative;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: left;
+            max-width: 1200px;
+            margin: 0 auto 30px;
+        }
+
+        .footer-section h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            padding: 5px 0;
+        }
+
+        .footer-section ul li::before {
+            content: none;
+        }
+
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--dark-color);
             transform: translateY(-5px);
         }
-        .next-birthday h2 {
-            margin-top: 0;
-            color: var(--highlight-color);
-            font-size: 2.5rem;
+
+        /* Dark Theme */
+        body.dark-theme {
+            background: #121212;
+            color: #e0e0e0;
         }
-        .next-birthday-content {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
+
+        body.dark-theme header {
+            background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
         }
-        .next-birthday-name {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--highlight-color);
+
+        body.dark-theme section {
+            background: #1e1e1e;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        .countdown {
-            font-size: 1.8rem;
-            margin-top: 1rem;
-            font-weight: bold;
-            background-color: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 50px;
-            display: inline-block;
+
+        body.dark-theme h2 {
+            color: var(--secondary-color);
+            border-bottom-color: #444;
         }
-        .dog-icon {
-            font-size: 8rem;
-            animation: float 3s ease-in-out infinite;
+
+        body.dark-theme h3 {
+            color: var(--secondary-color);
         }
-        .dog-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+
+        body.dark-theme input, 
+        body.dark-theme textarea {
+            background: #2e2e2e;
+            border-color: #444;
+            color: #e0e0e0;
         }
-        .dog-card {
-            background-color: var(--card-background);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 20px var(--shadow-color);
-            transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid transparent;
+
+        body.dark-theme .cta {
+            background: linear-gradient(135deg, #1e1e1e, #121212);
         }
-        .dog-card:hover {
-            transform: translateY(-10px);
+
+        body.dark-theme button {
+            background: #444;
+            color: white;
         }
-        .dog-card:nth-child(4n+1):not(.memorial-card) { border-color: var(--accent-color-1); }
-        .dog-card:nth-child(4n+2):not(.memorial-card) { border-color: var(--accent-color-2); }
-        .dog-card:nth-child(4n+3):not(.memorial-card) { border-color: var(--accent-color-3); }
-        .dog-card:nth-child(4n+4):not(.memorial-card) { border-color: var(--accent-color-4); }
-        .dog-name {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--highlight-color);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
+
+        body.dark-theme .cta button {
+            background: var(--secondary-color);
+            color: #121212;
         }
-        .dog-name::before {
-            content: '🐾';
-            margin-right: 10px;
-            font-size: 1.5em;
+
+        body.dark-theme .cta button:hover {
+            background: #81c784;
         }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
+
+        body.dark-theme .benefit-card {
+            background: rgba(102, 187, 106, 0.05);
         }
-        @media (max-width: 768px) {
-            .dog-list {
+
+        body.dark-theme .testimonial {
+            background: rgba(102, 187, 106, 0.05);
+        }
+
+        body.dark-theme .faq-question {
+            background: #2e2e2e;
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .faq-question:hover {
+            background: #333;
+        }
+
+        body.dark-theme .season-spring {
+            background: linear-gradient(to bottom right, #0d47a1, #1565c0);
+            color: white;
+        }
+
+        body.dark-theme .season-summer {
+            background: linear-gradient(to bottom right, #f57f17, #fbc02d);
+            color: white;
+        }
+
+        body.dark-theme .season-autumn {
+            background: linear-gradient(to bottom right, #bf360c, #e64a19);
+            color: white;
+        }
+
+        body.dark-theme .season-winter {
+            background: linear-gradient(to bottom right, #263238, #455a64);
+            color: white;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            header {
+                padding: 60px var(--spacing-md);
+            }
+
+            .two-column {
                 grid-template-columns: 1fr;
             }
-            .next-birthday-content {
-                flex-direction: column;
+        }
+
+        @media (max-width: 768px) {
+            h1 { 
+                margin-bottom: 10px;
             }
-            .next-birthday-info {
+
+            .subtitle { 
                 margin-bottom: 20px;
+            }
+            
+            section {
+                padding: 20px;
+            }
+
+            .benefits, .seasonal-tips {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 40px 15px;
+            }
+
+            .theme-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .cta {
+                padding: 30px 15px;
+            }
+
+            .cta button {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="paw-background"></div>
-        <h1>🎂 Aniversários Caninos 🐾</h1>
-        <div id="currentDate"></div>
+        <h1>Find the Best Gardeners in Geneva</h1>
+        <p class="subtitle">A Professional Guide to Impeccable Gardens in the Heart of Switzerland</p>
+        <div class="theme-controls">
+            <button id="theme-toggle"><i class="fas fa-moon"></i> Toggle Dark Mode</button>
+            <button id="accessibility-toggle"><i class="fas fa-universal-access"></i> Increase Font Size</button>
+        </div>
     </header>
+
     <div class="container">
-        <div class="next-birthday" id="nextBirthday"></div>
-        <div class="dog-list" id="dogList"></div>
+        <section class="intro">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Geneva Garden Landscape">
+            </div>
+            <p class="caption">A stunning garden overlooking Lake Geneva</p>
+            
+            <p>Geneva, a beacon of elegance and natural splendor, owes much of its charm to masterful gardening. Along the serene Lake Léman and within its quaint neighborhoods, skilled gardeners craft spaces that embody the city's sophistication and serenity. The unique blend of international influences and Swiss precision creates garden spaces that are both functionally excellent and aesthetically remarkable.</p>
+            
+            <p>In this comprehensive guide, we'll explore how to identify and collaborate with Geneva's premier gardening professionals, understanding the distinctive challenges of the region's climate, and discover the secrets behind the city's most admired green spaces.</p>
+        </section>
+
+        <section class="content">
+            <h2>Why Geneva's Gardens Stand Out</h2>
+            <p>With its alpine-influenced temperate climate, Geneva requires gardeners who excel in adapting to seasonal shifts while enhancing the region's rich biodiversity. The city's prestigious reputation demands landscapes that reflect both natural beauty and cultivated elegance.</p>
+            
+            <div class="two-column">
+                <div>
+                    <p>Geneva's gardens are distinguished by several unique characteristics:</p>
+                    <ul>
+                        <li><strong>Microclimate Adaptation:</strong> Expert knowledge of Lake Geneva's moderating effects on local growing conditions</li>
+                        <li><strong>Alpine Influence:</strong> Integration of mountain flora alongside classical European garden plants</li>
+                        <li><strong>International Flair:</strong> Cosmopolitan design approaches reflecting the city's global character</li>
+                        <li><strong>Sustainable Practices:</strong> Advanced water conservation and organic maintenance techniques</li>
+                        <li><strong>Precision Execution:</strong> Meticulous attention to detail reflecting Swiss craftsmanship</li>
+                    </ul>
+                </div>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1558293842-c0fd3db86157?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Geneva Park Detail">
+                </div>
+            </div>
+
+            <h3>Notable Gardens in Geneva</h3>
+            <p>The city boasts several world-class garden spaces that exemplify exceptional landscaping:</p>
+            <ul>
+                <li><strong>Conservatory and Botanical Garden:</strong> Home to over 16,000 plant species and specialized collections</li>
+                <li><strong>Parc des Bastions:</strong> Historic green space featuring meticulous geometric designs</li>
+                <li><strong>Parc de La Grange:</strong> Famous for its spectacular rose garden with over 200 varieties</li>
+                <li><strong>Jardin Anglais:</strong> Home to the iconic Flower Clock, combining horticultural artistry with precision engineering</li>
+            </ul>
+
+            <h2>Selecting Elite Gardeners in Geneva</h2>
+            <p>Finding the right gardening professional in Geneva requires careful consideration of several important factors:</p>
+            
+            <div class="benefits">
+                <div class="benefit-card">
+                    <i class="fas fa-certificate"></i>
+                    <h4>Certified Expertise</h4>
+                    <p>Choose professionals accredited by JardinSuisse with deep local knowledge and formal horticultural training.</p>
+                </div>
+                <div class="benefit-card">
+                    <i class="fas fa-trophy"></i>
+                    <h4>Proven Excellence</h4>
+                    <p>Examine their portfolio showcasing work on prestigious estates or notable public spaces.</p>
+                </div>
+                <div class="benefit-card">
+                    <i class="fas fa-leaf"></i>
+                    <h4>Sustainable Innovation</h4>
+                    <p>Favor those using organic methods, water-efficient systems, and environmentally responsible practices.</p>
+                </div>
+            </div>
+            
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Gardening in Action">
+            </div>
+            <p class="caption">Professional gardeners employ precision techniques for optimal results</p>
+
+            <div class="testimonial">
+                <p>The transformation of our lakeside property by Geneva's premier landscape team exceeded all expectations. Their understanding of our soil conditions and microclimate created a garden that thrives year-round while requiring minimal intervention.</p>
+                <p class="testimonial-author">— Claudia Berger, Cologny Resident</p>
+            </div>
+
+            <h3>Essential Questions to Ask Potential Gardeners</h3>
+            <ol>
+                <li>What specific experience do you have with Geneva's growing conditions?</li>
+                <li>How do you approach water conservation and sustainable practices?</li>
+                <li>Can you provide references from long-term maintenance clients?</li>
+                <li>What professional certifications and continuing education have you completed?</li>
+                <li>How do you handle seasonal transitions and winter protection?</li>
+            </ol>
+
+            <h2>Finding Geneva's Finest Gardening Professionals</h2>
+            <p>To connect with top-tier gardening talent in Geneva, consider these valuable resources:</p>
+            <ul>
+                <li><strong>Premier Landscaping Firms:</strong> Established companies with comprehensive design-build services</li>
+                <li><strong>Professional Associations:</strong> JardinSuisse member directory of certified professionals</li>
+                <li><strong>Local Online Directories:</strong> Trusted platforms like local.ch with verified reviews</li>
+                <li><strong>Eco-Focused Cooperatives:</strong> Sustainability-oriented gardening collectives</li>
+                <li><strong>Specialized Contractors:</strong> Experts in specific areas like alpine plants or water features</li>
+            </ul>
+        </section>
+
+        <section class="seasonal">
+            <h2>Seasonal Gardening in Geneva</h2>
+            <p>Geneva's distinct seasons require specialized approaches throughout the year. Professional gardeners adapt their techniques to maximize each season's potential while preparing for the challenges of the next.</p>
+            
+            <div class="seasonal-tips">
+                <div class="season season-spring">
+                    <i class="fas fa-seedling"></i>
+                    <h4>Spring</h4>
+                    <p>Soil preparation, early planting, and post-frost damage repair. Focus on native flowering species.</p>
+                </div>
+                <div class="season season-summer">
+                    <i class="fas fa-sun"></i>
+                    <h4>Summer</h4>
+                    <p>Irrigation optimization, heat-tolerant plantings, and regular maintenance to manage vigorous growth.</p>
+                </div>
+                <div class="season season-autumn">
+                    <i class="fas fa-leaf"></i>
+                    <h4>Autumn</h4>
+                    <p>Soil enrichment, planting of bulbs, and preparation of sensitive plants for winter protection.</p>
+                </div>
+                <div class="season season-winter">
+                    <i class="fas fa-snowflake"></i>
+                    <h4>Winter</h4>
+                    <p>Structural pruning, snow load management, and greenhouse cultivation of early spring specimens.</p>
+                </div>
+            </div>
+
+            <h3>Advanced Garden Features Popular in Geneva</h3>
+            <div class="two-column">
+                <div class="image-container">
+                    <img src="https://api-tat.kafow.com/storage/19404/conversions/24dbc6835e56935967ff615eba36d120-images.webp" alt="Water Feature in Geneva Garden">
+                </div>
+                <div>
+                    <p>Geneva's most impressive gardens often incorporate sophisticated features that require specialized expertise:</p>
+                    <ul>
+                        <li><strong>Smart Irrigation Systems:</strong> Weather-responsive technology that optimizes water usage</li>
+                        <li><strong>Terraced Landscapes:</strong> Engineered solutions for sloped properties with lake views</li>
+                        <li><strong>Living Walls:</strong> Vertical gardens that maximize greenery in limited spaces</li>
+                        <li><strong>Edible Landscapes:</strong> Integration of fruit-bearing plants and culinary herbs into ornamental designs</li>
+                        <li><strong>Naturalistic Water Features:</strong> Ponds and streams that support local aquatic ecosystems</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        What is the typical cost range for professional gardening services in Geneva?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                            <p>To create a sustainable garden, consider the following practices:</p>
+                        <ul>
+                            <li><strong>Native Plants:</strong> Use plants that are naturally adapted to Geneva's climate, reducing the need for water and chemical inputs.</li>
+                            <li><strong>Water Conservation:</strong> Install drip irrigation systems and rainwater harvesting to minimize water waste.</li>
+                            <li><strong>Organic Practices:</strong> Avoid synthetic fertilizers and pesticides, opting for compost and natural pest control methods.</li>
+                            <li><strong>Soil Health:</strong> Regularly enrich the soil with organic matter to promote healthy plant growth and reduce erosion.</li>
+                            <li><strong>Wildlife Support:</strong> Incorporate features like bird feeders, bee hotels, and ponds to support local biodiversity.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        How often should I schedule maintenance for my garden?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The frequency of garden maintenance depends on the size and complexity of your garden, as well as the season. In general:</p>
+                        <ul>
+                            <li><strong>Spring:</strong> Weekly maintenance to prepare for the growing season.</li>
+                            <li><strong>Summer:</strong> Bi-weekly or weekly visits to manage growth and irrigation.</li>
+                            <li><strong>Autumn:</strong> Monthly visits to prepare for winter and clean up fallen leaves.</li>
+                            <li><strong>Winter:</strong> Occasional check-ups to manage snow and protect plants from frost.</li>
+                        </ul>
+                        <p>Consult with your gardener to create a tailored maintenance schedule.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Can I incorporate edible plants into my ornamental garden?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! Many edible plants can be seamlessly integrated into ornamental gardens. Consider:</p>
+                        <ul>
+                            <li><strong>Herbs:</strong> Rosemary, thyme, and sage are both beautiful and practical.</li>
+                            <li><strong>Fruit Trees:</strong> Dwarf varieties of apple, pear, or cherry trees can add structure and beauty.</li>
+                            <li><strong>Vegetables:</strong> Leafy greens like kale or chard can be as decorative as they are nutritious.</li>
+                            <li><strong>Edible Flowers:</strong> Nasturtiums, pansies, and calendula add color and can be used in salads.</li>
+                        </ul>
+                        <p>Your gardener can help design a layout that combines aesthetics with functionality.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Ready to Transform Your Garden?</h2>
+            <p>Contact Geneva's top gardening professionals today and start creating the garden of your dreams. Whether you're looking for a complete redesign or regular maintenance, our experts are here to help.</p>
+            <button>Get a Free Consultation</button>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We are dedicated to helping Geneva residents create and maintain beautiful, sustainable gardens. Our network of certified professionals ensures top-quality service and expertise.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Portfolio</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> Geneva, Switzerland</li>
+                    <li><i class="fas fa-phone"></i> +41 22 123 4567</li>
+                    <li><i class="fas fa-envelope"></i> info@genevagardeners.com</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Geneva Gardeners. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+        <i class="fas fa-chevron-up"></i>
     </div>
 
     <script>
-        moment.locale('pt-br');
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
 
-        const dogs = [
-            { name: "Fluflu", birthDate: "2012-05-15" },
-            { 
-                name: "Bob", 
-                birthDate: "2007-12-14",
-                deathDate: "2024-11-15",
-                isMemorial: true,
-                memorialText: "Sempre em nossos corações (2007-2024) 🌈"
-            },
-            { name: "Bob Junior", birthDate: "2021-07-16" },
-            { name: "Marronzinha", birthDate: "2016-03-30" },
-            { name: "Doce de Leite", birthDate: "2020-03-13" },
-            { name: "Cafézinho", birthDate: "2020-03-13" },
-            { name: "Chocolate", birthDate: "2020-03-13" },
-            { name: "Mascarado", birthDate: "2020-03-13" },
-            { name: "Pretinha", birthDate: "2018-02-01" },
-            { name: "Billy", birthDate: "2015-10-20" }
-        ];
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            themeToggle.querySelector('i').classList.toggle('fa-sun');
+            themeToggle.querySelector('i').classList.toggle('fa-moon');
+        });
 
-        class DogBirthdayManager {
-            static getNextBirthday(birthDate) {
-                const today = moment();
-                let nextBirthday = moment(birthDate).year(today.year());
-                return nextBirthday.isSameOrBefore(today) ? nextBirthday.add(1, 'year') : nextBirthday;
-            }
+        // Accessibility - Increase Font Size
+        const accessibilityToggle = document.getElementById('accessibility-toggle');
+        accessibilityToggle.addEventListener('click', () => {
+            body.style.fontSize = body.style.fontSize === '1.2rem' ? '1rem' : '1.2rem';
+        });
 
-            static calculateAge(birthDate, deathDate = null) {
-                const endDate = deathDate ? moment(deathDate) : moment();
-                const birth = moment(birthDate);
-                const age = endDate.diff(birth, 'years');
-                const months = endDate.diff(birth.add(age, 'years'), 'months');
-                return `${age} anos${months > 0 ? ` e ${months} ${months === 1 ? 'mês' : 'meses'}` : ''}`;
-            }
-
-            static formatTimeUntil(duration) {
-                const units = [
-                    { unit: 'months', label: ['mês', 'meses'] },
-                    { unit: 'days', label: ['dia', 'dias'] },
-                    { unit: 'hours', label: ['hora', 'horas'] },
-                    { unit: 'minutes', label: ['minuto', 'minutos'] }
-                ];
-
-                return units
-                    .map(({ unit, label }) => {
-                        const value = duration[unit]();
-                        return value > 0 ? `${value} ${value === 1 ? label[0] : label[1]}` : '';
-                    })
-                    .filter(Boolean)
-                    .join(' ');
-            }
-
-            static createDogCard(dog) {
-                const card = document.createElement('div');
-                card.className = `dog-card ${dog.isMemorial ? 'memorial-card' : ''}`;
-                
-                const birthDate = moment(dog.birthDate);
-                const age = this.calculateAge(dog.birthDate, dog.deathDate);
-                
-                let birthdayInfo = '';
-                if (!dog.isMemorial) {
-                    const nextBirthday = this.getNextBirthday(dog.birthDate);
-                    const timeUntil = moment.duration(nextBirthday.diff(moment()));
-                    birthdayInfo = `
-                        <p>Próximo aniversário: ${nextBirthday.format('DD/MM/YYYY')}</p>
-                        <p>Tempo até o aniversário: ${this.formatTimeUntil(timeUntil)}</p>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="dog-name">${dog.name}</div>
-                    <div class="birthday-info">
-                        <p>Data de nascimento: ${birthDate.format('DD/MM/YYYY')}</p>
-                        <p>Idade: ${age}</p>
-                        ${birthdayInfo}
-                        ${dog.isMemorial ? `<div class="memorial-text">${dog.memorialText}</div>` : ''}
-                    </div>
-                `;
-
-                return card;
-            }
-        }
-
-        function updateDogList() {
-            const dogList = document.getElementById('dogList');
-            dogList.innerHTML = '';
-
-            const livingDogs = dogs.filter(dog => !dog.isMemorial);
-            const sortedDogs = livingDogs.sort((a, b) => {
-                const nextBirthdayA = DogBirthdayManager.getNextBirthday(a.birthDate);
-                const nextBirthdayB = DogBirthdayManager.getNextBirthday(b.birthDate);
-                return nextBirthdayA.diff(nextBirthdayB);
+        // FAQ Toggle
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                faqItem.classList.toggle('active');
             });
+        });
 
-            sortedDogs.forEach(dog => {
-                const card = DogBirthdayManager.createDogCard(dog);
-                dogList.appendChild(card);
-            });
-
-            dogs.filter(dog => dog.isMemorial).forEach(dog => {
-                const card = DogBirthdayManager.createDogCard(dog);
-                dogList.appendChild(card);
-            });
-        }
-
-        function updateNextBirthday() {
-            const today = moment();
-            const livingDogs = dogs.filter(dog => !dog.isMemorial);
-            
-            if (livingDogs.length === 0) {
-                document.getElementById('nextBirthday').innerHTML = "<h2>Não há mais aniversários para celebrar.</h2>";
-                return;
+        // Back to Top Button
+        const backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
             }
+        });
 
-            const nextDog = livingDogs.reduce((nearest, dog) => {
-                const nextBirthday = DogBirthdayManager.getNextBirthday(dog.birthDate);
-                const duration = moment.duration(nextBirthday.diff(today));
-                
-                return (!nearest || duration < nearest.duration) ? 
-                    { name: dog.name, birthday: nextBirthday, duration } : nearest;
-            }, null);
-
-            document.getElementById('nextBirthday').innerHTML = `
-                <h2>Próximo Aniversário</h2>
-                <div class="next-birthday-content">
-                    <div class="next-birthday-info">
-                        <div class="next-birthday-name">${nextDog.name}</div>
-                        <p>${nextDog.birthday.format('DD/MM/YYYY')}</p>
-                        <div class="countdown">Faltam: ${DogBirthdayManager.formatTimeUntil(nextDog.duration)}</div>
-                    </div>
-                    <div class="dog-icon">🐶</div>
-                </div>
-            `;
-        }
-
-        function updateCurrentDate() {
-            document.getElementById('currentDate').textContent = moment().format('dddd, D [de] MMMM [de] YYYY');
-        }
-
-        function init() {
-            updateCurrentDate();
-            updateNextBirthday();
-            updateDogList();
-        }
-
-        init();
-        setInterval(init, 60000); // Atualiza a cada minuto
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     </script>
 </body>
 </html>
