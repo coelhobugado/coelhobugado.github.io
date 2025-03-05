@@ -3,1006 +3,449 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find the Best Gardeners in Geneva: A Professional Guide</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Finding a Good Gardener in Geneva</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --primary-color: #2E7D32;
-            --secondary-color: #66BB6A;
-            --dark-color: #1B5E20;
-            --light-color: #f9f9f9;
-            --text-color: #333;
-            --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.2);
-            --transition: all 0.3s ease;
-            --spacing-sm: 10px;
-            --spacing-md: 20px;
-            --spacing-lg: 40px;
-            --border-radius: 15px;
-        }
-
-        body {
-            font-family: 'Georgia', serif;
-            line-height: 1.8;
-            background: var(--light-color);
-            color: var(--text-color);
-            transition: var(--transition);
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: var(--spacing-lg) var(--spacing-md);
-        }
-
-        header {
-            text-align: center;
-            padding: 80px var(--spacing-md);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') center/cover;
-            opacity: 0.15;
-            z-index: 0;
-            animation: zoomBg 30s infinite alternate;
-        }
-
-        @keyframes zoomBg {
-            from { transform: scale(1); }
-            to { transform: scale(1.1); }
-        }
-
-        header h1, header p, header .theme-controls {
-            position: relative;
-            z-index: 1;
-        }
-
-        h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
-            margin-bottom: var(--spacing-md);
-            letter-spacing: 1px;
-        }
-
-        .subtitle {
-            font-size: clamp(1.1rem, 3vw, 1.6rem);
-            margin: 15px 0 30px;
-            font-style: italic;
-			text-align: center;
-			width: 100%;
-            opacity: 0.9;
-        }
-
-        .theme-controls {
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-sm);
-        }
-
-        button {
-            padding: 12px 24px;
-            font-size: 1rem;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 25px;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            font-family: inherit;
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        button i {
-            margin-right: 8px;
-        }
-
-        section {
-            background: white;
-            padding: clamp(20px, 5vw, 40px);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            margin-bottom: var(--spacing-lg);
-            animation: fadeIn 0.8s ease-in;
-            transition: var(--transition);
-            transform: translateZ(0);
-        }
-
-        section:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .image-container {
-            width: 100%;
-            height: auto;
-            padding-bottom: 56.25%;
-            position: relative;
-            margin: 30px 0;
-            overflow: hidden;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-        }
-
-        .image-container img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .image-container:hover img {
-            transform: scale(1.05);
-        }
-
-        .caption {
-            font-size: 0.9rem;
-            font-style: italic;
-            text-align: center;
-            margin-top: 10px;
-            opacity: 0.7;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            font-size: clamp(1.5rem, 4vw, 2.2rem);
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 10px;
-            position: relative;
-        }
-
-        h2::after {
-            content: "";
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background-color: var(--primary-color);
-        }
-
-        h3 {
-            color: var(--primary-color);
-            font-size: clamp(1.3rem, 3vw, 1.8rem);
-            margin: 25px 0 15px;
-        }
-
-        p {
-            font-size: clamp(1rem, 2vw, 1.1rem);
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        ul, ol {
-            list-style-position: inside;
-            margin-bottom: 25px;
-            padding-left: 15px;
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        ul li, ol li {
-            padding: 8px 0;
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            position: relative;
-        }
-
-        ul li::before {
-            content: '✔';
-            color: var(--secondary-color);
-            margin-right: 10px;
-            font-weight: bold;
-        }
-
-        .benefits {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .benefit-card {
-            background: rgba(102, 187, 106, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid var(--secondary-color);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-
-        .benefit-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .benefit-card i {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .benefit-card h4 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-
-        .testimonial {
-            font-style: italic;
-            position: relative;
-            padding: 20px 30px;
-            margin: 30px 0;
-            background: rgba(102, 187, 106, 0.05);
-            border-radius: 10px;
-        }
-
-        .testimonial::before {
-            content: '"';
-            font-size: 4rem;
-            position: absolute;
-            left: 10px;
-            top: -10px;
-            color: var(--secondary-color);
-            opacity: 0.3;
-        }
-
-        .testimonial-author {
-            text-align: right;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .cta {
-            text-align: center;
-            background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('https://images.unsplash.com/photo-1557429287-b2e26467fc2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') center/cover;
-            opacity: 0.07;
-            z-index: 0;
-        }
-
-        .cta > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .cta button {
-            padding: 15px 40px;
-            background: var(--primary-color);
-            color: white;
-            font-size: 1.1rem;
-            margin-top: 20px;
-        }
-
-        .cta button:hover {
-            background: var(--dark-color);
-        }
-
-        .contact-form {
-            max-width: 600px;
-            margin: 30px auto 0;
-            display: grid;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input, textarea {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
-        }
-
-        .seasonal-tips {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .season {
-            text-align: center;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
-
-        .season:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .season i {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-
-        .season h4 {
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-
-        .season-spring {
-            background: linear-gradient(to bottom right, #e1f5fe, #b3e5fc);
-        }
-
-        .season-summer {
-            background: linear-gradient(to bottom right, #fffde7, #fff9c4);
-        }
-
-        .season-autumn {
-            background: linear-gradient(to bottom right, #fff3e0, #ffe0b2);
-        }
-
-        .season-winter {
-            background: linear-gradient(to bottom right, #e8eaf6, #c5cae9);
-        }
-
-        .faq {
-            margin: 30px 0;
-        }
-
-        .faq-item {
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .faq-question {
-            padding: 15px;
-            background: #f5f5f5;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            transition: var(--transition);
-        }
-
-        .faq-question:hover {
-            background: #e9e9e9;
-        }
-
-        .faq-answer {
-            padding: 0 15px;
-            max-height: 0;
-            overflow: hidden;
-            transition: var(--transition);
-			text-align: left;
-        }
-
-        .faq-item.active .faq-question {
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .faq-item.active .faq-answer {
-            padding: 15px;
-            max-height: 500px;
-        }
-
-        .two-column {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin: 30px 0;
-            align-items: start;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            background: var(--primary-color);
-            color: white;
-            position: relative;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            text-align: left;
-            max-width: 1200px;
-            margin: 0 auto 30px;
-        }
-
-        .footer-section h3 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 10px;
-        }
-
-        .footer-section ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-section ul li {
-            padding: 5px 0;
-        }
-
-        .footer-section ul li::before {
-            content: none;
-        }
-
-        .footer-section a {
-            color: white;
-            text-decoration: none;
-            opacity: 0.8;
-            transition: var(--transition);
-        }
-
-        .footer-section a:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .social-icons a {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: var(--transition);
-        }
-
-        .social-icons a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-        }
-
-        .copyright {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: var(--shadow-md);
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            z-index: 100;
-        }
-
-        .back-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .back-to-top:hover {
-            background: var(--dark-color);
-            transform: translateY(-5px);
-        }
-
-        /* Dark Theme */
-        body.dark-theme {
-            background: #121212;
-            color: #e0e0e0;
-        }
-
-        body.dark-theme header {
-            background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
-        }
-
-        body.dark-theme section {
-            background: #1e1e1e;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        body.dark-theme h2 {
-            color: var(--secondary-color);
-            border-bottom-color: #444;
-        }
-
-        body.dark-theme h3 {
-            color: var(--secondary-color);
-        }
-
-        body.dark-theme input, 
-        body.dark-theme textarea {
-            background: #2e2e2e;
-            border-color: #444;
-            color: #e0e0e0;
-        }
-
-        body.dark-theme .cta {
-            background: linear-gradient(135deg, #1e1e1e, #121212);
-        }
-
-        body.dark-theme button {
-            background: #444;
-            color: white;
-        }
-
-        body.dark-theme .cta button {
-            background: var(--secondary-color);
-            color: #121212;
-        }
-
-        body.dark-theme .cta button:hover {
-            background: #81c784;
-        }
-
-        body.dark-theme .benefit-card {
-            background: rgba(102, 187, 106, 0.05);
-        }
-
-        body.dark-theme .testimonial {
-            background: rgba(102, 187, 106, 0.05);
-        }
-
-        body.dark-theme .faq-question {
-            background: #2e2e2e;
-            color: #e0e0e0;
-        }
-
-        body.dark-theme .faq-question:hover {
-            background: #333;
-        }
-
-        body.dark-theme .season-spring {
-            background: linear-gradient(to bottom right, #0d47a1, #1565c0);
-            color: white;
-        }
-
-        body.dark-theme .season-summer {
-            background: linear-gradient(to bottom right, #f57f17, #fbc02d);
-            color: white;
-        }
-
-        body.dark-theme .season-autumn {
-            background: linear-gradient(to bottom right, #bf360c, #e64a19);
-            color: white;
-        }
-
-        body.dark-theme .season-winter {
-            background: linear-gradient(to bottom right, #263238, #455a64);
-            color: white;
-        }
-
-        @media (max-width: 992px) {
-            .container {
-                padding: var(--spacing-md);
-				overflow: hidden;
-            }
-
-            header {
-                padding: 60px var(--spacing-md);
-            }
-
-            .two-column {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            h1 { 
-                margin-bottom: 10px;
-            }
-
-            .subtitle { 
-                margin-bottom: 20px;
-            }
-            
-            section {
-                padding: 20px;
-            }
-
-            .benefits, .seasonal-tips {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .back-to-top {
-                bottom: 20px;
-                right: 20px;
-                width: 40px;
-                height: 40px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            header {
-                padding: 40px 15px;
-            }
-
-            .theme-controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            button {
-                width: 100%;
-            }
-
-            .cta {
-                padding: 30px 15px;
-            }
-
-            .cta button {
-                width: 100%;
-            }
-        }
+:root {
+    /* Color Palette - Enhanced with More Depth */
+    --bg-primary: #0f0f0f;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #252525;
+    --text-primary: #e0e0e0;
+    --text-secondary: #ffffff;
+    --accent-primary: #bb86fc;
+    --accent-secondary: #03dac6;
+    --accent-hover: #9a67ea;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+
+    /* Typography */
+    --font-main: 'Inter', 'Roboto', 'Arial', sans-serif;
+    --font-secondary: 'Roboto Mono', monospace;
+    --font-size-base: 16px;
+
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+}
+
+*, 
+*::before, 
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-width: 320px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive Container */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-sm);
+    overflow-x: hidden;
+}
+
+/* Responsive Typography */
+h1, h2, h3 {
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: var(--spacing-md);
+    letter-spacing: -0.05em;
+}
+
+h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin: var(--spacing-lg) 0 var(--spacing-md);
+    color: var(--accent-secondary);
+}
+
+p {
+    font-size: clamp(1rem, 3vw, 1.125rem);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Enhanced Image Handling */
+.gallery,
+.review {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.gallery img,
+.review img {
+    width: 100%;
+    height: 300px; /* Fixed height for consistency */
+    object-fit: cover; /* Ensures image covers entire area */
+    object-position: center; /* Center the image */
+    border-radius: 0.75rem;
+    transition: 
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        filter 0.3s ease;
+}
+
+.gallery img:hover,
+.review img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 1rem 2rem var(--shadow-color);
+    filter: brightness(1.1);
+}
+
+/* Enhanced Links */
+a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: 
+        color 0.3s ease,
+        text-decoration 0.3s ease;
+    position: relative;
+}
+
+a:hover {
+    color: var(--accent-secondary);
+    text-decoration: underline;
+}
+
+a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -3px;
+    left: 0;
+    background-color: var(--accent-secondary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+a:hover::after {
+    transform: scaleX(1);
+}
+
+/* Advanced Button Styling */
+.translate-btn {
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    border: 2px solid transparent;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    margin: var(--spacing-md) auto;
+    display: block;
+    font-size: 1rem;
+    text-align: center;
+    max-width: 350px;
+    width: 100%;
+    transition: 
+        background-color 0.3s ease,
+        transform 0.2s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.translate-btn:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.05) translateY(-3px);
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
+}
+
+/* Enhanced Review and Tip Sections */
+.review,
+.tip {
+    background-color: var(--bg-secondary);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem var(--shadow-color);
+    transition: 
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+    border: 1px solid var(--bg-tertiary);
+}
+
+.review:hover,
+.tip:hover {
+    transform: translateY(-0.75rem);
+    box-shadow: 0 1rem 2rem var(--shadow-color);
+}
+
+.review h3,
+.tip h3 {
+    color: var(--accent-primary);
+    margin-bottom: var(--spacing-sm);
+    text-align: left;
+    font-family: var(--font-secondary);
+}
+
+/* Tips Grid with Responsive Layout */
+.tips-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: var(--spacing-xs);
+    }
+
+    .gallery img,
+    .review img {
+        height: 250px; /* Slightly shorter on mobile */
+    }
+
+    h1 {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
+
+    h2 {
+        font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
+
+/* Dark Mode and High Contrast Handling */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+    }
+}
+
+@media (prefers-contrast: high) {
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    .review,
+    .tip {
+        border: 2px solid white;
+    }
+}
+
+/* Print Optimization */
+@media print {
+    body {
+        background-color: white;
+        color: black;
+    }
+
+    .container {
+        max-width: none;
+    }
+
+    .review,
+    .tip {
+        border: 1px solid black;
+        page-break-inside: avoid;
+    }
+
+    .gallery img,
+    .review img {
+        print-color-adjust: exact;
+    }
+}
+
+/* Performance and Accessibility Extras */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Focus Styles for Keyboard Navigation */
+*:focus {
+    outline: 3px solid var(--accent-secondary);
+    outline-offset: 3px;
+}
+
+/* Scroll Bar Styling for Webkit Browsers */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent-primary);
+    border-radius: 6px;
+    border: 3px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-secondary);
+}
     </style>
 </head>
 <body>
-    <header>
-        <h1>Find the Best Gardeners in Geneva</h1>
-        <p class="subtitle">A Professional Guide to Impeccable Gardens in the Heart of Switzerland</p>
-        <div class="theme-controls">
-            <button id="theme-toggle"><i class="fas fa-moon"></i> Toggle Dark Mode</button>
-        </div>
-    </header>
-
     <div class="container">
-        <section class="intro">
-            <div class="image-container">
-                <img src="https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Geneva Garden Landscape">
+        <h1>How to Find a Good Gardener in Geneva</h1>
+        <button class="translate-btn" onclick="translatePage()">Translate to French</button>
+
+        <p>Finding a reliable gardener in Geneva can be a daunting task, especially if you are new to the area. Whether you need help with landscaping, garden maintenance, or tree care, it's essential to choose a professional who understands your needs and can deliver quality work. Here are some tips to help you find the best gardener for your needs:</p>
+
+        <div class="tips-section">
+            <div class="tip">
+                <h3>1. Ask for Recommendations</h3>
+                <p>Word of mouth is one of the best ways to find a trustworthy gardener. Ask friends, family, or neighbors if they can recommend someone they've had a good experience with.</p>
             </div>
-            <p class="caption">A stunning garden overlooking Lake Geneva</p>
-            
-            <p>Geneva, a beacon of elegance and natural splendor, owes much of its charm to masterful gardening. Along the serene Lake Léman and within its quaint neighborhoods, skilled gardeners craft spaces that embody the city's sophistication and serenity. The unique blend of international influences and Swiss precision creates garden spaces that are both functionally excellent and aesthetically remarkable.</p>
-            
-            <p>In this comprehensive guide, we'll explore how to identify and collaborate with Geneva's premier gardening professionals, understanding the distinctive challenges of the region's climate, and discover the secrets behind the city's most admired green spaces.</p>
-        </section>
-
-        <section class="content">
-            <h2>Why Geneva's Gardens Stand Out</h2>
-            <p>With its alpine-influenced temperate climate, Geneva requires gardeners who excel in adapting to seasonal shifts while enhancing the region's rich biodiversity. The city's prestigious reputation demands landscapes that reflect both natural beauty and cultivated elegance.</p>
-            
-            <div class="two-column">
-                <div>
-                    <p>Geneva's gardens are distinguished by several unique characteristics:</p>
-                    <ul>
-                        <li><strong>Microclimate Adaptation:</strong> Expert knowledge of Lake Geneva's moderating effects on local growing conditions</li>
-                        <li><strong>Alpine Influence:</strong> Integration of mountain flora alongside classical European garden plants</li>
-                        <li><strong>International Flair:</strong> Cosmopolitan design approaches reflecting the city's global character</li>
-                        <li><strong>Sustainable Practices:</strong> Advanced water conservation and organic maintenance techniques</li>
-                        <li><strong>Precision Execution:</strong> Meticulous attention to detail reflecting Swiss craftsmanship</li>
-                    </ul>
-                </div>
-                <div class="image-container">
-                    <img src="https://images.unsplash.com/photo-1558293842-c0fd3db86157?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Geneva Park Detail">
-                </div>
+            <div class="tip">
+                <h3>2. Check Online Reviews</h3>
+                <p>Websites like Google, Yelp, and local directories often have reviews and ratings for gardeners in Geneva. Look for consistent positive feedback and pay attention to any red flags.</p>
             </div>
-
-            <h3>Notable Gardens in Geneva</h3>
-            <p>The city boasts several world-class garden spaces that exemplify exceptional landscaping:</p>
-            <ul>
-                <li><strong>Conservatory and Botanical Garden:</strong> Home to over 16,000 plant species and specialized collections</li>
-                <li><strong>Parc des Bastions:</strong> Historic green space featuring meticulous geometric designs</li>
-                <li><strong>Parc de La Grange:</strong> Famous for its spectacular rose garden with over 200 varieties</li>
-                <li><strong>Jardin Anglais:</strong> Home to the iconic Flower Clock, combining horticultural artistry with precision engineering</li>
-            </ul>
-
-            <h2>Selecting Elite Gardeners in Geneva</h2>
-            <p>Finding the right gardening professional in Geneva requires careful consideration of several important factors:</p>
-            
-            <div class="benefits">
-                <div class="benefit-card">
-                    <i class="fas fa-certificate"></i>
-                    <h4>Certified Expertise</h4>
-                    <p>Choose professionals accredited by JardinSuisse with deep local knowledge and formal horticultural training.</p>
-                </div>
-                <div class="benefit-card">
-                    <i class="fas fa-trophy"></i>
-                    <h4>Proven Excellence</h4>
-                    <p>Examine their portfolio showcasing work on prestigious estates or notable public spaces.</p>
-                </div>
-                <div class="benefit-card">
-                    <i class="fas fa-leaf"></i>
-                    <h4>Sustainable Innovation</h4>
-                    <p>Favor those using organic methods, water-efficient systems, and environmentally responsible practices.</p>
-                </div>
+            <div class="tip">
+                <h3>3. Verify Credentials</h3>
+                <p>Ensure the gardener is licensed, insured, and has the necessary certifications. This protects you in case of accidents or subpar work.</p>
             </div>
-            
-            <div class="image-container">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Gardening in Action">
+            <div class="tip">
+                <h3>4. Request a Quote</h3>
+                <p>Get quotes from multiple gardeners to compare prices and services. Be wary of quotes that seem too good to be true, as they often are.</p>
             </div>
-            <p class="caption">Professional gardeners employ precision techniques for optimal results</p>
-
-            <div class="testimonial">
-                <p>The transformation of our lakeside property by Geneva's premier landscape team exceeded all expectations. Their understanding of our soil conditions and microclimate created a garden that thrives year-round while requiring minimal intervention.</p>
-                <p class="testimonial-author">— Claudia Berger, Cologny Resident</p>
+            <div class="tip">
+                <h3>5. Visit Previous Projects</h3>
+                <p>If possible, ask to see examples of their previous work. This will give you a better idea of their skills and the quality of their work.</p>
             </div>
-
-            <h3>Essential Questions to Ask Potential Gardeners</h3>
-            <ol>
-                <li>What specific experience do you have with Geneva's growing conditions?</li>
-                <li>How do you approach water conservation and sustainable practices?</li>
-                <li>Can you provide references from long-term maintenance clients?</li>
-                <li>What professional certifications and continuing education have you completed?</li>
-                <li>How do you handle seasonal transitions and winter protection?</li>
-            </ol>
-
-            <h2>Finding Geneva's Finest Gardening Professionals</h2>
-            <p>To connect with top-tier gardening talent in Geneva, consider these valuable resources:</p>
-            <ul>
-                <li><strong>Premier Landscaping Firms:</strong> Established companies with comprehensive design-build services</li>
-                <li><strong>Professional Associations:</strong> JardinSuisse member directory of certified professionals</li>
-                <li><strong>Local Online Directories:</strong> Trusted platforms like local.ch with verified reviews</li>
-                <li><strong>Eco-Focused Cooperatives:</strong> Sustainability-oriented gardening collectives</li>
-                <li><strong>Specialized Contractors:</strong> Experts in specific areas like alpine plants or water features</li>
-            </ul>
-        </section>
-
-        <section class="seasonal">
-            <h2>Seasonal Gardening in Geneva</h2>
-            <p>Geneva's distinct seasons require specialized approaches throughout the year. Professional gardeners adapt their techniques to maximize each season's potential while preparing for the challenges of the next.</p>
-            
-            <div class="seasonal-tips">
-                <div class="season season-spring">
-                    <i class="fas fa-seedling"></i>
-                    <h4>Spring</h4>
-                    <p>Soil preparation, early planting, and post-frost damage repair. Focus on native flowering species.</p>
-                </div>
-                <div class="season season-summer">
-                    <i class="fas fa-sun"></i>
-                    <h4>Summer</h4>
-                    <p>Irrigation optimization, heat-tolerant plantings, and regular maintenance to manage vigorous growth.</p>
-                </div>
-                <div class="season season-autumn">
-                    <i class="fas fa-leaf"></i>
-                    <h4>Autumn</h4>
-                    <p>Soil enrichment, planting of bulbs, and preparation of sensitive plants for winter protection.</p>
-                </div>
-                <div class="season season-winter">
-                    <i class="fas fa-snowflake"></i>
-                    <h4>Winter</h4>
-                    <p>Structural pruning, snow load management, and greenhouse cultivation of early spring specimens.</p>
-                </div>
-            </div>
-
-            <h3>Advanced Garden Features Popular in Geneva</h3>
-            <div class="two-column">
-                <div class="image-container">
-                    <img src="https://api-tat.kafow.com/storage/19404/conversions/24dbc6835e56935967ff615eba36d120-images.webp" alt="Water Feature in Geneva Garden">
-                </div>
-                <div>
-                    <p>Geneva's most impressive gardens often incorporate sophisticated features that require specialized expertise:</p>
-                    <ul>
-                        <li><strong>Smart Irrigation Systems:</strong> Weather-responsive technology that optimizes water usage</li>
-                        <li><strong>Terraced Landscapes:</strong> Engineered solutions for sloped properties with lake views</li>
-                        <li><strong>Living Walls:</strong> Vertical gardens that maximize greenery in limited spaces</li>
-                        <li><strong>Edible Landscapes:</strong> Integration of fruit-bearing plants and culinary herbs into ornamental designs</li>
-                        <li><strong>Naturalistic Water Features:</strong> Ponds and streams that support local aquatic ecosystems</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section class="faq-section">
-            <h2>Frequently Asked Questions</h2>
-            <div class="faq">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        What is the typical cost range for professional gardening services in Geneva?
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                            <p>To create a sustainable garden, consider the following practices:</p>
-                        <ul>
-                            <li><strong>Native Plants:</strong> Use plants that are naturally adapted to Geneva's climate, reducing the need for water and chemical inputs.</li>
-                            <li><strong>Water Conservation:</strong> Install drip irrigation systems and rainwater harvesting to minimize water waste.</li>
-                            <li><strong>Organic Practices:</strong> Avoid synthetic fertilizers and pesticides, opting for compost and natural pest control methods.</li>
-                            <li><strong>Soil Health:</strong> Regularly enrich the soil with organic matter to promote healthy plant growth and reduce erosion.</li>
-                            <li><strong>Wildlife Support:</strong> Incorporate features like bird feeders, bee hotels, and ponds to support local biodiversity.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        How often should I schedule maintenance for my garden?
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>The frequency of garden maintenance depends on the size and complexity of your garden, as well as the season. In general:</p>
-                        <ul>
-                            <li><strong>Spring:</strong> Weekly maintenance to prepare for the growing season.</li>
-                            <li><strong>Summer:</strong> Bi-weekly or weekly visits to manage growth and irrigation.</li>
-                            <li><strong>Autumn:</strong> Monthly visits to prepare for winter and clean up fallen leaves.</li>
-                            <li><strong>Winter:</strong> Occasional check-ups to manage snow and protect plants from frost.</li>
-                        </ul>
-                        <p>Consult with your gardener to create a tailored maintenance schedule.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        Can I incorporate edible plants into my ornamental garden?
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Absolutely! Many edible plants can be seamlessly integrated into ornamental gardens. Consider:</p>
-                        <ul>
-                            <li><strong>Herbs:</strong> Rosemary, thyme, and sage are both beautiful and practical.</li>
-                            <li><strong>Fruit Trees:</strong> Dwarf varieties of apple, pear, or cherry trees can add structure and beauty.</li>
-                            <li><strong>Vegetables:</strong> Leafy greens like kale or chard can be as decorative as they are nutritious.</li>
-                            <li><strong>Edible Flowers:</strong> Nasturtiums, pansies, and calendula add color and can be used in salads.</li>
-                        </ul>
-                        <p>Your gardener can help design a layout that combines aesthetics with functionality.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="cta">
-            <h2>Ready to Transform Your Garden?</h2>
-            <p>Contact Geneva's top gardening professionals today and start creating the garden of your dreams. Whether you're looking for a complete redesign or regular maintenance, our experts are here to help.</p>
-            <button>Get a Free Consultation</button>
-        </section>
-    </div>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>About Us</h3>
-                <p>We are dedicated to helping Geneva residents create and maintain beautiful, sustainable gardens. Our network of certified professionals ensures top-quality service and expertise.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Portfolio</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Info</h3>
-                <ul>
-                    <li><i class="fas fa-map-marker-alt"></i> Geneva, Switzerland</li>
-                    <li><i class="fas fa-phone"></i> +41 22 123 4567</li>
-                    <li><i class="fas fa-envelope"></i> info@genevagardeners.com</li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Follow Us</h3>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
+            <div class="tip">
+                <h3>6. Communication is Key</h3>
+                <p>Choose a gardener who communicates clearly and listens to your needs. Good communication ensures your vision is understood and executed properly.</p>
             </div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2023 Geneva Gardeners. All rights reserved.</p>
-        </div>
-    </footer>
 
-    <div class="back-to-top" id="back-to-top">
-        <i class="fas fa-chevron-up"></i>
-    </div>
+        <h2>Top Rated Gardeners in Geneva</h2>
+
+<div class="review">
+    <h3>Ortancia</h3>
+    <p>Rating: 5.0</p>
+    <p>Phone: <a href="https://wa.me/41225702025" target="_blank">+41 22 570 20 25 (WhatsApp)</a></p>
+    <img src="https://lh3.googleusercontent.com/p/AF1QipOwDQW0xCbpt9s62j9_lIneiHs8416QlQ6kyd_3=s680-w680-h510" alt="Ortancia Garden">
+</div>
+
+<div class="review">
+    <h3>AS Jardinier Genève</h3>
+    <p>Rating: 4.9</p>
+    <p>Phone: <a href="https://wa.me/41787328292" target="_blank">+41 78 732 82 92 (WhatsApp)</a></p>
+    <img src="https://lh3.googleusercontent.com/p/AF1QipMj9hG2SRofPTsD_u6D_SbH40kQTgkutm4cLfvG=s680-w680-h510" alt="AS Jardinier Genève Garden">
+</div>
+
+<div class="review">
+    <h3>Creagarden Sàrl</h3>
+    <p>Rating: 5.0</p>
+    <p>Phone: <a href="https://wa.me/41779506549" target="_blank">+41 77 950 65 49 (WhatsApp)</a></p>
+    <img src="https://lh3.googleusercontent.com/p/AF1QipP5zj9OjUiwhQyHSC-zGUXhPWm69L8ZkkpywS4=s680-w680-h510" alt="Creagarden Sàrl Garden">
+</div>
+
+<h2>Gallery of Beautiful Gardens in Geneva</h2>
+<div class="gallery">
+    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/29/52/f3/caption.jpg?w=1200&h=-1&s=1" alt="Garden 1">
+    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/13/dc/6c/93/photo1jpg.jpg?w=900&h=500&s=1" alt="Garden 2">
+    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0a/0c/59/5e/parc-la-grange.jpg?w=1200&h=-1&s=1" alt="Garden 3">
+</div>
 
     <script>
-        // Dark Mode Toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
+        let isFrench = false; // Variável para rastrear o idioma atual
 
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            themeToggle.querySelector('i').classList.toggle('fa-sun');
-            themeToggle.querySelector('i').classList.toggle('fa-moon');
-        });
-
-        // FAQ Toggle
-        const faqQuestions = document.querySelectorAll('.faq-question');
-        faqQuestions.forEach(question => {
-            question.addEventListener('click', () => {
-                const faqItem = question.parentElement;
-                faqItem.classList.toggle('active');
-            });
-        });
-
-        // Back to Top Button
-        const backToTop = document.getElementById('back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
+        // Mapeamento bidirecional de traduções
+        const translations = {
+            'en': {
+                'How to Find a Good Gardener in Geneva': 'Comment trouver un bon jardinier à Genève',
+                'Finding a reliable gardener in Geneva can be a daunting task, especially if you are new to the area. Whether you need help with landscaping, garden maintenance, or tree care, it\'s essential to choose a professional who understands your needs and can deliver quality work. Here are some tips to help you find the best gardener for your needs:': 'Trouver un jardinier fiable à Genève peut être une tâche ardue, surtout si vous êtes nouveau dans la région. Que vous ayez besoin d\'aide pour l\'aménagement paysager, l\'entretien du jardin ou les soins aux arbres, il est essentiel de choisir un professionnel qui comprend vos besoins et peut fournir un travail de qualité. Voici quelques conseils pour vous aider à trouver le meilleur jardinier pour vos besoins :',
+                '1. Ask for Recommendations': '1. Demandez des recommandations',
+                'Word of mouth is one of the best ways to find a trustworthy gardener. Ask friends, family, or neighbors if they can recommend someone they\'ve had a good experience with.': 'Le bouche-à-oreille est l\'un des meilleurs moyens de trouver un jardinier de confiance. Demandez à vos amis, à votre famille ou à vos voisins s\'ils peuvent recommander quelqu\'un avec qui ils ont eu une bonne expérience.',
+                '2. Check Online Reviews': '2. Consultez les avis en ligne',
+                'Websites like Google, Yelp, and local directories often have reviews and ratings for gardeners in Geneva. Look for consistent positive feedback and pay attention to any red flags.': 'Des sites comme Google, Yelp et les annuaires locaux ont souvent des avis et des notes pour les jardiniers à Genève. Recherchez des commentaires positifs constants et faites attention aux signaux d\'alarme.',
+                '3. Verify Credentials': '3. Vérifiez les références',
+                'Ensure the gardener is licensed, insured, and has the necessary certifications. This protects you in case of accidents or subpar work.': 'Assurez-vous que le jardinier est licencié, assuré et possède les certifications nécessaires. Cela vous protège en cas d\'accidents ou de travail de mauvaise qualité.',
+                '4. Request a Quote': '4. Demandez un devis',
+                'Get quotes from multiple gardeners to compare prices and services. Be wary of quotes that seem too good to be true, as they often are.': 'Obtenez des devis de plusieurs jardiniers pour comparer les prix et les services. Méfiez-vous des devis qui semblent trop beaux pour être vrais, car ils le sont souvent.',
+                '5. Visit Previous Projects': '5. Visitez les projets précédents',
+                'If possible, ask to see examples of their previous work. This will give you a better idea of their skills and the quality of their work.': 'Si possible, demandez à voir des exemples de leurs travaux précédents. Cela vous donnera une meilleure idée de leurs compétences et de la qualité de leur travail.',
+                '6. Communication is Key': '6. La communication est essentielle',
+                'Choose a gardener who communicates clearly and listens to your needs. Good communication ensures your vision is understood and executed properly.': 'Choisissez un jardinier qui communique clairement et écoute vos besoins. Une bonne communication garantit que votre vision est comprise et exécutée correctement.',
+                'Top Rated Gardeners in Geneva': 'Jardiniers les mieux notés à Genève',
+                'Rating:': 'Note :',
+                'Phone:': 'Téléphone :',
+                'Gallery of Beautiful Gardens in Geneva': 'Galerie de beaux jardins à Genève'
+            },
+            'fr': {
+                'Comment trouver un bon jardinier à Genève': 'How to Find a Good Gardener in Geneva',
+                'Trouver un jardinier fiable à Genève peut être une tâche ardue, surtout si vous êtes nouveau dans la région. Que vous ayez besoin d\'aide pour l\'aménagement paysager, l\'entretien du jardin ou les soins aux arbres, il est essentiel de choisir un professionnel qui comprend vos besoins et peut fournir un travail de qualité. Voici quelques conseils pour vous aider à trouver le meilleur jardinier pour vos besoins :': 'Finding a reliable gardener in Geneva can be a daunting task, especially if you are new to the area. Whether you need help with landscaping, garden maintenance, or tree care, it\'s essential to choose a professional who understands your needs and can deliver quality work. Here are some tips to help you find the best gardener for your needs:',
+                '1. Demandez des recommandations': '1. Ask for Recommendations',
+                'Le bouche-à-oreille est l\'un des meilleurs moyens de trouver un jardinier de confiance. Demandez à vos amis, à votre famille ou à vos voisins s\'ils peuvent recommander quelqu\'un avec qui ils ont eu une bonne expérience.': 'Word of mouth is one of the best ways to find a trustworthy gardener. Ask friends, family, or neighbors if they can recommend someone they\'ve had a good experience with.',
+                '2. Consultez les avis en ligne': '2. Check Online Reviews',
+                'Des sites comme Google, Yelp et les annuaires locaux ont souvent des avis et des notes pour les jardiniers à Genève. Recherchez des commentaires positifs constants et faites attention aux signaux d\'alarme.': 'Websites like Google, Yelp, and local directories often have reviews and ratings for gardeners in Geneva. Look for consistent positive feedback and pay attention to any red flags.',
+                '3. Vérifiez les références': '3. Verify Credentials',
+                'Assurez-vous que le jardinier est licencié, assuré et possède les certifications nécessaires. Cela vous protège en cas d\'accidents ou de travail de mauvaise qualité.': 'Ensure the gardener is licensed, insured, and has the necessary certifications. This protects you in case of accidents or subpar work.',
+                '4. Demandez un devis': '4. Request a Quote',
+                'Obtenez des devis de plusieurs jardiniers pour comparer les prix et les services. Méfiez-vous des devis qui semblent trop beaux pour être vrais, car ils le sont souvent.': 'Get quotes from multiple gardeners to compare prices and services. Be wary of quotes that seem too good to be true, as they often are.',
+                '5. Visitez les projets précédents': '5. Visit Previous Projects',
+                'Si possible, demandez à voir des exemples de leurs travaux précédents. Cela vous donnera une meilleure idée de leurs compétences et de la qualité de leur travail.': 'If possible, ask to see examples of their previous work. This will give you a better idea of their skills and the quality of their work.',
+                '6. La communication est essentielle': '6. Communication is Key',
+                'Choisissez un jardinier qui communique clairement et écoute vos besoins. Une bonne communication garantit que votre vision est comprise et exécutée correctement.': 'Choose a gardener who communicates clearly and listens to your needs. Good communication ensures your vision is understood and executed properly.',
+                'Jardiniers les mieux notés à Genève': 'Top Rated Gardeners in Geneva',
+                'Note :': 'Rating:',
+                'Téléphone :': 'Phone:',
+                'Galerie de beaux jardins à Genève': 'Gallery of Beautiful Gardens in Geneva'
             }
-        });
+        };
 
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        function translatePage() {
+            const elements = document.querySelectorAll('h1, h2, h3, p, li, a');
+            const targetLanguage = isFrench ? 'en' : 'fr'; // Alternar entre inglês e francês
+
+            elements.forEach(element => {
+                const text = element.innerText;
+                if (translations[targetLanguage][text]) {
+                    element.innerText = translations[targetLanguage][text];
+                }
+            });
+
+            // Alternar o texto do botão
+            const translateButton = document.querySelector('.translate-btn');
+            if (isFrench) {
+                translateButton.innerText = 'Translate to English';
+                isFrench = false;
+            } else {
+                translateButton.innerText = 'Translate to French';
+                isFrench = true;
+            }
+        }
     </script>
 </body>
 </html>
