@@ -1,450 +1,860 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finding a Good Gardener in Geneva</title>
+    <title>Agar.io Online - Dark Theme</title>
     <style>
-:root {
-    /* Color Palette - Enhanced with More Depth */
-    --bg-primary: #0f0f0f;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #252525;
-    --text-primary: #e0e0e0;
-    --text-secondary: #ffffff;
-    --accent-primary: #bb86fc;
-    --accent-secondary: #03dac6;
-    --accent-hover: #9a67ea;
-    --shadow-color: rgba(0, 0, 0, 0.2);
-
-    /* Typography */
-    --font-main: 'Inter', 'Roboto', 'Arial', sans-serif;
-    --font-secondary: 'Roboto Mono', monospace;
-    --font-size-base: 16px;
-
-    /* Spacing */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 1.5rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 3rem;
-}
-
-*, 
-*::before, 
-*::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: var(--font-main);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    min-width: 320px;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Responsive Container */
-.container {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: var(--spacing-sm);
-    overflow-x: hidden;
-}
-
-/* Responsive Typography */
-h1, h2, h3 {
-    color: var(--text-secondary);
-    text-align: center;
-    line-height: 1.2;
-    font-weight: 700;
-}
-
-h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-bottom: var(--spacing-md);
-    letter-spacing: -0.05em;
-}
-
-h2 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    margin: var(--spacing-lg) 0 var(--spacing-md);
-    color: var(--accent-secondary);
-}
-
-p {
-    font-size: clamp(1rem, 3vw, 1.125rem);
-    margin-bottom: var(--spacing-sm);
-}
-
-/* Enhanced Image Handling */
-.gallery,
-.review {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-lg);
-}
-
-.gallery img,
-.review img {
-    width: 100%;
-    height: 300px; /* Fixed height for consistency */
-    object-fit: cover; /* Ensures image covers entire area */
-    object-position: center; /* Center the image */
-    border-radius: 0.75rem;
-    transition: 
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        filter 0.3s ease;
-}
-
-.gallery img:hover,
-.review img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 1rem 2rem var(--shadow-color);
-    filter: brightness(1.1);
-}
-
-/* Enhanced Links */
-a {
-    color: var(--accent-primary);
-    text-decoration: none;
-    transition: 
-        color 0.3s ease,
-        text-decoration 0.3s ease;
-    position: relative;
-}
-
-a:hover {
-    color: var(--accent-secondary);
-    text-decoration: underline;
-}
-
-a::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    bottom: -3px;
-    left: 0;
-    background-color: var(--accent-secondary);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
-
-a:hover::after {
-    transform: scaleX(1);
-}
-
-/* Advanced Button Styling */
-.translate-btn {
-    background-color: var(--accent-primary);
-    color: var(--bg-primary);
-    border: 2px solid transparent;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: 0.75rem;
-    cursor: pointer;
-    margin: var(--spacing-md) auto;
-    display: block;
-    font-size: 1rem;
-    text-align: center;
-    max-width: 350px;
-    width: 100%;
-    transition: 
-        background-color 0.3s ease,
-        transform 0.2s ease,
-        border-color 0.3s ease,
-        box-shadow 0.3s ease;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.translate-btn:hover {
-    background-color: var(--accent-hover);
-    transform: scale(1.05) translateY(-3px);
-    border-color: var(--accent-secondary);
-    box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
-}
-
-/* Enhanced Review and Tip Sections */
-.review,
-.tip {
-    background-color: var(--bg-secondary);
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-    border-radius: 1rem;
-    box-shadow: 0 0.5rem 1rem var(--shadow-color);
-    transition: 
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-    border: 1px solid var(--bg-tertiary);
-}
-
-.review:hover,
-.tip:hover {
-    transform: translateY(-0.75rem);
-    box-shadow: 0 1rem 2rem var(--shadow-color);
-}
-
-.review h3,
-.tip h3 {
-    color: var(--accent-primary);
-    margin-bottom: var(--spacing-sm);
-    text-align: left;
-    font-family: var(--font-secondary);
-}
-
-/* Tips Grid with Responsive Layout */
-.tips-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-lg);
-}
-
-/* Responsive Adjustments */
-@media screen and (max-width: 768px) {
-    .container {
-        padding: var(--spacing-xs);
-    }
-
-    .gallery img,
-    .review img {
-        height: 250px; /* Slightly shorter on mobile */
-    }
-
-    h1 {
-        font-size: clamp(1.5rem, 5vw, 2.5rem);
-    }
-
-    h2 {
-        font-size: clamp(1.5rem, 4vw, 2rem);
-    }
-}
-
-/* Accessibility Enhancements */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-    }
-}
-
-/* Dark Mode and High Contrast Handling */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: var(--bg-primary);
-        color: var(--text-primary);
-    }
-}
-
-@media (prefers-contrast: high) {
-    body {
-        background-color: black;
-        color: white;
-    }
-
-    .review,
-    .tip {
-        border: 2px solid white;
-    }
-}
-
-/* Print Optimization */
-@media print {
-    body {
-        background-color: white;
-        color: black;
-    }
-
-    .container {
-        max-width: none;
-    }
-
-    .review,
-    .tip {
-        border: 1px solid black;
-        page-break-inside: avoid;
-    }
-
-    .gallery img,
-    .review img {
-        print-color-adjust: exact;
-    }
-}
-
-/* Performance and Accessibility Extras */
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-/* Focus Styles for Keyboard Navigation */
-*:focus {
-    outline: 3px solid var(--accent-secondary);
-    outline-offset: 3px;
-}
-
-/* Scroll Bar Styling for Webkit Browsers */
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: var(--accent-primary);
-    border-radius: 6px;
-    border: 3px solid var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: var(--accent-secondary);
-}
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0a0a0a;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+        canvas {
+            display: block;
+            background-color: #111;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 18px;
+            color: #fff;
+            z-index: 10;
+        }
+        #players-online {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            color: #fff;
+            z-index: 10;
+        }
+        #leaderboard {
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10;
+            width: 200px;
+        }
+        #leaderboard h3 {
+            margin: 0 0 10px 0;
+            color: #0f0;
+            text-align: center;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 20;
+        }
+        #start-screen h1 {
+            color: #0f0;
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        #nickname {
+            padding: 10px;
+            font-size: 18px;
+            width: 300px;
+            margin-bottom: 20px;
+            background-color: #222;
+            color: #fff;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+        }
+        #start-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #0f0;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #start-button:hover {
+            background-color: #00cc00;
+            transform: scale(1.05);
+        }
+        #game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 30;
+        }
+        #game-over h2 {
+            color: #f00;
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #f00;
+        }
+        #final-score {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        #restart-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f00;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #restart-button:hover {
+            background-color: #cc0000;
+            transform: scale(1.05);
+        }
+        #ping {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: #aaa;
+            z-index: 10;
+        }
+        #server-message {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #0f0;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 10;
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>How to Find a Good Gardener in Geneva</h1>
-        <button class="translate-btn" onclick="translatePage()">Translate to French</button>
-
-        <p>Finding a reliable gardener in Geneva can be a daunting task, especially if you are new to the area. Whether you need help with landscaping, garden maintenance, or tree care, it's essential to choose a professional who understands your needs and can deliver quality work. Here are some tips to help you find the best gardener for your needs:</p>
-
-        <div class="tips-section">
-            <div class="tip">
-                <h3>1. Ask for Recommendations</h3>
-                <p>Word of mouth is one of the best ways to find a trustworthy gardener. Ask friends, family, or neighbors if they can recommend someone they've had a good experience with.</p>
-            </div>
-            <div class="tip">
-                <h3>2. Check Online Reviews</h3>
-                <p>Websites like Google, Yelp, and local directories often have reviews and ratings for gardeners in Geneva. Look for consistent positive feedback and pay attention to any red flags.</p>
-            </div>
-            <div class="tip">
-                <h3>3. Verify Credentials</h3>
-                <p>Ensure the gardener is licensed, insured, and has the necessary certifications. This protects you in case of accidents or subpar work.</p>
-            </div>
-            <div class="tip">
-                <h3>4. Request a Quote</h3>
-                <p>Get quotes from multiple gardeners to compare prices and services. Be wary of quotes that seem too good to be true, as they often are.</p>
-            </div>
-            <div class="tip">
-                <h3>5. Visit Previous Projects</h3>
-                <p>If possible, ask to see examples of their previous work. This will give you a better idea of their skills and the quality of their work.</p>
-            </div>
-            <div class="tip">
-                <h3>6. Communication is Key</h3>
-                <p>Choose a gardener who communicates clearly and listens to your needs. Good communication ensures your vision is understood and executed properly.</p>
-            </div>
+    <div id="game-container">
+        <div id="score">Pontuação: 0</div>
+        <div id="players-online">Jogadores: 0</div>
+        <div id="leaderboard">
+            <h3>Líderes</h3>
+            <div id="leaderboard-items"></div>
         </div>
+        <div id="ping">Ping: 0ms</div>
+        <div id="server-message"></div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="start-screen">
+            <h1>Agar.io Online</h1>
+            <input type="text" id="nickname" placeholder="Digite seu nickname" maxlength="15">
+            <button id="start-button">Jogar</button>
+        </div>
+        <div id="game-over">
+            <h2>Game Over</h2>
+            <div id="final-score">Pontuação: 0</div>
+            <button id="restart-button">Jogar Novamente</button>
+        </div>
+    </div>
 
-        <h2>Top Rated Gardeners in Geneva</h2>
-
-<div class="review">
-    <h3>Ortancia</h3>
-    <p>Rating: 5.0</p>
-    <p>Phone: <a href="https://wa.me/41225702025" target="_blank">+41 22 570 20 25 (WhatsApp)</a></p>
-    <img src="https://lh3.googleusercontent.com/p/AF1QipOwDQW0xCbpt9s62j9_lIneiHs8416QlQ6kyd_3=s680-w680-h510" alt="Ortancia Garden">
-</div>
-
-<div class="review">
-    <h3>AS Jardinier Genève</h3>
-    <p>Rating: 4.9</p>
-    <p>Phone: <a href="https://wa.me/41787328292" target="_blank">+41 78 732 82 92 (WhatsApp)</a></p>
-    <img src="https://lh3.googleusercontent.com/p/AF1QipMj9hG2SRofPTsD_u6D_SbH40kQTgkutm4cLfvG=s680-w680-h510" alt="AS Jardinier Genève Garden">
-</div>
-
-<div class="review">
-    <h3>Creagarden Sàrl</h3>
-    <p>Rating: 5.0</p>
-    <p>Phone: <a href="https://wa.me/41779506549" target="_blank">+41 77 950 65 49 (WhatsApp)</a></p>
-    <img src="https://lh3.googleusercontent.com/p/AF1QipP5zj9OjUiwhQyHSC-zGUXhPWm69L8ZkkpywS4=s680-w680-h510" alt="Creagarden Sàrl Garden">
-</div>
-
-<h2>Gallery of Beautiful Gardens in Geneva</h2>
-<div class="gallery">
-    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/29/52/f3/caption.jpg?w=1200&h=-1&s=1" alt="Garden 1">
-    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/13/dc/6c/93/photo1jpg.jpg?w=900&h=500&s=1" alt="Garden 2">
-    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0a/0c/59/5e/parc-la-grange.jpg?w=1200&h=-1&s=1" alt="Garden 3">
-</div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
     <script>
-        let isFrench = false; // Variável para rastrear o idioma atual
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const playersOnlineElement = document.getElementById('players-online');
+        const leaderboardItemsElement = document.getElementById('leaderboard-items');
+        const startScreen = document.getElementById('start-screen');
+        const startButton = document.getElementById('start-button');
+        const nicknameInput = document.getElementById('nickname');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScoreElement = document.getElementById('final-score');
+        const restartButton = document.getElementById('restart-button');
+        const pingElement = document.getElementById('ping');
+        const serverMessageElement = document.getElementById('server-message');
 
-        // Mapeamento bidirecional de traduções
-        const translations = {
-            'en': {
-                'How to Find a Good Gardener in Geneva': 'Comment trouver un bon jardinier à Genève',
-                'Finding a reliable gardener in Geneva can be a daunting task, especially if you are new to the area. Whether you need help with landscaping, garden maintenance, or tree care, it\'s essential to choose a professional who understands your needs and can deliver quality work. Here are some tips to help you find the best gardener for your needs:': 'Trouver un jardinier fiable à Genève peut être une tâche ardue, surtout si vous êtes nouveau dans la région. Que vous ayez besoin d\'aide pour l\'aménagement paysager, l\'entretien du jardin ou les soins aux arbres, il est essentiel de choisir un professionnel qui comprend vos besoins et peut fournir un travail de qualité. Voici quelques conseils pour vous aider à trouver le meilleur jardinier pour vos besoins :',
-                '1. Ask for Recommendations': '1. Demandez des recommandations',
-                'Word of mouth is one of the best ways to find a trustworthy gardener. Ask friends, family, or neighbors if they can recommend someone they\'ve had a good experience with.': 'Le bouche-à-oreille est l\'un des meilleurs moyens de trouver un jardinier de confiance. Demandez à vos amis, à votre famille ou à vos voisins s\'ils peuvent recommander quelqu\'un avec qui ils ont eu une bonne expérience.',
-                '2. Check Online Reviews': '2. Consultez les avis en ligne',
-                'Websites like Google, Yelp, and local directories often have reviews and ratings for gardeners in Geneva. Look for consistent positive feedback and pay attention to any red flags.': 'Des sites comme Google, Yelp et les annuaires locaux ont souvent des avis et des notes pour les jardiniers à Genève. Recherchez des commentaires positifs constants et faites attention aux signaux d\'alarme.',
-                '3. Verify Credentials': '3. Vérifiez les références',
-                'Ensure the gardener is licensed, insured, and has the necessary certifications. This protects you in case of accidents or subpar work.': 'Assurez-vous que le jardinier est licencié, assuré et possède les certifications nécessaires. Cela vous protège en cas d\'accidents ou de travail de mauvaise qualité.',
-                '4. Request a Quote': '4. Demandez un devis',
-                'Get quotes from multiple gardeners to compare prices and services. Be wary of quotes that seem too good to be true, as they often are.': 'Obtenez des devis de plusieurs jardiniers pour comparer les prix et les services. Méfiez-vous des devis qui semblent trop beaux pour être vrais, car ils le sont souvent.',
-                '5. Visit Previous Projects': '5. Visitez les projets précédents',
-                'If possible, ask to see examples of their previous work. This will give you a better idea of their skills and the quality of their work.': 'Si possible, demandez à voir des exemples de leurs travaux précédents. Cela vous donnera une meilleure idée de leurs compétences et de la qualité de leur travail.',
-                '6. Communication is Key': '6. La communication est essentielle',
-                'Choose a gardener who communicates clearly and listens to your needs. Good communication ensures your vision is understood and executed properly.': 'Choisissez un jardinier qui communique clairement et écoute vos besoins. Une bonne communication garantit que votre vision est comprise et exécutée correctement.',
-                'Top Rated Gardeners in Geneva': 'Jardiniers les mieux notés à Genève',
-                'Rating:': 'Note :',
-                'Phone:': 'Téléphone :',
-                'Gallery of Beautiful Gardens in Geneva': 'Galerie de beaux jardins à Genève'
-            },
-            'fr': {
-                'Comment trouver un bon jardinier à Genève': 'How to Find a Good Gardener in Geneva',
-                'Trouver un jardinier fiable à Genève peut être une tâche ardue, surtout si vous êtes nouveau dans la région. Que vous ayez besoin d\'aide pour l\'aménagement paysager, l\'entretien du jardin ou les soins aux arbres, il est essentiel de choisir un professionnel qui comprend vos besoins et peut fournir un travail de qualité. Voici quelques conseils pour vous aider à trouver le meilleur jardinier pour vos besoins :': 'Finding a reliable gardener in Geneva can be a daunting task, especially if you are new to the area. Whether you need help with landscaping, garden maintenance, or tree care, it\'s essential to choose a professional who understands your needs and can deliver quality work. Here are some tips to help you find the best gardener for your needs:',
-                '1. Demandez des recommandations': '1. Ask for Recommendations',
-                'Le bouche-à-oreille est l\'un des meilleurs moyens de trouver un jardinier de confiance. Demandez à vos amis, à votre famille ou à vos voisins s\'ils peuvent recommander quelqu\'un avec qui ils ont eu une bonne expérience.': 'Word of mouth is one of the best ways to find a trustworthy gardener. Ask friends, family, or neighbors if they can recommend someone they\'ve had a good experience with.',
-                '2. Consultez les avis en ligne': '2. Check Online Reviews',
-                'Des sites comme Google, Yelp et les annuaires locaux ont souvent des avis et des notes pour les jardiniers à Genève. Recherchez des commentaires positifs constants et faites attention aux signaux d\'alarme.': 'Websites like Google, Yelp, and local directories often have reviews and ratings for gardeners in Geneva. Look for consistent positive feedback and pay attention to any red flags.',
-                '3. Vérifiez les références': '3. Verify Credentials',
-                'Assurez-vous que le jardinier est licencié, assuré et possède les certifications nécessaires. Cela vous protège en cas d\'accidents ou de travail de mauvaise qualité.': 'Ensure the gardener is licensed, insured, and has the necessary certifications. This protects you in case of accidents or subpar work.',
-                '4. Demandez un devis': '4. Request a Quote',
-                'Obtenez des devis de plusieurs jardiniers pour comparer les prix et les services. Méfiez-vous des devis qui semblent trop beaux pour être vrais, car ils le sont souvent.': 'Get quotes from multiple gardeners to compare prices and services. Be wary of quotes that seem too good to be true, as they often are.',
-                '5. Visitez les projets précédents': '5. Visit Previous Projects',
-                'Si possible, demandez à voir des exemples de leurs travaux précédents. Cela vous donnera une meilleure idée de leurs compétences et de la qualité de leur travail.': 'If possible, ask to see examples of their previous work. This will give you a better idea of their skills and the quality of their work.',
-                '6. La communication est essentielle': '6. Communication is Key',
-                'Choisissez un jardinier qui communique clairement et écoute vos besoins. Une bonne communication garantit que votre vision est comprise et exécutée correctement.': 'Choose a gardener who communicates clearly and listens to your needs. Good communication ensures your vision is understood and executed properly.',
-                'Jardiniers les mieux notés à Genève': 'Top Rated Gardeners in Geneva',
-                'Note :': 'Rating:',
-                'Téléphone :': 'Phone:',
-                'Galerie de beaux jardins à Genève': 'Gallery of Beautiful Gardens in Geneva'
-            }
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let socket;
+        let playerId;
+        let player = {
+            id: null,
+            x: 0,
+            y: 0,
+            radius: 20,
+            color: '#0f0',
+            speed: 3,
+            score: 0,
+            nickname: 'Player'
         };
 
-        function translatePage() {
-            const elements = document.querySelectorAll('h1, h2, h3, p, li, a');
-            const targetLanguage = isFrench ? 'en' : 'fr'; // Alternar entre inglês e francês
+        let players = {};
+        let foods = [];
+        let gameActive = false;
+        let cameraOffset = { x: 0, y: 0 };
+        let lastPingTime = 0;
+        let leaderboard = [];
 
-            elements.forEach(element => {
-                const text = element.innerText;
-                if (translations[targetLanguage][text]) {
-                    element.innerText = translations[targetLanguage][text];
+        const colors = ['#ff0000', '#00ffff', '#ff00ff', '#ffff00', '#ff7f00', '#7f00ff'];
+        const gridSize = 50;
+        const worldSize = 3000;
+
+        function initSocket() {
+            socket = io('https://agar-io-server.glitch.me');
+
+            socket.on('connect', () => {
+                showServerMessage('Conectado ao servidor!');
+                pingServer();
+            });
+
+            socket.on('playerId', (id) => {
+                playerId = id;
+                player.id = id;
+            });
+
+            socket.on('gameState', (gameState) => {
+                players = gameState.players;
+                foods = gameState.foods;
+                leaderboard = gameState.leaderboard;
+                
+                playersOnlineElement.textContent = `Jogadores: ${Object.keys(players).length}`;
+                updateLeaderboard();
+                
+                if (playerId && players[playerId]) {
+                    player = players[playerId];
+                    scoreElement.textContent = `Pontuação: ${Math.floor(player.score)}`;
                 }
             });
 
-            // Alternar o texto do botão
-            const translateButton = document.querySelector('.translate-btn');
-            if (isFrench) {
-                translateButton.innerText = 'Translate to English';
-                isFrench = false;
-            } else {
-                translateButton.innerText = 'Translate to French';
-                isFrench = true;
+            socket.on('playerDied', (data) => {
+                if (data.id === playerId) {
+                    gameOver(data.killer);
+                }
+            });
+
+            socket.on('pong', () => {
+                const pingTime = Date.now() - lastPingTime;
+                pingElement.textContent = `Ping: ${pingTime}ms`;
+            });
+
+            socket.on('serverMessage', (message) => {
+                showServerMessage(message);
+            });
+
+            socket.on('disconnect', () => {
+                showServerMessage('Desconectado do servidor. Tentando reconectar...');
+            });
+        }
+
+        function showServerMessage(message) {
+            serverMessageElement.textContent = message;
+            serverMessageElement.style.display = 'block';
+            
+            setTimeout(() => {
+                serverMessageElement.style.display = 'none';
+            }, 3000);
+        }
+
+        function pingServer() {
+            lastPingTime = Date.now();
+            socket.emit('ping');
+            
+            setTimeout(pingServer, 2000);
+        }
+
+        function updateLeaderboard() {
+            leaderboardItemsElement.innerHTML = '';
+            
+            leaderboard.slice(0, 5).forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `
+                    <span>${index + 1}. ${player.nickname}</span>
+                    <span>${Math.floor(player.score)}</span>
+                `;
+                leaderboardItemsElement.appendChild(item);
+            });
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            
+            const offsetX = cameraOffset.x % gridSize;
+            const offsetY = cameraOffset.y % gridSize;
+            
+            for (let x = offsetX; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
             }
+            
+            for (let y = offsetY; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawCircle(x, y, radius, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        function drawText(text, x, y, size) {
+            ctx.font = `${size}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(text, x, y - size);
+        }
+
+        function updatePlayer() {
+            if (!player || !gameActive) return;
+            
+            const mouseX = mousePosition.x + cameraOffset.x;
+            const mouseY = mousePosition.y + cameraOffset.y;
+            
+            socket.emit('playerMovement', {
+                x: mouseX,
+                y: mouseY
+            });
+            
+            if (players[playerId]) {
+                cameraOffset.x = players[playerId].x - canvas.width / 2;
+                cameraOffset.y = players[playerId].y - canvas.height / 2;
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawGrid();
+            
+            foods.forEach(food => {
+                drawCircle(
+                    food.x - cameraOffset.x,
+                    food.y - cameraOffset.y,
+                    food.radius,
+                    food.color
+                );
+            });
+            
+            Object.values(players).forEach(p => {
+                drawCircle(
+                    p.x - cameraOffset.x,
+                    p.y - cameraOffset.y,
+                    p.radius,
+                    p.color
+                );
+                
+                drawText(
+                    p.nickname,
+                    p.x - cameraOffset.x,
+                    p.y - cameraOffset.y,
+                    Math.max(12, p.radius / 2)
+                );
+            });
+            
+            drawWorldBorders();
+        }
+
+        function drawWorldBorders() {
+            ctx.strokeStyle = '#f00';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(
+                -worldSize / 2 - cameraOffset.x,
+                -worldSize / 2 - cameraOffset.y,
+                worldSize,
+                worldSize
+            );
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            updatePlayer();
+            draw();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function startGame() {
+            const nickname = nicknameInput.value || 'Player';
+            
+            socket.emit('joinGame', {
+                nickname: nickname,
+                color: getRandomColor()
+            });
+            
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            
+            gameActive = true;
+            gameLoop();
+        }
+
+        function gameOver(killerInfo) {
+            gameActive = false;
+            
+            let message = '';
+            if (killerInfo) {
+                message = `Você foi devorado por ${killerInfo.nickname}!`;
+            } else {
+                message = 'Você morreu!';
+            }
+            
+            finalScoreElement.textContent = `${message} Pontuação final: ${Math.floor(player.score)}`;
+            gameOverScreen.style.display = 'flex';
+        }
+
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        let mousePosition = { x: 0, y: 0 };
+        
+        window.addEventListener('mousemove', (e) => {
+            mousePosition.x = e.clientX;
+            mousePosition.y = e.clientY;
+        });
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        
+        nicknameInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                startGame();
+            }
+        });
+
+        // Servidor de fallback para testes offline
+        class FallbackServer {
+            constructor() {
+                this.players = {};
+                this.foods = [];
+                this.leaderboard = [];
+                this.worldSize = 3000;
+                this.maxFoods = 500;
+                this.maxBots = 15;
+                this.botUpdateInterval = 50;
+                
+                this.createFoods(this.maxFoods);
+                this.createBots(this.maxBots);
+                
+                setInterval(() => this.updateBots(), this.botUpdateInterval);
+                setInterval(() => this.updateLeaderboard(), 1000);
+                setInterval(() => this.emitGameState(), 33);
+            }
+            
+            createFoods(count) {
+                for (let i = 0; i < count; i++) {
+                    this.foods.push({
+                        id: this.generateId(),
+                        x: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
+                        y: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
+                        radius: this.getRandomPosition(2, 6),
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+            }
+            
+            createBots(count) {
+                for (let i = 0; i < count; i++) {
+                    const botId = `bot-${this.generateId()}`;
+                    const radius = this.getRandomPosition(20, 60);
+                    
+                    this.players[botId] = {
+                        id: botId,
+                        x: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
+                        y: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
+                        radius: radius,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        speed: Math.max(1, 3 - (radius / 100)),
+                        score: radius * 5,
+                        nickname: `Bot ${i + 1}`,
+                        isBot: true,
+                        targetX: 0,
+                        targetY: 0,
+                        updateTargetTime: 0
+                    };
+                    
+                    this.updateBotTarget(botId);
+                }
+            }
+            
+            updateBotTarget(botId) {
+                const bot = this.players[botId];
+                if (!bot) return;
+                
+                if (Math.random() < 0.7) {
+                    // Target food
+                    let closestFood = null;
+                    let closestDistance = Infinity;
+                    
+                    this.foods.forEach(food => {
+                        const distance = this.getDistance(bot.x, bot.y, food.x, food.y);
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestFood = food;
+                        }
+                    });
+                    
+                    if (closestFood) {
+                        bot.targetX = closestFood.x;
+                        bot.targetY = closestFood.y;
+                    }
+                } else {
+                    // Random movement or target smaller player
+                    if (Math.random() < 0.5) {
+                        bot.targetX = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
+                        bot.targetY = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
+                    } else {
+                        // Find smaller player
+                        let target = null;
+                        Object.values(this.players).forEach(player => {
+                            if (player.id !== botId && player.radius < bot.radius * 0.8) {
+                                target = player;
+                            }
+                        });
+                        
+                        if (target) {
+                            bot.targetX = target.x;
+                            bot.targetY = target.y;
+                        } else {
+                            bot.targetX = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
+                            bot.targetY = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
+                        }
+                    }
+                }
+                
+                bot.updateTargetTime = Date.now() + this.getRandomPosition(1000, 3000);
+            }
+            
+            updateBots() {
+                Object.keys(this.players).forEach(playerId => {
+                    const player = this.players[playerId];
+                    
+                    if (player && player.isBot) {
+                        // Update bot target periodically
+                        if (Date.now() > player.updateTargetTime) {
+                            this.updateBotTarget(playerId);
+                        }
+                        
+                        // Move bot towards target
+                        const dx = player.targetX - player.x;
+                        const dy = player.targetY - player.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance > 5) {
+                            player.x += (dx / distance) * player.speed;
+                            player.y += (dy / distance) * player.speed;
+                        }
+                        
+                        // Check collisions with food
+                        this.foods.forEach((food, index) => {
+                            if (this.checkCollision(player.x, player.y, player.radius, food.x, food.y, food.radius)) {
+                                player.radius += food.radius / 10;
+                                player.score += food.radius;
+                                player.speed = Math.max(1, 3 - (player.radius / 100));
+                                
+                                this.foods.splice(index, 1);
+                                this.createFoods(1);
+                            }
+                        });
+                        
+                        // Check collisions with other players
+                        Object.keys(this.players).forEach(otherId => {
+                            if (playerId !== otherId) {
+                                const otherPlayer = this.players[otherId];
+                                
+                                if (this.checkCollision(player.x, player.y, player.radius, otherPlayer.x, otherPlayer.y, otherPlayer.radius)) {
+                                    if (player.radius > otherPlayer.radius * 1.1) {
+                                        player.score += otherPlayer.score;
+                                        player.radius += otherPlayer.radius / 4;
+                                        player.speed = Math.max(1, 3 - (player.radius / 100));
+                                        
+                                        this.playerDied(otherId, {
+                                            id: playerId,
+                                            nickname: player.nickname
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            
+            updateLeaderboard() {
+                this.leaderboard = Object.values(this.players)
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 10);
+            }
+            
+            generateId() {
+                return Math.random().toString(36).substr(2, 9);
+            }
+            
+            getRandomPosition(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            
+            getDistance(x1, y1, x2, y2) {
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            checkCollision(x1, y1, r1, x2, y2, r2) {
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance < r1 + r2;
+            }
+            
+            emitGameState() {
+                if (socket && socket.connected) {
+                    socket.emit('gameState', {
+                        players: this.players,
+                        foods: this.foods,
+                        leaderboard: this.leaderboard
+                    });
+                }
+            }
+            
+            playerDied(playerId, killer) {
+                const player = this.players[playerId];
+                
+                if (player) {
+                    if (socket && socket.connected && !player.isBot) {
+                        socket.emit('playerDied', {
+                            id: playerId,
+                            killer: killer
+                        });
+                    }
+                    
+                    delete this.players[playerId];
+                    
+                    if (player.isBot) {
+                        setTimeout(() => this.createBots(1), 2000);
+                    }
+                }
+            }
+            
+            onConnect(id) {
+                if (socket && socket.connected) {
+                    socket.emit('playerId', id);
+                }
+            }
+            
+            onJoinGame(id, data) {
+                this.players[id] = {
+                    id: id,
+                    x: this.getRandomPosition(-this.worldSize / 4, this.worldSize / 4),
+                    y: this.getRandomPosition(-this.worldSize / 4, this.worldSize / 4),
+                    radius: 20,
+                    color: data.color || '#0f0',
+                    speed: 3,
+                    score: 0,
+                    nickname: data.nickname || 'Player'
+                };
+            }
+            
+            onPlayerMovement(id, data) {
+                const player = this.players[id];
+                
+                if (player) {
+                    const dx = data.x - player.x;
+                    const dy = data.y - player.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 5) {
+                        player.x += (dx / distance) * player.speed;
+                        player.y += (dy / distance) * player.speed;
+                    }
+                    
+                    // Keep player within world bounds
+                    player.x = Math.max(-this.worldSize / 2, Math.min(this.worldSize / 2, player.x));
+                    player.y = Math.max(-this.worldSize / 2, Math.min(this.worldSize / 2, player.y));
+                    
+                    // Check collisions with food
+                    this.foods.forEach((food, index) => {
+                        if (this.checkCollision(player.x, player.y, player.radius, food.x, food.y, food.radius)) {
+                            player.radius += food.radius / 10;
+                            player.score += food.radius;
+                            player.speed = Math.max(1, 3 - (player.radius / 100));
+                            
+                            this.foods.splice(index, 1);
+                            this.createFoods(1);
+                        }
+                    });
+                    
+                    // Check collisions with other players
+                    Object.keys(this.players).forEach(otherId => {
+                        if (id !== otherId) {
+                            const otherPlayer = this.players[otherId];
+                            
+                            if (this.checkCollision(player.x, player.y, player.radius, otherPlayer.x, otherPlayer.y, otherPlayer.radius)) {
+                                if (player.radius > otherPlayer.radius * 1.1) {
+                                    player.score += otherPlayer.score;
+                                    player.radius += otherPlayer.radius / 4;
+                                    player.speed = Math.max(1, 3 - (player.radius / 100));
+                                    
+                                    this.playerDied(otherId, {
+                                        id: id,
+                                        nickname: player.nickname
+                                    });
+                                } else if (otherPlayer.radius > player.radius * 1.1) {
+                                    otherPlayer.score += player.score;
+                                    otherPlayer.radius += player.radius / 4;
+                                    otherPlayer.speed = Math.max(1, 3 - (otherPlayer.radius / 100));
+                                    
+                                    this.playerDied(id, {
+                                        id: otherId,
+                                        nickname: otherPlayer.nickname
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            onDisconnect(id) {
+                delete this.players[id];
+            }
+        }
+
+        // Iniciar a simulação de cliente e servidor
+        let fallbackServer;
+        
+        try {
+            // Tentar conectar ao servidor real
+            initSocket();
+            
+            // Iniciar o fallback server para testes (simulação local quando não há servidor real)
+            fallbackServer = new FallbackServer();
+            
+            // Adicionar funções de mock ao socket local
+            const realSocketEmit = socket.emit;
+            socket.emit = function(event, data) {
+                realSocketEmit.call(socket, event, data);
+                
+                // Processar eventos no servidor local também
+                if (event === 'joinGame') {
+                    fallbackServer.onJoinGame(playerId, data);
+                } else if (event === 'playerMovement') {
+                    fallbackServer.onPlayerMovement(playerId, data);
+                } else if (event === 'ping') {
+                    setTimeout(() => {
+                        socket.onevent({
+                            data: ['pong']
+                        });
+                    }, 100);
+                }
+            };
+            
+            // Simular ID do jogador
+            playerId = fallbackServer.generateId();
+            fallbackServer.onConnect(playerId);
+            socket.onevent({
+                data: ['playerId', playerId]
+            });
+            
+            // Mensagem de conexão com servidor de fallback
+            showServerMessage('Usando servidor de jogo local');
+        } catch (error) {
+            console.error('Erro ao inicializar o jogo:', error);
+            showServerMessage('Erro ao conectar ao servidor. Usando modo offline.');
+            
+            // Iniciar somente o servidor de fallback
+            fallbackServer = new FallbackServer();
+            
+            // Criar socket simulado
+            socket = {
+                emit: function(event, data) {
+                    if (event === 'joinGame') {
+                        fallbackServer.onJoinGame(playerId, data);
+                    } else if (event === 'playerMovement') {
+                        fallbackServer.onPlayerMovement(playerId, data);
+                    } else if (event === 'ping') {
+                        setTimeout(() => {
+                            this.onevent({
+                                data: ['pong']
+                            });
+                        }, 100);
+                    }
+                },
+                onevent: function(e) {
+                    const eventName = e.data[0];
+                    const eventData = e.data[1];
+                    
+                    if (this.callbacks && this.callbacks[eventName]) {
+                        this.callbacks[eventName](eventData);
+                    }
+                },
+                on: function(event, callback) {
+                    if (!this.callbacks) {
+                        this.callbacks = {};
+                    }
+                    this.callbacks[event] = callback;
+                },
+                connected: true
+            };
+            
+            // Simular ID do jogador
+            playerId = fallbackServer.generateId();
+            fallbackServer.onConnect(playerId);
+            socket.onevent({
+                data: ['playerId', playerId]
+            });
+            
+            pingServer();
         }
     </script>
 </body>
