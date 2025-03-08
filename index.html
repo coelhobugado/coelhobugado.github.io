@@ -230,7 +230,7 @@
         const worldSize = 3000;
 
         function initSocket() {
-            socket = io('https://agar-io-server.glitch.me');
+            socket = io('https://agar-io-proxy.glitch.me');
 
             socket.on('connect', () => {
                 showServerMessage('Conectado ao servidor!');
