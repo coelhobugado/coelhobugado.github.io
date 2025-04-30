@@ -1,861 +1,341 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agar.io Online - Dark Theme</title>
+    <title>Informações do Sistema</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --primary-color: #00ff00;
+            --secondary-color: #0066ff;
+            --background-color: #000011;
+            --text-color: #e0e0e0;
+        }
+
         body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
             margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #0a0a0a;
-            font-family: Arial, sans-serif;
-            color: #fff;
-        }
-        canvas {
-            display: block;
-            background-color: #111;
-        }
-        #game-container {
+            overflow-x: hidden;
             position: relative;
-            width: 100vw;
-            height: 100vh;
         }
-        #score {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 18px;
-            color: #fff;
-            z-index: 10;
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(to bottom, transparent 50%, rgba(0, 255, 0, 0.1) 50%),
+                linear-gradient(to right, rgba(0, 255, 0, 0.1), rgba(0, 102, 255, 0.1));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            animation: scanlines 2s linear infinite;
         }
-        #players-online {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 18px;
-            color: #fff;
-            z-index: 10;
+
+        @keyframes scanlines {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
         }
-        #leaderboard {
-            position: absolute;
-            top: 40px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 10;
-            width: 200px;
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(0, 20, 40, 0.7);
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--secondary-color);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s forwards, glowPulse 4s infinite alternate;
         }
-        #leaderboard h3 {
-            margin: 0 0 10px 0;
-            color: #0f0;
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glowPulse {
+            from { box-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--secondary-color); }
+            to { box-shadow: 0 0 40px var(--primary-color), 0 0 60px var(--secondary-color); }
+        }
+
+        h1 {
             text-align: center;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--secondary-color);
+            animation: glitch 2s infinite;
         }
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 14px;
+
+        @keyframes glitch {
+            0%, 100% { transform: none; opacity: 1; }
+            7% { transform: skew(-0.5deg, -0.9deg); }
+            10% { transform: none; }
+            27% { transform: none; }
+            30% { transform: skew(0.8deg, -0.1deg); }
+            35% { transform: none; }
+            52% { transform: none; }
+            55% { transform: skew(-1deg, 0.2deg); }
+            50% { transform: none; }
+            72% { transform: none; }
+            75% { transform: skew(0.4deg, 1deg); }
+            80% { transform: none; }
+            100% { transform: none; }
         }
-        #start-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 20;
-        }
-        #start-screen h1 {
-            color: #0f0;
-            font-size: 48px;
+
+        .info-section {
             margin-bottom: 30px;
-            text-shadow: 0 0 10px #0f0;
+            border: 1px solid var(--primary-color);
+            padding: 15px;
+            background-color: rgba(0, 40, 80, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        #nickname {
-            padding: 10px;
-            font-size: 18px;
-            width: 300px;
+
+        .info-section::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(0, 255, 0, 0.1),
+                transparent,
+                rgba(0, 102, 255, 0.1)
+            );
+            transform: rotate(45deg);
+            animation: sheen 10s linear infinite;
+        }
+
+        @keyframes sheen {
+            0% { transform: rotate(45deg) translateY(-100%); }
+            100% { transform: rotate(45deg) translateY(100%); }
+        }
+
+        .info-section:hover {
+            box-shadow: 0 0 25px var(--primary-color), 0 0 35px var(--secondary-color);
+            transform: scale(1.02) translateY(-5px);
+        }
+
+        .info-section h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
             margin-bottom: 20px;
-            background-color: #222;
-            color: #fff;
-            border: 2px solid #0f0;
-            border-radius: 5px;
+            color: var(--secondary-color);
+            text-shadow: 0 0 5px var(--secondary-color);
         }
-        #start-button {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #0f0;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
+
+        .info-list {
+            list-style: none;
+            padding: 0;
         }
-        #start-button:hover {
-            background-color: #00cc00;
-            transform: scale(1.05);
+
+        .info-list li {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-left: 3px solid var(--primary-color);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(-20px);
+            position: relative;
         }
-        #game-over {
+
+        .info-list li::before {
+            content: ">";
+            color: var(--primary-color);
             position: absolute;
+            left: -15px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .info-list li:hover {
+            background-color: rgba(0, 255, 0, 0.1);
+            transform: translateX(5px);
+            padding-left: 10px;
+        }
+
+        .info-list li:hover::before {
+            opacity: 1;
+            left: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            min-width: 180px;
+            display: inline-block;
+            color: var(--primary-color);
+        }
+
+        .info-value {
+            color: var(--secondary-color);
+        }
+
+        .info-value.error {
+            color: #ff3333;
+        }
+
+        #scanline {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 30;
+            height: 5px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+            opacity: 0.7;
+            pointer-events: none;
+            animation: scanline 6s linear infinite;
         }
-        #game-over h2 {
-            color: #f00;
-            font-size: 48px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px #f00;
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100vh);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
         }
-        #final-score {
-            color: #fff;
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-        #restart-button {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #f00;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        #restart-button:hover {
-            background-color: #cc0000;
-            transform: scale(1.05);
-        }
-        #ping {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            font-size: 14px;
-            color: #aaa;
-            z-index: 10;
-        }
-        #server-message {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #0f0;
-            border-radius: 5px;
-            font-size: 16px;
-            z-index: 10;
-            display: none;
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="score">Pontuação: 0</div>
-        <div id="players-online">Jogadores: 0</div>
-        <div id="leaderboard">
-            <h3>Líderes</h3>
-            <div id="leaderboard-items"></div>
+    <div id="scanline"></div>
+    <div class="container">
+        <h1>Informações Confidenciais do Sistema</h1>
+        <div class="info-section" id="browser-info">
+            <h2>Navegador</h2>
+            <ul class="info-list"></ul>
         </div>
-        <div id="ping">Ping: 0ms</div>
-        <div id="server-message"></div>
-        <canvas id="gameCanvas"></canvas>
-        <div id="start-screen">
-            <h1>Agar.io Online</h1>
-            <input type="text" id="nickname" placeholder="Digite seu nickname" maxlength="15">
-            <button id="start-button">Jogar</button>
-        </div>
-        <div id="game-over">
-            <h2>Game Over</h2>
-            <div id="final-score">Pontuação: 0</div>
-            <button id="restart-button">Jogar Novamente</button>
+        <div class="info-section" id="system-info">
+            <h2>Sistema</h2>
+            <ul class="info-list"></ul>
         </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
-        const playersOnlineElement = document.getElementById('players-online');
-        const leaderboardItemsElement = document.getElementById('leaderboard-items');
-        const startScreen = document.getElementById('start-screen');
-        const startButton = document.getElementById('start-button');
-        const nicknameInput = document.getElementById('nickname');
-        const gameOverScreen = document.getElementById('game-over');
-        const finalScoreElement = document.getElementById('final-score');
-        const restartButton = document.getElementById('restart-button');
-        const pingElement = document.getElementById('ping');
-        const serverMessageElement = document.getElementById('server-message');
+        function createInfoItem(parentId, label, value) {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="info-label">${label}:</span> <span class="info-value">${value}</span>`;
+            const parent = document.getElementById(parentId).querySelector('.info-list');
+            if (parent) {
+                parent.appendChild(li);
+                setTimeout(() => {
+                    li.style.opacity = '1';
+                    li.style.transform = 'translateX(0)';
+                }, 50 * parent.children.length);
+            }
+        }
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        function verificarCookiesDeTerceiros() {
+            let cookiesDeTerceirosHabilitados = false;
+            if (navigator.cookieEnabled) {
+                document.cookie = "testeDeTerceiros=true";
+                cookiesDeTerceirosHabilitados = document.cookie.indexOf("testeDeTerceiros=true") !== -1;
+                document.cookie = "testeDeTerceiros=true; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+            return cookiesDeTerceirosHabilitados ? 'Sim - Cookies de terceiros estão ativados' : 'Não - Cookies de terceiros estão desativados';
+        }
 
-        let socket;
-        let playerId;
-        let player = {
-            id: null,
-            x: 0,
-            y: 0,
-            radius: 20,
-            color: '#0f0',
-            speed: 3,
-            score: 0,
-            nickname: 'Player'
-        };
+        createInfoItem('browser-info', 'Seu navegador se parece com', navigator.userAgent);
+        createInfoItem('browser-info', 'O JavaScript está habilitado?', 'Sim - JavaScript está ativado');
+        createInfoItem('browser-info', 'Os cookies estão habilitados?', navigator.cookieEnabled ? 'Sim - os cookies estão ativados' : 'Não - os cookies estão desativados');
+        createInfoItem('browser-info', 'Os cookies de terceiros estão habilitados?', verificarCookiesDeTerceiros());
+        createInfoItem('browser-info', 'Idioma do Navegador', navigator.language || navigator.userLanguage);
+        createInfoItem('browser-info', 'Modo Escuro', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Ativado' : 'Desativado');
+        createInfoItem('browser-info', 'Tipo de Conexão', obterTipoDeConexao());
+        createInfoItem('browser-info', 'Fuso Horário', Intl.DateTimeFormat().resolvedOptions().timeZone);
+        createInfoItem('browser-info', 'Touchscreen', 'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 'Sim' : 'Não');
 
-        let players = {};
-        let foods = [];
-        let gameActive = false;
-        let cameraOffset = { x: 0, y: 0 };
-        let lastPingTime = 0;
-        let leaderboard = [];
+        createInfoItem('system-info', 'Edição de 64 bits', navigator.userAgent.includes("WOW64") || navigator.userAgent.includes("Win64") ? 'Sim' : 'Não');
+        createInfoItem('system-info', 'Seu referenciador', document.referrer || 'Sem referenciador');
 
-        const colors = ['#ff0000', '#00ffff', '#ff00ff', '#ffff00', '#ff7f00', '#7f00ff'];
-        const gridSize = 50;
-        const worldSize = 3000;
-
-        function initSocket() {
-            socket = io('https://agar-io-proxy.glitch.me');
-
-            socket.on('connect', () => {
-                showServerMessage('Conectado ao servidor!');
-                pingServer();
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                createInfoItem('system-info', 'Endereço IP', data.ip);
+                return fetch(`https://ipapi.co/${data.ip}/json/`);
+            })
+            .then(response => response.json())
+            .then(data => {
+                createInfoItem('system-info', 'Local', `${data.city}, ${data.region}, ${data.country_name}`);
+                createInfoItem('system-info', 'Provedor de Internet', data.org);
+            })
+            .catch(error => {
+                console.error('Erro ao obter informações de IP:', error);
+                createInfoItem('system-info', 'Endereço IP', 'Não foi possível obter');
+                createInfoItem('system-info', 'Local', 'Não foi possível obter');
+                createInfoItem('system-info', 'Provedor de Internet', 'Não foi possível obter');
             });
 
-            socket.on('playerId', (id) => {
-                playerId = id;
-                player.id = id;
-            });
-
-            socket.on('gameState', (gameState) => {
-                players = gameState.players;
-                foods = gameState.foods;
-                leaderboard = gameState.leaderboard;
-                
-                playersOnlineElement.textContent = `Jogadores: ${Object.keys(players).length}`;
-                updateLeaderboard();
-                
-                if (playerId && players[playerId]) {
-                    player = players[playerId];
-                    scoreElement.textContent = `Pontuação: ${Math.floor(player.score)}`;
+        const RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+        if (RTCPeerConnection) {
+            const rtc = new RTCPeerConnection({iceServers: []});
+            rtc.createDataChannel('');
+            rtc.onicecandidate = (evt) => {
+                if (evt.candidate) {
+                    const regex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+                    const match = regex.exec(evt.candidate.candidate);
+                    if (match) {
+                        createInfoItem('system-info', 'Endereço IP local', match[1]);
+                        rtc.onicecandidate = () => {};
+                    }
                 }
-            });
+            };
+            rtc.createOffer()
+                .then(offerDesc => rtc.setLocalDescription(offerDesc))
+                .catch(e => console.warn("Falha na oferta", e));
+        } else {
+            createInfoItem('system-info', 'Endereço IP local', 'Detecção bloqueada pelo seu navegador');
+        }
 
-            socket.on('playerDied', (data) => {
-                if (data.id === playerId) {
-                    gameOver(data.killer);
+        createInfoItem('system-info', 'Tela do computador', `${screen.width} x ${screen.height} pixels, ${screen.colorDepth} bits`);
+        createInfoItem('system-info', 'Tamanho da janela do navegador', `${window.innerWidth} x ${window.innerHeight} pixels`);
+        createInfoItem('system-info', 'Configuração Não Rastrear', navigator.doNotTrack === "1" ? "Ativado" : "Desativado");
+
+        function obterTipoDeConexao() {
+            if (navigator.connection && navigator.connection.effectiveType) {
+                if (navigator.connection.effectiveType === '4g' && navigator.userAgent.includes('5G')) {
+                    return '5G';
                 }
-            });
-
-            socket.on('pong', () => {
-                const pingTime = Date.now() - lastPingTime;
-                pingElement.textContent = `Ping: ${pingTime}ms`;
-            });
-
-            socket.on('serverMessage', (message) => {
-                showServerMessage(message);
-            });
-
-            socket.on('disconnect', () => {
-                showServerMessage('Desconectado do servidor. Tentando reconectar...');
-            });
-        }
-
-        function showServerMessage(message) {
-            serverMessageElement.textContent = message;
-            serverMessageElement.style.display = 'block';
-            
-            setTimeout(() => {
-                serverMessageElement.style.display = 'none';
-            }, 3000);
-        }
-
-        function pingServer() {
-            lastPingTime = Date.now();
-            socket.emit('ping');
-            
-            setTimeout(pingServer, 2000);
-        }
-
-        function updateLeaderboard() {
-            leaderboardItemsElement.innerHTML = '';
-            
-            leaderboard.slice(0, 5).forEach((player, index) => {
-                const item = document.createElement('div');
-                item.className = 'leaderboard-item';
-                item.innerHTML = `
-                    <span>${index + 1}. ${player.nickname}</span>
-                    <span>${Math.floor(player.score)}</span>
-                `;
-                leaderboardItemsElement.appendChild(item);
-            });
-        }
-
-        function drawGrid() {
-            ctx.strokeStyle = '#222';
-            ctx.lineWidth = 1;
-            
-            const offsetX = cameraOffset.x % gridSize;
-            const offsetY = cameraOffset.y % gridSize;
-            
-            for (let x = offsetX; x < canvas.width; x += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-            
-            for (let y = offsetY; y < canvas.height; y += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-        }
-
-        function drawCircle(x, y, radius, color) {
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        function drawText(text, x, y, size) {
-            ctx.font = `${size}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(text, x, y - size);
-        }
-
-        function updatePlayer() {
-            if (!player || !gameActive) return;
-            
-            const mouseX = mousePosition.x + cameraOffset.x;
-            const mouseY = mousePosition.y + cameraOffset.y;
-            
-            socket.emit('playerMovement', {
-                x: mouseX,
-                y: mouseY
-            });
-            
-            if (players[playerId]) {
-                cameraOffset.x = players[playerId].x - canvas.width / 2;
-                cameraOffset.y = players[playerId].y - canvas.height / 2;
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            drawGrid();
-            
-            foods.forEach(food => {
-                drawCircle(
-                    food.x - cameraOffset.x,
-                    food.y - cameraOffset.y,
-                    food.radius,
-                    food.color
-                );
-            });
-            
-            Object.values(players).forEach(p => {
-                drawCircle(
-                    p.x - cameraOffset.x,
-                    p.y - cameraOffset.y,
-                    p.radius,
-                    p.color
-                );
-                
-                drawText(
-                    p.nickname,
-                    p.x - cameraOffset.x,
-                    p.y - cameraOffset.y,
-                    Math.max(12, p.radius / 2)
-                );
-            });
-            
-            drawWorldBorders();
-        }
-
-        function drawWorldBorders() {
-            ctx.strokeStyle = '#f00';
-            ctx.lineWidth = 5;
-            ctx.strokeRect(
-                -worldSize / 2 - cameraOffset.x,
-                -worldSize / 2 - cameraOffset.y,
-                worldSize,
-                worldSize
-            );
-        }
-
-        function gameLoop() {
-            if (!gameActive) return;
-            
-            updatePlayer();
-            draw();
-            
-            requestAnimationFrame(gameLoop);
-        }
-
-        function startGame() {
-            const nickname = nicknameInput.value || 'Player';
-            
-            socket.emit('joinGame', {
-                nickname: nickname,
-                color: getRandomColor()
-            });
-            
-            startScreen.style.display = 'none';
-            gameOverScreen.style.display = 'none';
-            
-            gameActive = true;
-            gameLoop();
-        }
-
-        function gameOver(killerInfo) {
-            gameActive = false;
-            
-            let message = '';
-            if (killerInfo) {
-                message = `Você foi devorado por ${killerInfo.nickname}!`;
+                return navigator.connection.effectiveType;
             } else {
-                message = 'Você morreu!';
-            }
-            
-            finalScoreElement.textContent = `${message} Pontuação final: ${Math.floor(player.score)}`;
-            gameOverScreen.style.display = 'flex';
-        }
-
-        function getRandomColor() {
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        let mousePosition = { x: 0, y: 0 };
-        
-        window.addEventListener('mousemove', (e) => {
-            mousePosition.x = e.clientX;
-            mousePosition.y = e.clientY;
-        });
-        
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-        
-        startButton.addEventListener('click', startGame);
-        restartButton.addEventListener('click', startGame);
-        
-        nicknameInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                startGame();
-            }
-        });
-
-        // Servidor de fallback para testes offline
-        class FallbackServer {
-            constructor() {
-                this.players = {};
-                this.foods = [];
-                this.leaderboard = [];
-                this.worldSize = 3000;
-                this.maxFoods = 500;
-                this.maxBots = 15;
-                this.botUpdateInterval = 50;
-                
-                this.createFoods(this.maxFoods);
-                this.createBots(this.maxBots);
-                
-                setInterval(() => this.updateBots(), this.botUpdateInterval);
-                setInterval(() => this.updateLeaderboard(), 1000);
-                setInterval(() => this.emitGameState(), 33);
-            }
-            
-            createFoods(count) {
-                for (let i = 0; i < count; i++) {
-                    this.foods.push({
-                        id: this.generateId(),
-                        x: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
-                        y: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
-                        radius: this.getRandomPosition(2, 6),
-                        color: colors[Math.floor(Math.random() * colors.length)]
-                    });
-                }
-            }
-            
-            createBots(count) {
-                for (let i = 0; i < count; i++) {
-                    const botId = `bot-${this.generateId()}`;
-                    const radius = this.getRandomPosition(20, 60);
-                    
-                    this.players[botId] = {
-                        id: botId,
-                        x: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
-                        y: this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2),
-                        radius: radius,
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        speed: Math.max(1, 3 - (radius / 100)),
-                        score: radius * 5,
-                        nickname: `Bot ${i + 1}`,
-                        isBot: true,
-                        targetX: 0,
-                        targetY: 0,
-                        updateTargetTime: 0
-                    };
-                    
-                    this.updateBotTarget(botId);
-                }
-            }
-            
-            updateBotTarget(botId) {
-                const bot = this.players[botId];
-                if (!bot) return;
-                
-                if (Math.random() < 0.7) {
-                    // Target food
-                    let closestFood = null;
-                    let closestDistance = Infinity;
-                    
-                    this.foods.forEach(food => {
-                        const distance = this.getDistance(bot.x, bot.y, food.x, food.y);
-                        if (distance < closestDistance) {
-                            closestDistance = distance;
-                            closestFood = food;
-                        }
-                    });
-                    
-                    if (closestFood) {
-                        bot.targetX = closestFood.x;
-                        bot.targetY = closestFood.y;
-                    }
-                } else {
-                    // Random movement or target smaller player
-                    if (Math.random() < 0.5) {
-                        bot.targetX = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
-                        bot.targetY = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
-                    } else {
-                        // Find smaller player
-                        let target = null;
-                        Object.values(this.players).forEach(player => {
-                            if (player.id !== botId && player.radius < bot.radius * 0.8) {
-                                target = player;
-                            }
-                        });
-                        
-                        if (target) {
-                            bot.targetX = target.x;
-                            bot.targetY = target.y;
-                        } else {
-                            bot.targetX = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
-                            bot.targetY = this.getRandomPosition(-this.worldSize / 2, this.worldSize / 2);
-                        }
-                    }
-                }
-                
-                bot.updateTargetTime = Date.now() + this.getRandomPosition(1000, 3000);
-            }
-            
-            updateBots() {
-                Object.keys(this.players).forEach(playerId => {
-                    const player = this.players[playerId];
-                    
-                    if (player && player.isBot) {
-                        // Update bot target periodically
-                        if (Date.now() > player.updateTargetTime) {
-                            this.updateBotTarget(playerId);
-                        }
-                        
-                        // Move bot towards target
-                        const dx = player.targetX - player.x;
-                        const dy = player.targetY - player.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if (distance > 5) {
-                            player.x += (dx / distance) * player.speed;
-                            player.y += (dy / distance) * player.speed;
-                        }
-                        
-                        // Check collisions with food
-                        this.foods.forEach((food, index) => {
-                            if (this.checkCollision(player.x, player.y, player.radius, food.x, food.y, food.radius)) {
-                                player.radius += food.radius / 10;
-                                player.score += food.radius;
-                                player.speed = Math.max(1, 3 - (player.radius / 100));
-                                
-                                this.foods.splice(index, 1);
-                                this.createFoods(1);
-                            }
-                        });
-                        
-                        // Check collisions with other players
-                        Object.keys(this.players).forEach(otherId => {
-                            if (playerId !== otherId) {
-                                const otherPlayer = this.players[otherId];
-                                
-                                if (this.checkCollision(player.x, player.y, player.radius, otherPlayer.x, otherPlayer.y, otherPlayer.radius)) {
-                                    if (player.radius > otherPlayer.radius * 1.1) {
-                                        player.score += otherPlayer.score;
-                                        player.radius += otherPlayer.radius / 4;
-                                        player.speed = Math.max(1, 3 - (player.radius / 100));
-                                        
-                                        this.playerDied(otherId, {
-                                            id: playerId,
-                                            nickname: player.nickname
-                                        });
-                                    }
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-            
-            updateLeaderboard() {
-                this.leaderboard = Object.values(this.players)
-                    .sort((a, b) => b.score - a.score)
-                    .slice(0, 10);
-            }
-            
-            generateId() {
-                return Math.random().toString(36).substr(2, 9);
-            }
-            
-            getRandomPosition(min, max) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            }
-            
-            getDistance(x1, y1, x2, y2) {
-                const dx = x2 - x1;
-                const dy = y2 - y1;
-                return Math.sqrt(dx * dx + dy * dy);
-            }
-            
-            checkCollision(x1, y1, r1, x2, y2, r2) {
-                const dx = x2 - x1;
-                const dy = y2 - y1;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                return distance < r1 + r2;
-            }
-            
-            emitGameState() {
-                if (socket && socket.connected) {
-                    socket.emit('gameState', {
-                        players: this.players,
-                        foods: this.foods,
-                        leaderboard: this.leaderboard
-                    });
-                }
-            }
-            
-            playerDied(playerId, killer) {
-                const player = this.players[playerId];
-                
-                if (player) {
-                    if (socket && socket.connected && !player.isBot) {
-                        socket.emit('playerDied', {
-                            id: playerId,
-                            killer: killer
-                        });
-                    }
-                    
-                    delete this.players[playerId];
-                    
-                    if (player.isBot) {
-                        setTimeout(() => this.createBots(1), 2000);
-                    }
-                }
-            }
-            
-            onConnect(id) {
-                if (socket && socket.connected) {
-                    socket.emit('playerId', id);
-                }
-            }
-            
-            onJoinGame(id, data) {
-                this.players[id] = {
-                    id: id,
-                    x: this.getRandomPosition(-this.worldSize / 4, this.worldSize / 4),
-                    y: this.getRandomPosition(-this.worldSize / 4, this.worldSize / 4),
-                    radius: 20,
-                    color: data.color || '#0f0',
-                    speed: 3,
-                    score: 0,
-                    nickname: data.nickname || 'Player'
-                };
-            }
-            
-            onPlayerMovement(id, data) {
-                const player = this.players[id];
-                
-                if (player) {
-                    const dx = data.x - player.x;
-                    const dy = data.y - player.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance > 5) {
-                        player.x += (dx / distance) * player.speed;
-                        player.y += (dy / distance) * player.speed;
-                    }
-                    
-                    // Keep player within world bounds
-                    player.x = Math.max(-this.worldSize / 2, Math.min(this.worldSize / 2, player.x));
-                    player.y = Math.max(-this.worldSize / 2, Math.min(this.worldSize / 2, player.y));
-                    
-                    // Check collisions with food
-                    this.foods.forEach((food, index) => {
-                        if (this.checkCollision(player.x, player.y, player.radius, food.x, food.y, food.radius)) {
-                            player.radius += food.radius / 10;
-                            player.score += food.radius;
-                            player.speed = Math.max(1, 3 - (player.radius / 100));
-                            
-                            this.foods.splice(index, 1);
-                            this.createFoods(1);
-                        }
-                    });
-                    
-                    // Check collisions with other players
-                    Object.keys(this.players).forEach(otherId => {
-                        if (id !== otherId) {
-                            const otherPlayer = this.players[otherId];
-                            
-                            if (this.checkCollision(player.x, player.y, player.radius, otherPlayer.x, otherPlayer.y, otherPlayer.radius)) {
-                                if (player.radius > otherPlayer.radius * 1.1) {
-                                    player.score += otherPlayer.score;
-                                    player.radius += otherPlayer.radius / 4;
-                                    player.speed = Math.max(1, 3 - (player.radius / 100));
-                                    
-                                    this.playerDied(otherId, {
-                                        id: id,
-                                        nickname: player.nickname
-                                    });
-                                } else if (otherPlayer.radius > player.radius * 1.1) {
-                                    otherPlayer.score += player.score;
-                                    otherPlayer.radius += player.radius / 4;
-                                    otherPlayer.speed = Math.max(1, 3 - (otherPlayer.radius / 100));
-                                    
-                                    this.playerDied(id, {
-                                        id: otherId,
-                                        nickname: otherPlayer.nickname
-                                    });
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-            
-            onDisconnect(id) {
-                delete this.players[id];
+                return 'Desconhecido';
             }
         }
 
-        // Iniciar a simulação de cliente e servidor
-        let fallbackServer;
-        
-        try {
-            // Tentar conectar ao servidor real
-            initSocket();
-            
-            // Iniciar o fallback server para testes (simulação local quando não há servidor real)
-            fallbackServer = new FallbackServer();
-            
-            // Adicionar funções de mock ao socket local
-            const realSocketEmit = socket.emit;
-            socket.emit = function(event, data) {
-                realSocketEmit.call(socket, event, data);
-                
-                // Processar eventos no servidor local também
-                if (event === 'joinGame') {
-                    fallbackServer.onJoinGame(playerId, data);
-                } else if (event === 'playerMovement') {
-                    fallbackServer.onPlayerMovement(playerId, data);
-                } else if (event === 'ping') {
-                    setTimeout(() => {
-                        socket.onevent({
-                            data: ['pong']
-                        });
-                    }, 100);
+        function obterNomeGPU() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'Não disponível';
                 }
-            };
-            
-            // Simular ID do jogador
-            playerId = fallbackServer.generateId();
-            fallbackServer.onConnect(playerId);
-            socket.onevent({
-                data: ['playerId', playerId]
-            });
-            
-            // Mensagem de conexão com servidor de fallback
-            showServerMessage('Usando servidor de jogo local');
-        } catch (error) {
-            console.error('Erro ao inicializar o jogo:', error);
-            showServerMessage('Erro ao conectar ao servidor. Usando modo offline.');
-            
-            // Iniciar somente o servidor de fallback
-            fallbackServer = new FallbackServer();
-            
-            // Criar socket simulado
-            socket = {
-                emit: function(event, data) {
-                    if (event === 'joinGame') {
-                        fallbackServer.onJoinGame(playerId, data);
-                    } else if (event === 'playerMovement') {
-                        fallbackServer.onPlayerMovement(playerId, data);
-                    } else if (event === 'ping') {
-                        setTimeout(() => {
-                            this.onevent({
-                                data: ['pong']
-                            });
-                        }, 100);
-                    }
-                },
-                onevent: function(e) {
-                    const eventName = e.data[0];
-                    const eventData = e.data[1];
-                    
-                    if (this.callbacks && this.callbacks[eventName]) {
-                        this.callbacks[eventName](eventData);
-                    }
-                },
-                on: function(event, callback) {
-                    if (!this.callbacks) {
-                        this.callbacks = {};
-                    }
-                    this.callbacks[event] = callback;
-                },
-                connected: true
-            };
-            
-            // Simular ID do jogador
-            playerId = fallbackServer.generateId();
-            fallbackServer.onConnect(playerId);
-            socket.onevent({
-                data: ['playerId', playerId]
-            });
-            
-            pingServer();
+            } catch (e) {
+                return 'Detecção bloqueada pelo seu navegador';
+            }
+            return 'Detecção bloqueada pelo seu navegador';
         }
+
+        createInfoItem('system-info', 'Placa de Vídeo', obterNomeGPU());
     </script>
 </body>
 </html>
