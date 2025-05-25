@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radio Stream Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#16213e">
+    <!-- Add meta tags for iOS PWA support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RadioPro">
+    <!-- Link to a placeholder apple-touch-icon, actual icon would be needed -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <style>
         * {
             margin: 0;
@@ -46,7 +54,7 @@
 
         .subtitle {
             font-size: 1.2rem;
-            opacity: 0.8;
+            opacity: 0.85; /* Increased opacity */
             font-weight: 300;
         }
 
@@ -76,10 +84,11 @@
             outline: none;
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.02);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.5); /* Added focus indicator */
         }
 
         .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.7); /* Increased opacity */
         }
 
         .genre-filter {
@@ -172,7 +181,7 @@
         }
 
         .station-info {
-            opacity: 0.8;
+            opacity: 0.85; /* Increased opacity */
             font-size: 1rem;
         }
 
@@ -202,6 +211,12 @@
         .control-btn:hover {
             transform: scale(1.1);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-btn:focus-visible { /* Using focus-visible for better accessibility */
+            outline: 2px solid #4ecdc4;
+            outline-offset: 2px;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
         }
 
         .play-btn {
@@ -260,6 +275,12 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
+        .genre-card:focus-visible { /* Using focus-visible */
+            outline: 2px solid #4ecdc4;
+            outline-offset: 2px;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
         .genre-icon {
             font-size: 2.5rem;
             margin-bottom: 10px;
@@ -287,6 +308,12 @@
             transform: translateY(-3px);
             background: rgba(255, 255, 255, 0.2);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .station-card:focus-visible { /* Using focus-visible */
+            outline: 2px solid #4ecdc4;
+            outline-offset: 2px;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
         }
 
         .station-card::before {
@@ -330,7 +357,7 @@
 
         .station-meta {
             font-size: 0.9rem;
-            opacity: 0.7;
+            opacity: 0.8; /* Increased opacity */
         }
 
         .station-quality {
@@ -376,6 +403,17 @@
             margin: 20px 0;
             text-align: center;
             backdrop-filter: blur(10px);
+            color: #ffffff; /* Ensure error message text is white */
+        }
+
+        .empty-message { /* New class for non-error empty states */
+            padding: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.75);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 20px 0;
         }
 
         .status-indicator {
@@ -402,49 +440,150 @@
 
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 10px; /* Reduced padding */
+            }
+
+            .header {
+                padding: 20px; /* Reduced padding for header */
+                margin-bottom: 20px; /* Adjusted margin */
             }
 
             .logo {
-                font-size: 2rem;
+                font-size: 1.8rem; /* Slightly reduced font size */
+            }
+            
+            .subtitle {
+                font-size: 1rem; /* Adjusted for better legibility */
             }
 
             .search-container {
                 flex-direction: column;
+                gap: 10px; /* Adjusted gap */
+                margin-bottom: 20px; /* Adjusted margin */
             }
 
             .search-input {
                 min-width: 100%;
+                padding: 12px 18px; /* Adjusted padding */
+                font-size: 15px; /* Adjusted font size */
+            }
+
+            .genre-filter {
+                padding: 12px 25px; /* Adjusted padding */
+                padding-right: 40px; /* Keep space for arrow */
+                font-size: 15px; /* Adjusted font size */
+                min-width: 100%; /* Make full width */
+            }
+            
+            .player-section {
+                padding: 20px; /* Reduced padding */
+                margin-bottom: 20px; /* Adjusted margin */
+            }
+
+            .station-avatar {
+                width: 100px; /* Slightly smaller avatar */
+                height: 100px;
+                font-size: 2.5rem; /* Adjusted icon size */
+                margin-bottom: 15px;
+            }
+
+            .station-name {
+                font-size: 1.5rem; /* Reduced font size */
+                margin-bottom: 5px;
+            }
+
+            .station-info {
+                font-size: 0.9rem; /* Adjusted for legibility */
             }
 
             .player-controls {
-                gap: 15px;
+                gap: 15px; /* Existing, seems okay */
+                margin-bottom: 20px; /* Added margin */
             }
 
             .control-btn {
                 width: 50px;
                 height: 50px;
-                font-size: 1.2rem;
+                font-size: 1.2rem; /* Existing, seems okay */
             }
 
             .play-btn {
                 width: 70px;
                 height: 70px;
-                font-size: 1.8rem;
+                font-size: 1.8rem; /* Existing, seems okay */
             }
 
             .volume-container {
                 flex-direction: column;
-                gap: 10px;
+                gap: 10px; /* Existing, seems okay */
+            }
+            .volume-slider {
+                width: 100%; /* Make volume slider take more width */
             }
 
             .genres-section {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller minmax */
+                gap: 10px; /* Reduced gap */
+                margin-bottom: 20px; /* Adjusted margin */
+            }
+            
+            .genre-card {
+                padding: 15px; /* Adjusted padding */
+            }
+
+            .genre-icon {
+                font-size: 2rem; /* Reduced icon size */
+                margin-bottom: 8px; /* Adjusted margin */
+            }
+            
+            .genre-card h3 {
+                font-size: 0.9rem; /* Adjust genre card title */
             }
 
             .stations-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Already set for single column */
+                gap: 10px; /* Reduced gap */
+            }
+
+            .station-card {
+                padding: 15px; /* Adjusted padding */
+            }
+
+            .station-header {
+                gap: 10px; /* Reduced gap */
+                margin-bottom: 10px; /* Adjusted margin */
+                flex-direction: row; /* Ensure horizontal layout */
+            }
+            
+            .station-logo {
+                width: 40px; /* Smaller logo */
+                height: 40px;
+            }
+
+            .station-details h3 {
+                font-size: 1.1rem; /* Adjusted font size */
+            }
+
+            .station-meta {
+                font-size: 0.85rem; /* Adjusted font size */
+            }
+            
+            .station-quality {
+                top: 10px; /* Adjusted position */
+                right: 10px; /* Adjusted position */
+                padding: 4px 8px; /* Adjusted padding */
+                font-size: 0.75rem; /* Adjusted font size */
+            }
+            
+            .favorite-btn {
+                top: 10px; /* Adjusted position */
+                left: 10px; /* Moved to the left */
+                right: auto; /* Ensure right is not applied */
+                font-size: 1.3rem; /* Adjusted size for tappability */
+            }
+            
+            .section-title {
+                font-size: 1.3rem; /* Adjust section titles */
             }
         }
 
@@ -483,9 +622,47 @@
             transform: scale(1.2);
         }
 
+        .favorite-btn:focus-visible { /* Using focus-visible */
+            outline: 2px solid #ff6b6b;
+            outline-offset: 1px;
+        }
+
         #genreFilter option, #countryFilter option {
             color: #333;
             background-color: #fff; /* Garante que o fundo da lista de opções seja branco */
+        }
+
+        /* Animations for Player Updates */
+        .player-content-fade-out {
+            opacity: 0 !important;
+            transform: translateY(-10px) !important;
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out !important;
+        }
+
+        .player-content-fade-in {
+            opacity: 0 !important;
+            transform: translateY(10px) !important;
+        }
+        
+        .player-content-fade-in.active {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            transition: opacity 0.15s ease-in, transform 0.15s ease-in !important;
+        }
+
+        /* Animation for Station Card Appearance */
+        @keyframes fadeInCard {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .station-card-animated {
+            animation: fadeInCard 0.4s ease-out forwards;
         }
     </style>
 </head>
@@ -585,6 +762,7 @@
                 this.loadCountries();
                 this.loadStations(); // Initial load without country filter
                 this.loadFavorites();
+                this.setupMediaSessionHandlers(); // Call to setup media session handlers
             }
 
             initializeElements() {
@@ -627,8 +805,32 @@
                     if (this.currentAvatar) {
                         this.currentAvatar.classList.remove('spinning-avatar');
                     }
+                    if ('mediaSession' in navigator) {
+                        navigator.mediaSession.playbackState = "none";
+                    }
                     this.nextStation();
                 });
+            }
+
+            setupMediaSessionHandlers() {
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.setActionHandler('play', () => {
+                        if (!this.isPlaying) {
+                            this.togglePlay(); // Or directly call playStation if currentStation is set
+                        }
+                    });
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                        if (this.isPlaying) {
+                            this.togglePlay();
+                        }
+                    });
+                    navigator.mediaSession.setActionHandler('previoustrack', () => {
+                        this.previousStation();
+                    });
+                    navigator.mediaSession.setActionHandler('nexttrack', () => {
+                        this.nextStation();
+                    });
+                }
             }
 
             async loadGenres() {
@@ -694,6 +896,7 @@
                     this.filteredStations = [...this.stations];
                     this.renderStations();
                 } catch (error) {
+            // For loadStations error, using .error-message is appropriate
                     this.showError('Erro ao carregar estações. Tentando novamente...');
                     setTimeout(() => this.loadStations(genre, search, countryCode), 3000); 
                 }
@@ -709,12 +912,13 @@
 
             renderStations() {
                 if (this.filteredStations.length === 0) {
-                    this.stationsGrid.innerHTML = '<div class="error-message">Nenhuma estação encontrada</div>';
+            // Using .empty-message for "no stations found" as it's not a fetch error
+            this.stationsGrid.innerHTML = '<div class="empty-message">Nenhuma estação encontrada. Tente um termo de busca ou gênero diferente.</div>';
                     return;
                 }
 
                 this.stationsGrid.innerHTML = this.filteredStations.map((station, index) => `
-                    <div class="station-card" onclick="radioPlayer.selectStation(${index})">
+                    <div class="station-card station-card-animated" style="animation-delay: ${index * 0.05}s" onclick="radioPlayer.selectStation(${index})">
                         <div class="station-quality">${station.bitrate || 'N/A'} kbps</div>
                         <button class="favorite-btn ${this.favorites.find(f => f.stationuuid === station.stationuuid) ? 'active' : ''}" 
                                 onclick="event.stopPropagation(); radioPlayer.toggleFavorite('${station.stationuuid}')">
@@ -748,12 +952,36 @@
 
             updateCurrentStationInfo() {
                 if (!this.currentStation) return;
-                
-                this.currentStationName.textContent = this.currentStation.name;
-                this.currentStationInfo.textContent = `${this.currentStation.country || 'Internacional'} • ${this.currentStation.tags || 'Geral'}`;
-                this.currentAvatar.innerHTML = this.currentStation.favicon 
-                    ? `<img src="${this.currentStation.favicon}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
-                    : this.currentStation.name.charAt(0);
+
+                const elementsToAnimate = [this.currentAvatar, this.currentStationName, this.currentStationInfo];
+
+                elementsToAnimate.forEach(el => el.classList.add('player-content-fade-out'));
+
+                setTimeout(() => {
+                    this.currentStationName.textContent = this.currentStation.name;
+                    this.currentStationInfo.textContent = `${this.currentStation.country || 'Internacional'} • ${this.currentStation.tags || 'Geral'}`;
+                    this.currentAvatar.innerHTML = this.currentStation.favicon 
+                        ? `<img src="${this.currentStation.favicon}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+                        : this.currentStation.name.charAt(0);
+                    
+                    elementsToAnimate.forEach(el => {
+                        el.classList.remove('player-content-fade-out');
+                        el.classList.add('player-content-fade-in');
+                    });
+
+                    // Force reflow/repaint before adding 'active' for fade-in
+                    requestAnimationFrame(() => {
+                        elementsToAnimate.forEach(el => el.classList.add('active'));
+                    });
+                    
+                    setTimeout(() => {
+                        elementsToAnimate.forEach(el => {
+                            el.classList.remove('player-content-fade-in');
+                            el.classList.remove('active');
+                        });
+                    }, 150); // Duration of fade-in animation
+
+                }, 150); // Duration of fade-out animation
             }
 
             async playStation() {
@@ -768,6 +996,24 @@
                     }
                     this.updatePlayButton('playing');
                     this.renderStations();
+
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: this.currentStation.name,
+                        artist: this.currentStation.tags ? this.currentStation.tags.split(',')[0].trim() : 'Radio Stream Pro',
+                        album: this.currentStation.country || 'Live Radio',
+                        artwork: [
+                            { src: this.currentStation.favicon || 'icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+                            { src: this.currentStation.favicon || 'icons/icon-128x128.png', sizes: '128x128', type: 'image/png' },
+                            { src: this.currentStation.favicon || 'icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+                            { src: this.currentStation.favicon || 'icons/icon-256x256.png', sizes: '256x256', type: 'image/png' },
+                            { src: this.currentStation.favicon || 'icons/icon-384x384.png', sizes: '384x384', type: 'image/png' },
+                            { src: this.currentStation.favicon || 'icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+                        ]
+                    });
+                    navigator.mediaSession.playbackState = "playing";
+                }
+
                 } catch (error) {
                     this.handleAudioError();
                 }
@@ -776,7 +1022,7 @@
             togglePlay() {
                 if (!this.currentStation) {
                     if (this.filteredStations.length > 0) {
-                        this.selectStation(0);
+                    this.selectStation(0); // This will call playStation which handles mediaSession
                     }
                     return;
                 }
@@ -788,8 +1034,11 @@
                         this.currentAvatar.classList.remove('spinning-avatar');
                     }
                     this.updatePlayButton('paused');
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.playbackState = "paused";
+                }
                 } else {
-                    this.playStation();
+                this.playStation(); // playStation will set metadata and playing state
                 }
             }
 
@@ -832,6 +1081,9 @@
                     this.currentAvatar.classList.remove('spinning-avatar');
                 }
                 this.showError('Erro ao reproduzir estação. Tentando próxima...');
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = "none";
+            }
                 setTimeout(() => this.nextStation(), 2000);
             }
 
@@ -870,12 +1122,13 @@
 
             loadFavorites() {
                 if (this.favorites.length === 0) {
-                    this.favoritesGrid.innerHTML = '<p style="text-align: center; opacity: 0.7;">Nenhuma estação favorita ainda</p>';
+            // Using new .empty-message class for consistency
+            this.favoritesGrid.innerHTML = '<div class="empty-message">Nenhuma estação favorita ainda. Clique no ícone de coração 🤍 em uma estação para adicioná-la.</div>';
                     return;
                 }
 
                 this.favoritesGrid.innerHTML = this.favorites.map((station, index) => `
-                    <div class="station-card" onclick="radioPlayer.playFavorite(${index})">
+                    <div class="station-card station-card-animated" style="animation-delay: ${index * 0.05}s" onclick="radioPlayer.playFavorite(${index})">
                         <div class="station-quality">${station.bitrate || 'N/A'} kbps</div>
                         <button class="favorite-btn active" onclick="event.stopPropagation(); radioPlayer.toggleFavorite('${station.stationuuid}')">❤️</button>
                         <div class="station-header">
@@ -902,6 +1155,19 @@
         }
 
         const radioPlayer = new RadioPlayer();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(error => {
+              console.log('ServiceWorker registration failed: ', error);
+            });
+        });
+      }
     </script>
 </body>
 </html>
