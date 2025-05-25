@@ -83,21 +83,37 @@
         }
 
         .genre-filter {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 25px;
+            padding: 15px 30px; /* Aumentado o padding */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Adicionada uma borda sutil */
+            border-radius: 30px; /* Aumentado o border-radius */
             background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
             color: white;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px; /* Levemente aumentado */
             font-weight: 500;
             transition: all 0.3s ease;
-            min-width: 120px;
+            min-width: 150px; /* Aumentado o min-width */
+            appearance: none; /* Remove a aparência padrão do sistema */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            /* Adicionar espaço para a seta personalizada */
+            padding-right: 45px; /* Espaço para a seta */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5H7z'/%3e%3c/svg%3e"); /* Seta SVG branca */
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
         }
 
         .genre-filter:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5); /* Sombra mais pronunciada */
+            border-color: rgba(255, 255, 255, 0.4); /* Borda mais clara no hover */
+        }
+
+        .genre-filter:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6); /* Borda destacada no foco */
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3); /* Glow effect no foco */
         }
 
         .player-section {
@@ -126,13 +142,29 @@
             justify-content: center;
             font-size: 3rem;
             border: 4px solid rgba(255, 255, 255, 0.3);
-            animation: pulse 2s infinite;
+            /* animation: pulse 2s infinite; */ /* Existing pulse animation - Comentado */
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+
+        /* Animação de Rotação */
+        @keyframes spin-vinyl {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinning-avatar {
+            animation: spin-vinyl 2s linear infinite;
+        }
+        
+        #currentAvatar img { 
+            /* Assegura que a imagem em si não quebre o 'border-radius' do pai durante a rotação. */
+            /* Esta regra já existe e deve ser suficiente: style="width:100%;height:100%;border-radius:50%;object-fit:cover;" */
+        }
+
 
         .station-name {
             font-size: 1.8rem;
@@ -451,6 +483,11 @@
             color: #ff6b6b;
             transform: scale(1.2);
         }
+
+        #genreFilter option, #countryFilter option {
+            color: #333;
+            background-color: #fff; /* Garante que o fundo da lista de opções seja branco */
+        }
     </style>
 </head>
 <body>
@@ -464,6 +501,9 @@
             <input type="text" class="search-input" placeholder="Buscar estações..." id="searchInput">
             <select class="genre-filter" id="genreFilter">
                 <option value="">Todos os Gêneros</option>
+            </select>
+            <select class="genre-filter" id="countryFilter">
+                <option value="">Todos os Países</option>
             </select>
         </div>
 
@@ -543,7 +583,8 @@
                 this.initializeElements();
                 this.bindEvents();
                 this.loadGenres();
-                this.loadStations();
+                this.loadCountries();
+                this.loadStations(); // Initial load without country filter
                 this.loadFavorites();
             }
 
@@ -555,6 +596,7 @@
                 this.volumeValue = document.getElementById('volumeValue');
                 this.searchInput = document.getElementById('searchInput');
                 this.genreFilter = document.getElementById('genreFilter');
+                this.countryFilter = document.getElementById('countryFilter');
                 this.stationsGrid = document.getElementById('stationsGrid');
                 this.favoritesGrid = document.getElementById('favoritesGrid');
                 this.currentStationName = document.getElementById('currentStationName');
@@ -569,30 +611,37 @@
                 this.volumeSlider.addEventListener('input', (e) => this.setVolume(e.target.value));
                 this.searchInput.addEventListener('input', (e) => this.filterStations(e.target.value));
                 this.genreFilter.addEventListener('change', (e) => this.filterByGenre(e.target.value));
+                this.countryFilter.addEventListener('change', (e) => this.filterByCountry(e.target.value));
 
                 document.querySelectorAll('.genre-card').forEach(card => {
                     card.addEventListener('click', () => {
                         const genre = card.dataset.genre;
-                        this.genreFilter.value = genre;
-                        this.filterByGenre(genre);
+                        this.genreFilter.value = genre; 
+                        this.filterByGenre(genre); 
                     });
                 });
 
                 this.audio.addEventListener('loadstart', () => this.updatePlayButton('loading'));
                 this.audio.addEventListener('canplay', () => this.updatePlayButton('ready'));
                 this.audio.addEventListener('error', () => this.handleAudioError());
-                this.audio.addEventListener('ended', () => this.nextStation());
+                this.audio.addEventListener('ended', () => {
+                    if (this.currentAvatar) {
+                        this.currentAvatar.classList.remove('spinning-avatar');
+                    }
+                    this.nextStation();
+                });
             }
 
             async loadGenres() {
                 try {
-                    const response = await fetch(`${this.apiUrl}/tags?limit=50`);
+                    const response = await fetch(`${this.apiUrl}/tags?limit=50&hidebroken=true&order=stationcount&reverse=true`);
                     const genres = await response.json();
                     
                     genres.forEach(genre => {
                         const option = document.createElement('option');
                         option.value = genre.name.toLowerCase();
-                        option.textContent = genre.name;
+                        // Adiciona a contagem de estações ao texto da opção
+                        option.textContent = `${genre.name} (${genre.stationcount || 0})`; 
                         this.genreFilter.appendChild(option);
                     });
                 } catch (error) {
@@ -600,13 +649,46 @@
                 }
             }
 
-            async loadStations(genre = '', search = '') {
+            async loadCountries() {
+                try {
+                    const response = await fetch('https://de1.api.radio-browser.info/json/countries?limit=500&hidebroken=true&order=stationcount&reverse=true');
+                    let countries = await response.json();
+                    
+                    countries.sort((a, b) => a.name.localeCompare(b.name)); // Keep sorting by name after fetching
+
+                    if (this.countryFilter) {
+                        countries.forEach(country => {
+                            if (country.name && country.name.trim() !== "" && country.iso_3166_1 && country.iso_3166_1.trim() !== "") {
+                                const option = document.createElement('option');
+                                option.value = country.iso_3166_1;
+                                // Adiciona a contagem de estações ao texto da opção
+                                option.textContent = `${country.name} (${country.stationcount || 0})`; 
+                                this.countryFilter.appendChild(option);
+                            }
+                        });
+                    } else {
+                        console.error('countryFilter element not found when trying to load countries.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar países:', error);
+                    if (this.countryFilter) {
+                        const option = document.createElement('option');
+                        option.value = "";
+                        option.textContent = 'Erro ao carregar países';
+                        option.disabled = true;
+                        this.countryFilter.appendChild(option);
+                    }
+                }
+            }
+
+            async loadStations(genre = '', search = '', countryCode = '') { 
                 try {
                     this.showLoading();
                     let url = `${this.apiUrl}/stations/search?limit=100&hidebroken=true&order=clickcount&reverse=true`;
                     
                     if (genre) url += `&tag=${genre}`;
                     if (search) url += `&name=${search}`;
+                    if (countryCode) url += `&countrycode=${countryCode}`; 
                     
                     const response = await fetch(url);
                     this.stations = await response.json();
@@ -614,7 +696,7 @@
                     this.renderStations();
                 } catch (error) {
                     this.showError('Erro ao carregar estações. Tentando novamente...');
-                    setTimeout(() => this.loadStations(genre, search), 3000);
+                    setTimeout(() => this.loadStations(genre, search, countryCode), 3000); 
                 }
             }
 
@@ -656,6 +738,9 @@
             }
 
             selectStation(index) {
+                if (this.currentAvatar) { 
+                    this.currentAvatar.classList.remove('spinning-avatar');
+                }
                 this.currentIndex = index;
                 this.currentStation = this.filteredStations[index];
                 this.updateCurrentStationInfo();
@@ -679,6 +764,9 @@
                     this.audio.src = this.currentStation.url_resolved || this.currentStation.url;
                     await this.audio.play();
                     this.isPlaying = true;
+                    if (this.currentAvatar) {
+                        this.currentAvatar.classList.add('spinning-avatar');
+                    }
                     this.updatePlayButton('playing');
                     this.renderStations();
                 } catch (error) {
@@ -697,6 +785,9 @@
                 if (this.isPlaying) {
                     this.audio.pause();
                     this.isPlaying = false;
+                    if (this.currentAvatar) {
+                        this.currentAvatar.classList.remove('spinning-avatar');
+                    }
                     this.updatePlayButton('paused');
                 } else {
                     this.playStation();
@@ -738,26 +829,27 @@
             }
 
             handleAudioError() {
+                if (this.currentAvatar) {
+                    this.currentAvatar.classList.remove('spinning-avatar');
+                }
                 this.showError('Erro ao reproduzir estação. Tentando próxima...');
                 setTimeout(() => this.nextStation(), 2000);
             }
 
-            filterStations(searchTerm) {
-                const filtered = this.stations.filter(station =>
-                    station.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    (station.tags && station.tags.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                    (station.country && station.country.toLowerCase().includes(searchTerm.toLowerCase()))
-                );
-                this.filteredStations = filtered;
-                this.renderStations();
+            filterStations(searchTerm) { 
+                this.loadStations(this.genreFilter.value, searchTerm, this.countryFilter.value);
             }
 
-            filterByGenre(genre) {
+            filterByGenre(genre) { 
                 if (genre) {
-                    this.loadStations(genre, this.searchInput.value);
+                    this.loadStations(genre, this.searchInput.value, this.countryFilter.value);
                 } else {
-                    this.loadStations('', this.searchInput.value);
+                    this.loadStations('', this.searchInput.value, this.countryFilter.value);
                 }
+            }
+
+            filterByCountry(countryCode) { 
+                this.loadStations(this.genreFilter.value, this.searchInput.value, countryCode);
             }
 
             toggleFavorite(stationUuid) {
