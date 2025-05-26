@@ -607,7 +607,7 @@
         .favorite-btn {
             position: absolute;
             top: 15px;
-            right: 50px;
+    left: 15px; /* Changed from right: 50px */
             background: none;
             border: none;
             color: rgba(255, 255, 255, 0.6);
@@ -922,7 +922,7 @@
                         <div class="station-quality">${station.bitrate || 'N/A'} kbps</div>
                         <button class="favorite-btn ${this.favorites.find(f => f.stationuuid === station.stationuuid) ? 'active' : ''}" 
                                 onclick="event.stopPropagation(); radioPlayer.toggleFavorite('${station.stationuuid}')">
-                            ${this.favorites.find(f => f.stationuuid === station.stationuuid) ? '❤️' : '🤍'}
+                            ${this.favorites.find(f => f.stationuuid === station.stationuuid) ? '⭐' : '☆'}
                         </button>
                         <div class="station-header">
                             <div class="station-logo">
@@ -1130,7 +1130,7 @@
                 this.favoritesGrid.innerHTML = this.favorites.map((station, index) => `
                     <div class="station-card station-card-animated" style="animation-delay: ${index * 0.05}s" onclick="radioPlayer.playFavorite(${index})">
                         <div class="station-quality">${station.bitrate || 'N/A'} kbps</div>
-                        <button class="favorite-btn active" onclick="event.stopPropagation(); radioPlayer.toggleFavorite('${station.stationuuid}')">❤️</button>
+                        <button class="favorite-btn active" onclick="event.stopPropagation(); radioPlayer.toggleFavorite('${station.stationuuid}')">⭐</button>
                         <div class="station-header">
                             <div class="station-logo">
                                 ${station.favicon ? `<img src="${station.favicon}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : station.name.charAt(0)}
