@@ -3,16 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Stream Pro</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#16213e">
-    <!-- Add meta tags for iOS PWA support -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="RadioPro">
-    <!-- Link to a placeholder apple-touch-icon, actual icon would be needed -->
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <title>Gerador de Mapas Mentais Tradicionais com IA</title>
     <style>
+        :root {
+            --primary-color: #5b86e5;
+            --secondary-color: #36d1dc;
+            --light-bg: #fdfdff;
+            --text-color: #333;
+            --node-text-color: white;
+            --border-radius: 10px;
+            --shadow: 0 6px 20px rgba(0,0,0,0.1);
+
+            /* Cores para o tema claro (padrão) */
+            --body-bg: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --container-header-text-color: white;
+            --input-section-bg: white;
+            --input-label-color: #555;
+            --textarea-border-color: #e0e0e0;
+            --textarea-focus-border-color: var(--primary-color);
+            --textarea-focus-shadow-color: rgba(91, 134, 229, 0.25);
+            --btn-secondary-bg: #f5f5f5;
+            --btn-secondary-text-color: var(--text-color);
+            --btn-secondary-border-color: #ddd;
+            --btn-secondary-hover-bg: #e8e8e8;
+            --btn-secondary-hover-border-color: #ccc;
+            --loading-text-color: white;
+            --mindmap-container-bg: var(--light-bg);
+            --mindmap-svg-bg: #ffffff;
+            --control-btn-bg: rgba(0,0,0,0.7);
+            --control-btn-hover-bg: rgba(0,0,0,0.85);
+            --debug-info-bg: rgba(40,40,40,0.8);
+            --debug-info-text-color: #f0f0f0;
+            --error-message-bg: #fff0f0;
+            --error-message-text-color: #d32f2f;
+            --error-message-border-color: #ffcdd2;
+            --link-path-stroke-default: #777; /* Cor base para links no tema claro */
+        }
+
+        .dark-theme {
+            --primary-color: #7A86B6; /* Roxo acinzentado */
+            --secondary-color: #4A5568; /* Cinza azulado escuro */
+            --light-bg: #2d3748;    /* Cinza muito escuro para fundos principais */
+            --text-color: #e2e8f0;   /* Cinza claro para texto geral */
+            --node-text-color: #f7fafc; /* Branco quase puro para texto do nó */
+            
+            --body-bg: linear-gradient(135deg, #2c3e50 0%, #1f2937 100%);
+            --container-header-text-color: #e2e8f0;
+            --input-section-bg: #2d3748; /* Cinza escuro para seções de input */
+            --input-label-color: #a0aec0; /* Cinza médio para labels */
+            --textarea-border-color: #4a5568; /* Cinza mais escuro para bordas */
+            --textarea-focus-border-color: var(--primary-color);
+            --textarea-focus-shadow-color: rgba(122, 134, 182, 0.3);
+            --btn-secondary-bg: #4a5568;
+            --btn-secondary-text-color: #e2e8f0;
+            --btn-secondary-border-color: #718096;
+            --btn-secondary-hover-bg: #2d3748;
+            --btn-secondary-hover-border-color: #a0aec0;
+            --loading-text-color: #e2e8f0;
+            --mindmap-container-bg: #1a202c; /* Fundo bem escuro para o container do mapa */
+            --mindmap-svg-bg: #283141; /* Fundo escuro para o SVG */
+            --control-btn-bg: rgba(255,255,255,0.15);
+            --control-btn-hover-bg: rgba(255,255,255,0.25);
+            --debug-info-bg: rgba(20,20,20,0.85);
+            --debug-info-text-color: #cbd5e0;
+            --error-message-bg: #4a2426; /* Vermelho escuro para fundo de erro */
+            --error-message-text-color: #feb2b2; /* Vermelho claro para texto de erro */
+            --error-message-border-color: #c53030; /* Vermelho para borda de erro */
+            --link-path-stroke-default: #9eadbf; /* Cor base para links no tema escuro */
+        }
+
+
         * {
             margin: 0;
             padding: 0;
@@ -20,1157 +80,1051 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%); /* New Primary Background Gradient */
-            color: #E0E1DD; /* New Primary Text Color */
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--body-bg);
             min-height: 100vh;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
             overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px; 
+            width: 95%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            background: rgba(61, 90, 128, 0.25); /* New Secondary Background */
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(224, 225, 221, 0.2); /* New Subtle Border */
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #4FC3F7, #FF7F50, #F038FF); /* New Logo Gradient */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.85; /* Increased opacity */
-            font-weight: 300;
-        }
-
-        .search-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .search-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 50px;
-            background: rgba(61, 90, 128, 0.3); /* New Secondary Background (slightly more opaque) */
-            color: #E0E1DD; /* New Primary Text Color */
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(224, 225, 221, 0.2); /* New Subtle Border */
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            background: rgba(61, 90, 128, 0.5); /* Darker shade for focus */
-            transform: scale(1.02);
-            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.5); /* AccentColor1 for focus indicator */
-        }
-
-        .search-input::placeholder {
-            color: rgba(224, 225, 221, 0.6); /* New Placeholder Color */
-        }
-
-        .genre-filter {
-            padding: 15px 30px; /* Aumentado o padding */
-            border: 1px solid rgba(224, 225, 221, 0.2); /* New Subtle Border */
-            border-radius: 30px; /* Aumentado o border-radius */
-            background: #4FC3F7; /* AccentColor1 */
-            color: #0D1B2A; /* Dark text on light button */
-            cursor: pointer;
-            font-size: 15px; /* Levemente aumentado */
-            font-weight: 500;
-            transition: all 0.3s ease;
-            min-width: 150px; /* Aumentado o min-width */
-            appearance: none; /* Remove a aparência padrão do sistema */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            /* Adicionar espaço para a seta personalizada */
-            padding-right: 45px; /* Espaço para a seta */
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230D1B2A'%3e%3cpath d='M7 10l5 5 5-5H7z'/%3e%3c/svg%3e"); /* SVG arrow with new dark text color */
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 20px;
-        }
-
-        .genre-filter:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(79, 195, 247, 0.4); /* AccentColor1 shadow */
-            border-color: rgba(224, 225, 221, 0.4); /* Lighter subtle border on hover */
-        }
-
-        .genre-filter:focus {
-            outline: none;
-            border-color: rgba(224, 225, 221, 0.6); /* Stronger subtle border on focus */
-            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.3); /* AccentColor1 glow */
-        }
-
-        .player-section {
-            background: rgba(61, 90, 128, 0.25); /* New Secondary Background */
-            backdrop-filter: blur(15px);
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(224, 225, 221, 0.2); /* New Subtle Border */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); /* Adjusted shadow for new theme */
-        }
-
-        .current-station {
-            text-align: center;
             margin-bottom: 25px;
+            color: var(--container-header-text-color);
         }
 
-        .station-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            background: linear-gradient(45deg, #4FC3F7, #FF7F50); /* Accent1 to Accent2 gradient */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            border: 4px solid rgba(224, 225, 221, 0.3); /* New Subtle Border (slightly more opaque) */
-            /* REMOVIDO: animation: pulse 2s infinite; */
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        /* Animação de Rotação */
-        @keyframes spin-vinyl {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .spinning-avatar {
-            animation: spin-vinyl 2s linear infinite; /* APENAS A ANIMAÇÃO DE ROTAÇÃO */
+        .header h1 {
+            font-size: 2.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
         }
         
-        #currentAvatar img { 
-            /* Assegura que a imagem em si não quebre o 'border-radius' do pai durante a rotação. */
-            /* Esta regra já existe e deve ser suficiente: style="width:100%;height:100%;border-radius:50%;object-fit:cover;" */
-        }
-
-        .station-name {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .station-info {
-            opacity: 0.85; /* Increased opacity */
+        .header p {
             font-size: 1rem;
+            opacity: 0.95;
         }
 
-        .player-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
+        .input-section {
+            background: var(--input-section-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
             margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s ease;
         }
 
-        .control-btn {
-            background: #4FC3F7; /* AccentColor1 */
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            color: #0D1B2A; /* Dark text for contrast */
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .input-group {
+            margin-bottom: 20px;
         }
 
-        .control-btn:hover {
-            transform: scale(1.1);
-            background: #29B6F6; /* Slightly darker AccentColor1 */
-            box-shadow: 0 8px 25px rgba(79, 195, 247, 0.3); /* AccentColor1 shadow */
-        }
-
-        .control-btn:focus-visible { /* Using focus-visible for better accessibility */
-            outline: 2px solid #4FC3F7; /* AccentColor1 */
-            outline-offset: 2px;
-            box-shadow: 0 0 15px rgba(79, 195, 247, 0.4); /* AccentColor1 shadow */
-        }
-
-        .play-btn {
-            width: 80px;
-            height: 80px;
-            font-size: 2rem;
-            background: #FF7F50; /* AccentColor2 */
-            color: #FFFFFF; /* White text on coral */
-        }
-
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .volume-slider {
-            width: 150px;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(224, 225, 221, 0.3); /* Subtle Border color, slightly more opaque */
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4FC3F7; /* AccentColor1 */
-            cursor: pointer;
-        }
-
-        .genres-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .genre-card {
-            background: rgba(61, 90, 128, 0.25); /* New Secondary Background */
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(224, 225, 221, 0.2); /* New Subtle Border */
-        }
-
-        .genre-card:hover {
-            transform: translateY(-5px);
-            background: rgba(61, 90, 128, 0.4); /* Darker Secondary Background on hover */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
-        }
-
-        .genre-card:focus-visible { /* Using focus-visible */
-            outline: 2px solid #4FC3F7; /* AccentColor1 */
-            outline-offset: 2px;
-            box-shadow: 0 0 15px rgba(79, 195, 247, 0.4); /* AccentColor1 shadow */
-        }
-
-        .genre-icon {
-            font-size: 2.5rem;
+        label {
+            display: block;
+            font-weight: 500;
             margin-bottom: 10px;
+            color: var(--input-label-color);
+            transition: color 0.3s ease;
         }
 
-        .stations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .station-card {
-            background: rgba(61, 90, 128, 0.25); /* New Secondary Background */
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(224, 225, 221, 0.2); /* New Subtle Border */
-            position: relative;
-            overflow: hidden;
-        }
-
-        .station-card:hover {
-            transform: translateY(-3px);
-            background: rgba(61, 90, 128, 0.4); /* Darker Secondary Background on hover */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
-        }
-
-        .station-card:focus-visible { /* Using focus-visible */
-            outline: 2px solid #4FC3F7; /* AccentColor1 */
-            outline-offset: 2px;
-            box-shadow: 0 0 15px rgba(79, 195, 247, 0.4); /* AccentColor1 shadow */
-        }
-
-        .station-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        textarea {
             width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #4FC3F7, transparent); /* AccentColor1 gradient */
-            transition: left 0.5s;
+            padding: 14px;
+            border: 1px solid var(--textarea-border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            resize: vertical;
+            min-height: 120px; 
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            background-color: var(--input-section-bg); 
+            color: var(--text-color); 
         }
 
-        .station-card:hover::before {
-            left: 100%;
+        textarea:focus {
+            outline: none;
+            border-color: var(--textarea-focus-border-color);
+            box-shadow: 0 0 0 2.5px var(--textarea-focus-shadow-color);
         }
 
-        .station-header {
+        .button-group {
             display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .station-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #4FC3F7, #FF7F50); /* Accent1 to Accent2 gradient */
-            display: flex;
-            align-items: center;
+            gap: 12px;
             justify-content: center;
-            font-weight: bold;
-            color: #FFFFFF; /* White text for contrast */
+            flex-wrap: wrap;
         }
 
-        .station-details h3 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
+        button {
+            padding: 11px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.3px;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .station-meta {
-            font-size: 0.9rem;
-            opacity: 0.8; /* Increased opacity */
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white; 
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
         }
 
-        .station-quality {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #4FC3F7; /* AccentColor1 */
-            color: #0D1B2A; /* Dark text for contrast */
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 18px rgba(91, 134, 229, 0.35);
         }
+
+        .btn-secondary {
+            background: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text-color);
+            border: 1px solid var(--btn-secondary-border-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--btn-secondary-hover-bg);
+            border-color: var(--btn-secondary-hover-border-color);
+        }
+        
+        .theme-toggle-btn {
+        }
+
 
         .loading {
+            display: none;
             text-align: center;
-            padding: 50px;
-            font-size: 1.2rem;
+            padding: 25px;
+            color: var(--loading-text-color);
         }
 
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #4FC3F7; /* AccentColor1 */
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.25);
             border-radius: 50%;
-            border-top-color: transparent;
+            border-top: 4px solid var(--container-header-text-color); 
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin-left: 10px;
+            margin: 0 auto 10px;
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .error-message {
-            background: rgba(255, 127, 80, 0.3); /* AccentColor2 (Coral) with opacity */
-            border: 1px solid rgba(255, 127, 80, 0.6); /* AccentColor2 (Coral) border */
-            border-radius: 10px;
+        .mindmap-container {
+            background: var(--mindmap-container-bg);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            box-shadow: var(--shadow);
+            min-height: 600px; 
+            height: 70vh; 
+            overflow: hidden;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .mindmap-controls {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%;
+            border: none;
+            background: var(--control-btn-bg);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px; 
+            font-weight: bold;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25); 
+        }
+
+        .control-btn:hover {
+            background: var(--control-btn-hover-bg);
+            transform: scale(1.1);
+        }
+
+        #mindMapSvg {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            background-color: var(--mindmap-svg-bg);
+            border-radius: calc(var(--border-radius) - 4px);
+            transition: background-color 0.3s ease;
+        }
+
+        #mindMapSvg:active {
+            cursor: grabbing;
+        }
+        
+        .node-group .node-rect {
+            stroke-width: 2px; 
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.15)); 
+            transition: filter 0.2s ease, transform 0.2s ease, fill 0.3s ease, stroke 0.3s ease;
+        }
+        
+        .node-group:hover .node-rect {
+             filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.25));
+             transform: translateY(-1px) scale(1.02); 
+        }
+
+        .node-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            text-anchor: middle;
+            dominant-baseline: central;
+            pointer-events: none;
+            fill: var(--node-text-color);
+            transition: fill 0.3s ease;
+        }
+        
+        .link-path {
+            stroke-opacity: 0.7;
+            stroke-width: 2.5px; 
+            fill: none;
+            transition: stroke-opacity 0.2s ease, stroke-width 0.2s ease, stroke 0.3s ease;
+        }
+
+        .link-path:hover { 
+            stroke-opacity: 1;
+            stroke-width: 3.5px;
+        }
+
+        .error-message { 
+            background: var(--error-message-bg);
+            color: var(--error-message-text-color);
+            border: 1px solid var(--error-message-border-color);
+            border-radius: 8px;
             padding: 15px;
             margin: 20px 0;
             text-align: center;
-            backdrop-filter: blur(10px);
-            color: #E0E1DD; /* Primary Text Color */
+            font-size: 0.9rem;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
-        .empty-message { /* New class for non-error empty states */
-            padding: 30px;
-            text-align: center;
-            font-size: 1.1rem;
-            color: rgba(224, 225, 221, 0.75); /* Primary Text Color with opacity */
-            border-radius: 10px;
-            background: rgba(61, 90, 128, 0.15); /* Lighter Secondary Background */
-            margin: 20px 0;
+        .hidden {
+            display: none !important; 
         }
 
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
-        .status-playing {
-            background: #4FC3F7; /* AccentColor1 */
-            animation: pulse 1.5s infinite;
-        }
-
-        .status-stopped {
-            background: #FF7F50; /* AccentColor2 */
-        }
-
-        .status-loading {
-            background: #FFC107; /* A distinct yellow for loading */
-            animation: pulse 1s infinite;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px; /* Reduced padding */
-            }
-
-            .header {
-                padding: 20px; /* Reduced padding for header */
-                margin-bottom: 20px; /* Adjusted margin */
-            }
-
-            .logo {
-                font-size: 1.8rem; /* Slightly reduced font size */
-            }
-            
-            .subtitle {
-                font-size: 1rem; /* Adjusted for better legibility */
-            }
-
-            .search-container {
-                flex-direction: column;
-                gap: 10px; /* Adjusted gap */
-                margin-bottom: 20px; /* Adjusted margin */
-            }
-
-            .search-input {
-                min-width: 100%;
-                padding: 12px 18px; /* Adjusted padding */
-                font-size: 15px; /* Adjusted font size */
-            }
-
-            .genre-filter {
-                padding: 12px 25px; /* Adjusted padding */
-                padding-right: 40px; /* Keep space for arrow */
-                font-size: 15px; /* Adjusted font size */
-                min-width: 100%; /* Make full width */
-            }
-            
-            .player-section {
-                padding: 20px; /* Reduced padding */
-                margin-bottom: 20px; /* Adjusted margin */
-            }
-
-            .station-avatar {
-                width: 100px; /* Slightly smaller avatar */
-                height: 100px;
-                font-size: 2.5rem; /* Adjusted icon size */
-                margin-bottom: 15px;
-            }
-
-            .station-name {
-                font-size: 1.5rem; /* Reduced font size */
-                margin-bottom: 5px;
-            }
-
-            .station-info {
-                font-size: 0.9rem; /* Adjusted for legibility */
-            }
-
-            .player-controls {
-                gap: 15px; /* Existing, seems okay */
-                margin-bottom: 20px; /* Added margin */
-            }
-
-            .control-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem; /* Existing, seems okay */
-            }
-
-            .play-btn {
-                width: 70px;
-                height: 70px;
-                font-size: 1.8rem; /* Existing, seems okay */
-            }
-
-            .volume-container {
-                flex-direction: column;
-                gap: 10px; /* Existing, seems okay */
-            }
-            .volume-slider {
-                width: 100%; /* Make volume slider take more width */
-            }
-
-            .genres-section {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller minmax */
-                gap: 10px; /* Reduced gap */
-                margin-bottom: 20px; /* Adjusted margin */
-            }
-            
-            .genre-card {
-                padding: 15px; /* Adjusted padding */
-            }
-
-            .genre-icon {
-                font-size: 2rem; /* Reduced icon size */
-                margin-bottom: 8px; /* Adjusted margin */
-            }
-            
-            .genre-card h3 {
-                font-size: 0.9rem; /* Adjust genre card title */
-            }
-
-            .stations-grid {
-                grid-template-columns: 1fr; /* Already set for single column */
-                gap: 10px; /* Reduced gap */
-            }
-
-            .station-card {
-                padding: 15px; /* Adjusted padding */
-            }
-
-            .station-header {
-                gap: 10px; /* Reduced gap */
-                margin-bottom: 10px; /* Adjusted margin */
-                flex-direction: row; /* Ensure horizontal layout */
-            }
-            
-            .station-logo {
-                width: 40px; /* Smaller logo */
-                height: 40px;
-            }
-
-            .station-details h3 {
-                font-size: 1.1rem; /* Adjusted font size */
-            }
-
-            .station-meta {
-                font-size: 0.85rem; /* Adjusted font size */
-            }
-            
-            .station-quality {
-                top: 10px; /* Adjusted position */
-                right: 10px; /* Adjusted position */
-                padding: 4px 8px; /* Adjusted padding */
-                font-size: 0.75rem; /* Adjusted font size */
-            }
-            
-            .favorite-btn {
-                top: 10px; /* Adjusted position */
-                left: 10px; /* Moved to the left */
-                right: auto; /* Ensure right is not applied */
-                font-size: 1.3rem; /* Adjusted size for tappability */
-            }
-            
-            .section-title {
-                font-size: 1.3rem; /* Adjust section titles */
-            }
-        }
-
-        .favorites-section {
-            margin-top: 30px;
-            background: rgba(61, 90, 128, 0.2); /* Slightly lighter Secondary Background */
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(224, 225, 221, 0.15); /* Lighter Subtle Border */
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            text-align: center;
-            background: linear-gradient(45deg, #4FC3F7, #FF7F50); /* Accent1 to Accent2 gradient for title */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .favorite-btn {
+        .debug-info {
             position: absolute;
-            top: 15px;
-    left: 15px; /* Changed from right: 50px */
-            background: none;
-            border: none;
-    color: #FFFFFF; /* Changed to opaque white */
-    font-size: 1.5rem; /* Increased font size */
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .favorite-btn:hover,
-        .favorite-btn.active {
-            color: #FF7F50; /* AccentColor2 for active/hover state */
-            transform: scale(1.2);
-        }
-
-        .favorite-btn:focus-visible { /* Using focus-visible */
-            outline: 2px solid #FF7F50; /* AccentColor2 for focus */
-            outline-offset: 1px;
-        }
-
-        #genreFilter option, #countryFilter option {
-            color: #0D1B2A; /* Dark text for readability */
-            background-color: #E0E1DD; /* Light background for dropdown options */
-        }
-
-        /* Animations for Player Updates */
-        .player-content-fade-out {
-            opacity: 0 !important;
-            transform: translateY(-10px) !important;
-            transition: opacity 0.15s ease-out, transform 0.15s ease-out !important;
-        }
-
-        .player-content-fade-in {
-            opacity: 0 !important;
-            transform: translateY(10px) !important;
-        }
-        
-        .player-content-fade-in.active {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-            transition: opacity 0.15s ease-in, transform 0.15s ease-in !important;
-        }
-
-        /* Animation for Station Card Appearance */
-        @keyframes fadeInCard {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        .station-card-animated {
-            animation: fadeInCard 0.4s ease-out forwards;
+            top: 12px;
+            left: 12px;
+            background: var(--debug-info-bg); 
+            color: var(--debug-info-text-color);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 11px; 
+            font-family: monospace;
+            z-index: 1001;
+            opacity: 0.9;
+            display: none; 
+            transition: background 0.3s ease, color 0.3s ease;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="logo">🎵 Radio Stream Pro</h1>
-            <p class="subtitle">Sua estação de rádio online favorita</p>
+            <h1>🧠 Gerador de Mapas Mentais</h1>
+            <p>Visualize suas ideias com mapas mentais criados por IA</p>
         </div>
 
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Buscar estações..." id="searchInput">
-            <select class="genre-filter" id="genreFilter">
-                <option value="">Todos os Gêneros</option>
-            </select>
-            <select class="genre-filter" id="countryFilter">
-                <option value="">Todos os Países</option>
-            </select>
-        </div>
-
-        <div class="player-section">
-            <div class="current-station">
-                <div class="station-avatar" id="currentAvatar">🎵</div>
-                <h2 class="station-name" id="currentStationName">Selecione uma estação</h2>
-                <p class="station-info" id="currentStationInfo">Navegue pelas opções abaixo</p>
+        <div class="input-section">
+            <div class="input-group">
+                <label for="textInput">Insira o texto base para o seu mapa mental:</label>
+                <textarea id="textInput" placeholder="Ex: Planejamento de um projeto, resumo de um livro, ideias para um novo negócio..."></textarea>
             </div>
-
-            <div class="player-controls">
-                <button class="control-btn" id="prevBtn">⏮</button>
-                <button class="control-btn play-btn" id="playBtn">▶</button>
-                <button class="control-btn" id="nextBtn">⏭</button>
-            </div>
-
-            <div class="volume-container">
-                <span>🔊</span>
-                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
-                <span id="volumeValue">50%</span>
-            </div>
-
-            <audio id="audioPlayer" preload="none"></audio>
-        </div>
-
-        <div class="genres-section" id="genresSection">
-            <div class="genre-card" data-genre="pop">
-                <div class="genre-icon">🎤</div>
-                <h3>Pop</h3>
-            </div>
-            <div class="genre-card" data-genre="rock">
-                <div class="genre-icon">🎸</div>
-                <h3>Rock</h3>
-            </div>
-            <div class="genre-card" data-genre="jazz">
-                <div class="genre-icon">🎺</div>
-                <h3>Jazz</h3>
-            </div>
-            <div class="genre-card" data-genre="classical">
-                <div class="genre-icon">🎼</div>
-                <h3>Clássica</h3>
-            </div>
-            <div class="genre-card" data-genre="electronic">
-                <div class="genre-icon">🎛</div>
-                <h3>Eletrônica</h3>
-            </div>
-            <div class="genre-card" data-genre="country">
-                <div class="genre-icon">🤠</div>
-                <h3>Country</h3>
+            <div class="button-group">
+                <button class="btn-primary" id="generateMapBtn" onclick="generateMindMap()">💡 Gerar Mapa Mental</button>
+                <button class="btn-secondary" onclick="clearAll()">🗑️ Limpar Tudo</button>
+                <button class="btn-secondary theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn">🌓 Tema</button>
             </div>
         </div>
 
-        <div class="stations-grid" id="stationsGrid">
-            <div class="loading">Carregando estações...</div>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Criando seu mapa mental...</p>
         </div>
-
-        <div class="favorites-section">
-            <h2 class="section-title">⭐ Favoritos</h2>
-            <div class="stations-grid" id="favoritesGrid">
-                <p style="text-align: center; opacity: 0.7;">Nenhuma estação favorita ainda</p>
+        
+        <div id="errorContainer"></div> 
+        <div class="mindmap-container hidden" id="mindMapContainer">
+            <div class="debug-info" id="debugInfo"></div>
+            <div class="mindmap-controls">
+                <button class="control-btn" onclick="zoomInHandler()" title="Aproximar Zoom">+</button>
+                <button class="control-btn" onclick="zoomOutHandler()" title="Afastar Zoom">-</button>
+                <button class="control-btn" onclick="resetViewHandler()" title="Recentralizar">🎯</button>
             </div>
+            <svg id="mindMapSvg">
+                <defs>
+                    <marker id="arrowhead" markerWidth="8" markerHeight="6" 
+                            refX="7" refY="3" orient="auto-start-reverse">
+                        <polygon points="0 0, 8 3, 0 6" fill="#777" />
+                    </marker>
+                </defs>
+                <g id="mindMapRootGroup"></g>
+            </svg>
         </div>
     </div>
 
     <script>
-        class RadioPlayer {
-            constructor() {
-                this.audio = document.getElementById('audioPlayer');
-                this.isPlaying = false;
-                this.currentStation = null;
-                this.stations = [];
-                this.filteredStations = [];
-                this.favorites = JSON.parse(localStorage.getItem('radioFavorites')) || [];
-                this.currentIndex = 0;
-                this.apiUrl = 'https://de1.api.radio-browser.info/json';
-                
-                this.initializeElements();
-                this.bindEvents();
-                this.loadGenres();
-                this.loadCountries();
-                this.loadStations(); // Initial load without country filter
-                this.loadFavorites();
-                this.setupMediaSessionHandlers(); // Call to setup media session handlers
-            }
+        let userApiKey = null; // Chave API será fornecida pelo utilizador
+        const GEMINI_MODEL_NAME = "gemini-2.0-flash"; 
+        
+        const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
-            initializeElements() {
-                this.playBtn = document.getElementById('playBtn');
-                this.prevBtn = document.getElementById('prevBtn');
-                this.nextBtn = document.getElementById('nextBtn');
-                this.volumeSlider = document.getElementById('volumeSlider');
-                this.volumeValue = document.getElementById('volumeValue');
-                this.searchInput = document.getElementById('searchInput');
-                this.genreFilter = document.getElementById('genreFilter');
-                this.countryFilter = document.getElementById('countryFilter');
-                this.stationsGrid = document.getElementById('stationsGrid');
-                this.favoritesGrid = document.getElementById('favoritesGrid');
-                this.currentStationName = document.getElementById('currentStationName');
-                this.currentStationInfo = document.getElementById('currentStationInfo');
-                this.currentAvatar = document.getElementById('currentAvatar');
-            }
+        const NODE_COLORS_LIGHT = ['#5b86e5', '#45b6fe', '#36d1dc', '#f09819', '#cb356b', '#9b59b6', '#2ecc71', '#e74c3c'];
+        const NODE_COLORS_DARK = ['#7A86B6', '#5C9EBF', '#4A7F83', '#D4882C', '#B04E5D', '#8A6AA1', '#3E8E41', '#C0392B'];
 
-            bindEvents() {
-                this.playBtn.addEventListener('click', () => this.togglePlay());
-                this.prevBtn.addEventListener('click', () => this.previousStation());
-                this.nextBtn.addEventListener('click', () => this.nextStation());
-                this.volumeSlider.addEventListener('input', (e) => this.setVolume(e.target.value));
-                this.searchInput.addEventListener('input', (e) => this.filterStations(e.target.value));
-                this.genreFilter.addEventListener('change', (e) => this.filterByGenre(e.target.value));
-                this.countryFilter.addEventListener('change', (e) => this.filterByCountry(e.target.value));
+        const NODE_PADDING = { x: 20, y: 12 };
+        const BASE_NODE_HEIGHT = 45;
+        const BASE_FONT_SIZE = 12;
+        const LEVEL_DISTANCE_FACTOR = 200; 
+        const MIN_ZOOM = 0.1;
+        const MAX_ZOOM = 3; 
+        const MAX_TEXT_LENGTH = 30; 
+        const MIN_ANGLE_BETWEEN_BRANCHES = Math.PI / 7; 
 
-                document.querySelectorAll('.genre-card').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const genre = card.dataset.genre;
-                        this.genreFilter.value = genre; 
-                        this.filterByGenre(genre); 
-                    });
-                });
+        let svgElement, rootGroup, debugInfoElement, themeToggleBtn, generateMapButton;
+        let currentScale = 1;
+        let currentTranslateX = 0;
+        let currentTranslateY = 0;
+        let isDragging = false;
+        let lastPointerX = 0;
+        let lastPointerY = 0;
+        let nodePositions = new Map(); 
+        let currentTheme = 'light';
+        
+        const textInputElement = document.getElementById('textInput');
+        const loadingElement = document.getElementById('loading');
+        const mindMapContainerElement = document.getElementById('mindMapContainer');
+        const errorContainerElement = document.getElementById('errorContainer');
+        
+        function getCurrentNodeColors() {
+            return currentTheme === 'light' ? NODE_COLORS_LIGHT : NODE_COLORS_DARK;
+        }
 
-                this.audio.addEventListener('loadstart', () => this.updatePlayButton('loading'));
-                this.audio.addEventListener('canplay', () => this.updatePlayButton('ready'));
-                this.audio.addEventListener('error', () => this.handleAudioError());
-                this.audio.addEventListener('ended', () => {
-                    if (this.currentAvatar) {
-                        this.currentAvatar.classList.remove('spinning-avatar');
-                    }
-                    if ('mediaSession' in navigator) {
-                        navigator.mediaSession.playbackState = "none";
-                    }
-                    this.nextStation();
-                });
-            }
-
-            setupMediaSessionHandlers() {
-                if ('mediaSession' in navigator) {
-                    navigator.mediaSession.setActionHandler('play', () => {
-                        if (!this.isPlaying) {
-                            this.togglePlay(); // Or directly call playStation if currentStation is set
-                        }
-                    });
-                    navigator.mediaSession.setActionHandler('pause', () => {
-                        if (this.isPlaying) {
-                            this.togglePlay();
-                        }
-                    });
-                    navigator.mediaSession.setActionHandler('previoustrack', () => {
-                        this.previousStation();
-                    });
-                    navigator.mediaSession.setActionHandler('nexttrack', () => {
-                        this.nextStation();
-                    });
-                }
-            }
-
-            async loadGenres() {
-                try {
-                    const response = await fetch(`${this.apiUrl}/tags?limit=50&hidebroken=true&order=stationcount&reverse=true`);
-                    const genres = await response.json();
-                    
-                    genres.forEach(genre => {
-                        const option = document.createElement('option');
-                        option.value = genre.name.toLowerCase();
-                        // Adiciona a contagem de estações ao texto da opção
-                        option.textContent = `${genre.name} (${genre.stationcount || 0})`; 
-                        this.genreFilter.appendChild(option);
-                    });
-                } catch (error) {
-                    console.error('Erro ao carregar gêneros:', error);
-                }
-            }
-
-            async loadCountries() {
-                try {
-                    const response = await fetch('https://de1.api.radio-browser.info/json/countries?limit=500&hidebroken=true&order=stationcount&reverse=true');
-                    let countries = await response.json();
-                    
-                    countries.sort((a, b) => a.name.localeCompare(b.name)); // Keep sorting by name after fetching
-
-                    if (this.countryFilter) {
-                        countries.forEach(country => {
-                            if (country.name && country.name.trim() !== "" && country.iso_3166_1 && country.iso_3166_1.trim() !== "") {
-                                const option = document.createElement('option');
-                                option.value = country.iso_3166_1;
-                                // Adiciona a contagem de estações ao texto da opção
-                                option.textContent = `${country.name} (${country.stationcount || 0})`; 
-                                this.countryFilter.appendChild(option);
-                            }
-                        });
-                    } else {
-                        console.error('countryFilter element not found when trying to load countries.');
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar países:', error);
-                    if (this.countryFilter) {
-                        const option = document.createElement('option');
-                        option.value = "";
-                        option.textContent = 'Erro ao carregar países';
-                        option.disabled = true;
-                        this.countryFilter.appendChild(option);
-                    }
-                }
-            }
-
-            async loadStations(genre = '', search = '', countryCode = '') { 
-                try {
-                    this.showLoading();
-                    let url = `${this.apiUrl}/stations/search?limit=100&hidebroken=true&order=clickcount&reverse=true`;
-                    
-                    if (genre) url += `&tag=${genre}`;
-                    if (search) url += `&name=${search}`;
-                    if (countryCode) url += `&countrycode=${countryCode}`; 
-                    
-                    const response = await fetch(url);
-                    this.stations = await response.json();
-                    this.filteredStations = [...this.stations];
-                    this.renderStations();
-                } catch (error) {
-            // For loadStations error, using .error-message is appropriate
-                    this.showError('Erro ao carregar estações. Tentando novamente...');
-                    setTimeout(() => this.loadStations(genre, search, countryCode), 3000); 
-                }
-            }
-
-            showLoading() {
-                this.stationsGrid.innerHTML = '<div class="loading">Carregando estações...</div>';
-            }
-
-            showError(message) {
-                this.stationsGrid.innerHTML = `<div class="error-message">${message}</div>`;
-            }
-
-            renderStations() {
-                if (this.filteredStations.length === 0) {
-            // Using .empty-message for "no stations found" as it's not a fetch error
-            this.stationsGrid.innerHTML = '<div class="empty-message">Nenhuma estação encontrada. Tente um termo de busca ou gênero diferente.</div>';
-                    return;
-                }
-
-                this.stationsGrid.innerHTML = this.filteredStations.map((station, index) => `
-                    <div class="station-card station-card-animated" style="animation-delay: ${index * 0.05}s" onclick="radioPlayer.selectStation(${index})">
-                        <div class="station-quality">${station.bitrate || 'N/A'} kbps</div>
-                        <button class="favorite-btn ${this.favorites.find(f => f.stationuuid === station.stationuuid) ? 'active' : ''}" 
-                                onclick="event.stopPropagation(); radioPlayer.toggleFavorite('${station.stationuuid}')">
-                            ${this.favorites.find(f => f.stationuuid === station.stationuuid) ? '⭐' : '☆'}
-                        </button>
-                        <div class="station-header">
-                            <div class="station-logo">
-                                ${station.favicon ? `<img src="${station.favicon}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : station.name.charAt(0)}
-                            </div>
-                            <div class="station-details">
-                                <h3>${station.name}</h3>
-                                <div class="station-meta">
-                                    <span class="status-indicator ${this.currentStation?.stationuuid === station.stationuuid ? (this.isPlaying ? 'status-playing' : 'status-stopped') : ''}"></span>
-                                    ${station.country || 'Internacional'} • ${station.tags || 'Geral'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            selectStation(index) {
-                if (this.currentAvatar) { 
-                    this.currentAvatar.classList.remove('spinning-avatar');
-                }
-                this.currentIndex = index;
-                this.currentStation = this.filteredStations[index];
-                this.updateCurrentStationInfo();
-                this.playStation();
-            }
-
-            updateCurrentStationInfo() {
-                if (!this.currentStation) return;
-
-                const elementsToAnimate = [this.currentAvatar, this.currentStationName, this.currentStationInfo];
-
-                elementsToAnimate.forEach(el => el.classList.add('player-content-fade-out'));
-
-                setTimeout(() => {
-                    this.currentStationName.textContent = this.currentStation.name;
-                    this.currentStationInfo.textContent = `${this.currentStation.country || 'Internacional'} • ${this.currentStation.tags || 'Geral'}`;
-                    this.currentAvatar.innerHTML = this.currentStation.favicon 
-                        ? `<img src="${this.currentStation.favicon}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
-                        : this.currentStation.name.charAt(0);
-                    
-                    elementsToAnimate.forEach(el => {
-                        el.classList.remove('player-content-fade-out');
-                        el.classList.add('player-content-fade-in');
-                    });
-
-                    // Force reflow/repaint before adding 'active' for fade-in
-                    requestAnimationFrame(() => {
-                        elementsToAnimate.forEach(el => el.classList.add('active'));
-                    });
-                    
-                    setTimeout(() => {
-                        elementsToAnimate.forEach(el => {
-                            el.classList.remove('player-content-fade-in');
-                            el.classList.remove('active');
-                        });
-                    }, 150); // Duration of fade-in animation
-
-                }, 150); // Duration of fade-out animation
-            }
-
-            async playStation() {
-                if (!this.currentStation) return;
-
-                try {
-                    this.audio.src = this.currentStation.url_resolved || this.currentStation.url;
-                    await this.audio.play();
-                    this.isPlaying = true;
-                    if (this.currentAvatar) {
-                        this.currentAvatar.classList.add('spinning-avatar');
-                    }
-                    this.updatePlayButton('playing');
-                    this.renderStations();
-
-                if ('mediaSession' in navigator) {
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                        title: this.currentStation.name,
-                        artist: this.currentStation.tags ? this.currentStation.tags.split(',')[0].trim() : 'Radio Stream Pro',
-                        album: this.currentStation.country || 'Live Radio',
-                        artwork: [
-                            { src: this.currentStation.favicon || 'icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
-                            { src: this.currentStation.favicon || 'icons/icon-128x128.png', sizes: '128x128', type: 'image/png' },
-                            { src: this.currentStation.favicon || 'icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-                            { src: this.currentStation.favicon || 'icons/icon-256x256.png', sizes: '256x256', type: 'image/png' },
-                            { src: this.currentStation.favicon || 'icons/icon-384x384.png', sizes: '384x384', type: 'image/png' },
-                            { src: this.currentStation.favicon || 'icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-                        ]
-                    });
-                    navigator.mediaSession.playbackState = "playing";
-                }
-
-                } catch (error) {
-                    this.handleAudioError();
-                }
-            }
-
-            togglePlay() {
-                if (!this.currentStation) {
-                    if (this.filteredStations.length > 0) {
-                    this.selectStation(0); // This will call playStation which handles mediaSession
-                    }
-                    return;
-                }
-
-                if (this.isPlaying) {
-                    this.audio.pause();
-                    this.isPlaying = false;
-                    if (this.currentAvatar) {
-                        this.currentAvatar.classList.remove('spinning-avatar');
-                    }
-                    this.updatePlayButton('paused');
-                if ('mediaSession' in navigator) {
-                    navigator.mediaSession.playbackState = "paused";
-                }
-                } else {
-                this.playStation(); // playStation will set metadata and playing state
-                }
-            }
-
-            previousStation() {
-                if (this.filteredStations.length === 0) return;
-                
-                this.currentIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.filteredStations.length - 1;
-                this.selectStation(this.currentIndex);
-            }
-
-            nextStation() {
-                if (this.filteredStations.length === 0) return;
-                
-                this.currentIndex = (this.currentIndex + 1) % this.filteredStations.length;
-                this.selectStation(this.currentIndex);
-            }
-
-            setVolume(value) {
-                this.audio.volume = value / 100;
-                this.volumeValue.textContent = `${value}%`;
-            }
-
-            updatePlayButton(state) {
-                switch (state) {
-                    case 'playing':
-                        this.playBtn.innerHTML = '⏸';
-                        break;
-                    case 'paused':
-                    case 'ready':
-                        this.playBtn.innerHTML = '▶';
-                        break;
-                    case 'loading':
-                        this.playBtn.innerHTML = '⏳';
-                        break;
-                }
-            }
-
-            handleAudioError() {
-                if (this.currentAvatar) {
-                    this.currentAvatar.classList.remove('spinning-avatar');
-                }
-                this.showError('Erro ao reproduzir estação. Tentando próxima...');
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.playbackState = "none";
-            }
-                setTimeout(() => this.nextStation(), 2000);
-            }
-
-            filterStations(searchTerm) { 
-                this.loadStations(this.genreFilter.value, searchTerm, this.countryFilter.value);
-            }
-
-            filterByGenre(genre) { 
-                if (genre) {
-                    this.loadStations(genre, this.searchInput.value, this.countryFilter.value);
-                } else {
-                    this.loadStations('', this.searchInput.value, this.countryFilter.value);
-                }
-            }
-
-            filterByCountry(countryCode) { 
-                this.loadStations(this.genreFilter.value, this.searchInput.value, countryCode);
-            }
-
-            toggleFavorite(stationUuid) {
-                const station = this.stations.find(s => s.stationuuid === stationUuid);
-                if (!station) return;
-
-                const existingIndex = this.favorites.findIndex(f => f.stationuuid === stationUuid);
-                
-                if (existingIndex >= 0) {
-                    this.favorites.splice(existingIndex, 1);
-                } else {
-                    this.favorites.push(station);
-                }
-
-                localStorage.setItem('radioFavorites', JSON.stringify(this.favorites));
-                this.renderStations();
-                this.loadFavorites();
-            }
-
-            loadFavorites() {
-                if (this.favorites.length === 0) {
-            // Using new .empty-message class for consistency
-            this.favoritesGrid.innerHTML = '<div class="empty-message">Nenhuma estação favorita ainda. Clique no ícone de coração 🤍 em uma estação para adicioná-la.</div>';
-                    return;
-                }
-
-                this.favoritesGrid.innerHTML = this.favorites.map((station, index) => `
-                    <div class="station-card station-card-animated" style="animation-delay: ${index * 0.05}s" onclick="radioPlayer.playFavorite(${index})">
-                        <div class="station-quality">${station.bitrate || 'N/A'} kbps</div>
-                        <button class="favorite-btn active" onclick="event.stopPropagation(); radioPlayer.toggleFavorite('${station.stationuuid}')">⭐</button>
-                        <div class="station-header">
-                            <div class="station-logo">
-                                ${station.favicon ? `<img src="${station.favicon}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : station.name.charAt(0)}
-                            </div>
-                            <div class="station-details">
-                                <h3>${station.name}</h3>
-                                <div class="station-meta">
-                                    <span class="status-indicator ${this.currentStation?.stationuuid === station.stationuuid ? (this.isPlaying ? 'status-playing' : 'status-stopped') : ''}"></span>
-                                    ${station.country || 'Internacional'} • ${station.tags || 'Geral'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            playFavorite(index) {
-                this.currentStation = this.favorites[index];
-                this.updateCurrentStationInfo();
-                this.playStation();
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.classList.toggle('dark-theme', currentTheme === 'dark');
+            themeToggleBtn.textContent = currentTheme === 'light' ? '🌙 Tema Escuro' : '☀️ Tema Claro';
+            
+            if (rootGroup && rootGroup.dataset.mindmapData) { 
+                 const currentData = JSON.parse(rootGroup.dataset.mindmapData);
+                 if (currentData.central) {
+                    renderMindMap(currentData, mindMapContainerElement.clientWidth, mindMapContainerElement.clientHeight);
+                 }
             }
         }
 
-        const radioPlayer = new RadioPlayer();
-    </script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            })
-            .catch(error => {
-              console.log('ServiceWorker registration failed: ', error);
+        function truncateText(text, maxLength = MAX_TEXT_LENGTH) {
+            if (!text || typeof text !== 'string') return 'Sem Título';
+            text = text.trim();
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength - 3) + '...';
+        }
+
+        function checkCollision(x, y, width, height) {
+            const R1 = { left: x - width / 2, right: x + width / 2, top: y - height / 2, bottom: y + height / 2 };
+            for (let pos of nodePositions.values()) {
+                const R2 = { left: pos.x - pos.width / 2, right: pos.x + pos.width / 2, top: pos.y - pos.height / 2, bottom: pos.y + pos.height / 2 };
+                const buffer = 10; 
+                if (R1.left < R2.right + buffer && R1.right + buffer > R2.left && 
+                    R1.top < R2.bottom + buffer && R1.bottom + buffer > R2.top) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function adjustPosition(initialX, initialY, width, height, nodeKeyPrefix, maxAttempts = 40, stepSize = 10) {
+            let currentX = initialX;
+            let currentY = initialY;
+            let attempt = 0;
+            const initialStepRadius = stepSize; 
+
+            while (checkCollision(currentX, currentY, width, height) && attempt < maxAttempts) {
+                attempt++;
+                const angle = attempt * (Math.PI * 0.618034); 
+                const radius = initialStepRadius + (attempt * stepSize * 0.15); 
+                currentX = initialX + Math.cos(angle) * radius;
+                currentY = initialY + Math.sin(angle) * radius;
+            }
+            if (attempt >= maxAttempts) {
+                console.warn(`Não foi possível encontrar posição livre de colisão para ${nodeKeyPrefix} após ${maxAttempts} tentativas. Usando última posição tentada.`);
+            }
+            return { x: currentX, y: currentY };
+        }
+        
+        async function generateMindMap() {
+            if (!userApiKey) {
+                showError('Chave da API Gemini não fornecida. Por favor, recarregue a página e insira a chave.');
+                return;
+            }
+
+            const textInput = textInputElement.value.trim();
+            if (!textInput) {
+                showError('Por favor, insira um texto para gerar o mapa mental.');
+                return;
+            }
+            if (textInput.length < 20) {
+                showError('O texto precisa ter pelo menos 20 caracteres para gerar um mapa mental útil.');
+                return;
+            }
+            
+            showLoading(true);
+            clearError(); 
+            mindMapContainerElement.classList.add('hidden'); 
+            nodePositions.clear();
+
+            try {
+                const apiResponse = await callGeminiAPI(textInput);
+                console.log("Resposta da API Gemini (Mapa Mental):", JSON.stringify(apiResponse, null, 2));
+
+                if (rootGroup) { 
+                    rootGroup.dataset.mindmapData = JSON.stringify(apiResponse);
+                }
+
+                if (apiResponse && apiResponse.central && validateMindMapStructure(apiResponse)) {
+                    mindMapContainerElement.classList.remove('hidden'); 
+                    await new Promise(resolve => requestAnimationFrame(resolve));
+                    
+                    const svgWidth = mindMapContainerElement.clientWidth;
+                    const svgHeight = mindMapContainerElement.clientHeight;
+
+                    if (svgWidth > 0 && svgHeight > 0) {
+                       renderMindMap(apiResponse, svgWidth, svgHeight);
+                    } else {
+                       showError('Falha ao obter dimensões do container do mapa.');
+                       mindMapContainerElement.classList.add('hidden');
+                    }
+                } else {
+                    showError('A IA não retornou uma estrutura de mapa mental válida ou completa. Tente novamente com um texto mais detalhado, ou ajuste o prompt na API.');
+                    mindMapContainerElement.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Erro em generateMindMap:", error);
+                showError(`Erro ao gerar mapa mental: ${error.message}`);
+                mindMapContainerElement.classList.add('hidden');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function validateMindMapStructure(data) {
+            if (!data.central || typeof data.central !== 'string' || data.central.trim() === '') {
+                console.warn("Validação falhou: Tópico central ausente ou inválido.");
+                return false;
+            }
+            if (!data.branches || !Array.isArray(data.branches)) { 
+                 console.warn("Validação: Sem ramos principais, mas tópico central existe. Permitindo.");
+                 data.branches = []; 
+                 return true; 
+            }
+            if (data.branches.length > 0) {
+                const validBranches = data.branches.filter(branch => 
+                    branch && typeof branch.title === 'string' && branch.title.trim() !== ''
+                );
+                if (validBranches.length < data.branches.length * 0.5 && data.branches.length > 1) { 
+                    console.warn("Validação falhou: Muitos ramos sem título válido.");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        async function callGeminiAPI(text) {
+            if (!userApiKey) {
+                 throw new Error("Chave da API Gemini não está definida.");
+            }
+            const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${userApiKey}`;
+
+            const prompt = `
+Analise o seguinte texto e crie uma estrutura de MAPA MENTAL hierárquica bem organizada em formato JSON.
+
+INSTRUÇÕES IMPORTANTES:
+1. Crie entre 3 a 7 ramos principais (branches) originados do "central".
+2. Cada "title" (tanto para "central" quanto para ramos/filhos) deve ter no máximo ${MAX_TEXT_LENGTH} caracteres.
+3. Cada ramo principal ("branches") deve ter, idealmente, entre 1 a 4 "children" (sub-ramos). Se não houver sub-ramos, omita "children" ou use um array vazio.
+4. Evite "children" de "children" (netos) com mais de 1 nível de profundidade, ou seja, no máximo Central -> Ramo -> Filho -> Neto. O ideal é Central -> Ramo -> Filho.
+5. Use títulos claros, concisos e específicos para cada nó.
+6. Distribua as informações de forma equilibrada entre os ramos.
+7. O tópico "central" deve ser o conceito mais importante ou o título do texto.
+
+ESTRUTURA JSON ESPERADA:
+{
+  "central": "Tópico Principal (máx ${MAX_TEXT_LENGTH} chars)",
+  "branches": [
+    {
+      "title": "Ramo 1 (máx ${MAX_TEXT_LENGTH} chars)",
+      "children": [
+        { "title": "Sub-ramo 1.1 (máx ${MAX_TEXT_LENGTH} chars)" },
+        { "title": "Sub-ramo 1.2 (máx ${MAX_TEXT_LENGTH} chars)", "children": [{ "title": "Neto 1.2.1 (máx ${MAX_TEXT_LENGTH} chars)" }] }
+      ]
+    },
+    { "title": "Ramo 2 (máx ${MAX_TEXT_LENGTH} chars)" }
+  ]
+}
+
+REGRAS OBRIGATÓRIAS PARA O JSON DE SAÍDA:
+- A propriedade "central" DEVE existir e ser uma string não vazia.
+- A propriedade "branches" DEVE existir e ser um array (pode ser vazio se não houver ramos).
+- Cada objeto dentro de "branches" (e dentro de "children" recursivamente) DEVE ter uma propriedade "title" (string não vazia).
+- Todos os textos de "title" e "central" NÃO DEVEM exceder ${MAX_TEXT_LENGTH} caracteres.
+- Retorne APENAS o JSON válido, sem NENHUM texto explicativo, markdown, ou qualquer caractere fora do objeto JSON.
+
+Texto para análise:
+${text}
+`;
+            const grandChildItemSchema = {
+                type: "OBJECT",
+                properties: { "title": { type: "STRING" } },
+                required: ["title"]
+            };
+
+            const childItemSchema = {
+                type: "OBJECT",
+                properties: {
+                    "title": { type: "STRING" },
+                    "children": { type: "ARRAY", items: grandChildItemSchema }
+                },
+                required: ["title"]
+            };
+
+            const branchItemSchema = {
+                type: "OBJECT",
+                properties: {
+                    "title": { type: "STRING" },
+                    "children": { type: "ARRAY", items: childItemSchema }
+                },
+                required: ["title"]
+            };
+
+            const mindMapSchema = {
+                type: "OBJECT",
+                properties: {
+                    "central": { type: "STRING" },
+                    "branches": { type: "ARRAY", items: branchItemSchema }
+                },
+                required: ["central"]
+            };
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: mindMapSchema,
+                    temperature: 0.6, 
+                    maxOutputTokens: 2048
+                }
+            };
+            
+            const response = await fetch(GEMINI_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`API Error: ${response.status}. Details: ${errorBody.substring(0, 300)}`);
+            }
+            
+            const data = await response.json();
+            if (!data.candidates || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0].text) {
+                throw new Error('Resposta da API em formato inesperado.');
+            }
+            
+            const generatedText = data.candidates[0].content.parts[0].text;
+            try {
+                const parsed = JSON.parse(generatedText);
+                
+                function  processNodeText(node) {
+                    if (node.title) node.title = truncateText(node.title);
+                    if (node.children) node.children.forEach(processNodeText);
+                }
+                if (parsed.central) parsed.central = truncateText(parsed.central);
+                if (parsed.branches) parsed.branches.forEach(processNodeText);
+                
+                return parsed;
+            } catch (e) {
+                throw new Error('A IA retornou um JSON inválido.');
+            }
+        }
+        
+        function renderMindMap(data, svgWidth, svgHeight) {
+            svgElement = document.getElementById('mindMapSvg');
+            rootGroup = document.getElementById('mindMapRootGroup');
+            debugInfoElement = document.getElementById('debugInfo');
+            rootGroup.innerHTML = ''; 
+            nodePositions.clear();
+
+            const centerX = svgWidth / 2;
+            const centerY = svgHeight / 2;
+
+            svgElement.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+            
+            const centralNodeData = createNodeElement(data.central, centerX, centerY, 0, 0, true);
+            rootGroup.appendChild(centralNodeData.group);
+            
+            const centralNodeInfo = {
+                x: centerX, y: centerY,
+                width: centralNodeData.width, height: centralNodeData.height
+            };
+            nodePositions.set('central', centralNodeInfo);
+
+            if (data.branches && data.branches.length > 0) {
+                const numBranches = data.branches.length;
+                let angleStep = (2 * Math.PI) / numBranches;
+                if (numBranches > 1 && angleStep < MIN_ANGLE_BETWEEN_BRANCHES) {
+                    console.warn(`Ângulo entre ramos (${angleStep*180/Math.PI}°) é menor que o mínimo. Ajustando para ${MIN_ANGLE_BETWEEN_BRANCHES*180/Math.PI}°`);
+                    angleStep = MIN_ANGLE_BETWEEN_BRANCHES;
+                }
+
+
+                data.branches.forEach((branch, index) => {
+                    if (!branch || !branch.title || branch.title.trim() === '') return;
+                    
+                    let angle = (index * angleStep) - (Math.PI / 2); 
+                    if (numBranches === 1) angle = -Math.PI / 2; 
+
+                    const branchRadius = LEVEL_DISTANCE_FACTOR * 0.9 + (Math.random() * 20 - 10);
+                    const initialBranchX = centerX + Math.cos(angle) * branchRadius;
+                    const initialBranchY = centerY + Math.sin(angle) * branchRadius;
+                    
+                    drawBranchRecursive(branch, initialBranchX, initialBranchY, centralNodeInfo, 1, angle, rootGroup, index);
+                });
+            }
+            
+            updateDebugInfo();
+            resetViewHandler();
+            setupSVGInteractions();
+        }
+        
+        function calculateNodeMetrics(text, level, isCentral = false) {
+            const displayText = truncateText(text);
+            const fontSize = isCentral ? BASE_FONT_SIZE + 4 : BASE_FONT_SIZE + Math.max(0, 3 - level);
+            const rectHeight = isCentral ? BASE_NODE_HEIGHT + 10 : BASE_NODE_HEIGHT + Math.max(0, (3 - level) * 4);
+            const fontWeight = isCentral ? '700' : (level === 1 ? '600' : '500');
+
+            const tempText = createSVGElement('text', {
+                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`,
+            }, displayText);
+            
+            if (!svgElement || !svgElement.appendChild) { 
+                 console.warn("calculateNodeMetrics: svgElement não está pronto ou não tem appendChild.");
+                 return { width: 150, height: rectHeight}; 
+            }
+            svgElement.appendChild(tempText);
+            const textWidth = tempText.getComputedTextLength();
+            svgElement.removeChild(tempText);
+
+            const rectWidth = Math.max(textWidth + NODE_PADDING.x * 2, 80);
+            return { width: rectWidth, height: rectHeight };
+        }
+
+        function drawBranchRecursive(branchData, initialX, initialY, parentNodeInfo, level, parentAngle, parentSvgGroup, branchIndex) {
+            const originalNodeText = branchData.title;
+            if (!originalNodeText || typeof originalNodeText !== 'string' || originalNodeText.trim() === "") return;
+
+            const nodeKey = `node-${level}-${branchIndex}-${parentSvgGroup.childNodes.length}`;
+            const metrics = calculateNodeMetrics(originalNodeText, level, false);
+            const { x: finalX, y: finalY } = adjustPosition(initialX, initialY, metrics.width, metrics.height, nodeKey);
+
+            const nodeData = createNodeElement(originalNodeText, finalX, finalY, level, branchIndex, false);
+            parentSvgGroup.appendChild(nodeData.group);
+            
+            nodePositions.set(nodeKey, {
+                x: finalX, y: finalY, width: nodeData.width, height: nodeData.height
+            });
+
+            const link = createLinkElement(parentNodeInfo.x, parentNodeInfo.y, finalX, finalY, level, nodeData.width/2, nodeData.height/2);
+            parentSvgGroup.insertBefore(link, nodeData.group); 
+
+            if (branchData.children && branchData.children.length > 0) {
+                const numChildren = branchData.children.length;
+                const maxSpread = Math.PI / (1.5 + level * 0.2); 
+                const minSpread = Math.PI / 8;
+                let currentSpreadAngle = Math.max(minSpread, Math.min(maxSpread, Math.PI / (1.2 + level * 0.4 + Math.max(0, numChildren - 2) * 0.3)));
+                if (numChildren === 1) currentSpreadAngle = 0; 
+
+                const childRadius = LEVEL_DISTANCE_FACTOR * Math.max(0.35, (0.75 - level * 0.12)); 
+
+                branchData.children.forEach((child, childIdx) => {
+                    if (!child || !child.title || child.title.trim() === '') return;
+                    
+                    let childAngle;
+                    if (numChildren === 1) {
+                        childAngle = parentAngle; 
+                    } else {
+                        childAngle = parentAngle - (currentSpreadAngle / 2) + (childIdx / (numChildren - 1)) * currentSpreadAngle;
+                    }
+                    
+                    const angleVariation = (Math.random() - 0.5) * (Math.PI / 18 / (level + 1)); 
+                    childAngle += angleVariation;
+                    
+                    const childInitialX = finalX + Math.cos(childAngle) * childRadius;
+                    const childInitialY = finalY + Math.sin(childAngle) * childRadius;
+                    
+                    drawBranchRecursive(child, childInitialX, childInitialY, { x: finalX, y: finalY, width: nodeData.width, height: nodeData.height }, level + 1, childAngle, parentSvgGroup, branchIndex);
+                });
+            }
+        }
+
+        function createSVGElement(tag, attributes = {}, textContent = null) {
+            const element = document.createElementNS(SVG_NAMESPACE, tag);
+            for (const attr in attributes) {
+                element.setAttribute(attr, attributes[attr]);
+            }
+            if (textContent) {
+                element.textContent = textContent;
+            }
+            return element;
+        }
+
+        function createNodeElement(text, x, y, level, branchIndex, isCentral = false) {
+            const originalText = text;
+            const displayText = truncateText(originalText, isCentral ? MAX_TEXT_LENGTH + 5 : MAX_TEXT_LENGTH); 
+
+            const group = createSVGElement('g', {
+                class: 'node-group',
+                transform: `translate(${x},${y})`
+            });
+
+            const fontSize = isCentral ? BASE_FONT_SIZE + 3 : BASE_FONT_SIZE + Math.max(0, 2 - level);
+            const currentRectHeight = isCentral ? BASE_NODE_HEIGHT + 8 : BASE_NODE_HEIGHT + Math.max(0, (2 - level) * 3);
+            const fontWeight = isCentral ? '600' : (level === 1 ? '500' : '400');
+            
+            const tempText = createSVGElement('text', {
+                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`
+            }, displayText);
+            
+            let computedTextWidth = displayText.length * fontSize * 0.6; 
+            if (svgElement && svgElement.appendChild) {
+                svgElement.appendChild(tempText);
+                computedTextWidth = tempText.getComputedTextLength();
+                svgElement.removeChild(tempText);
+            } else {
+                console.warn("createNodeElement: svgElement não está pronto para medir texto.");
+            }
+
+            const currentRectWidth = Math.max(computedTextWidth + NODE_PADDING.x * 2, isCentral ? 100 : 70);
+            
+            let colorIdx;
+            const nodeColors = getCurrentNodeColors();
+            if (isCentral) {
+                colorIdx = 0;
+            } else {
+                colorIdx = (branchIndex % (nodeColors.length - 1)) + 1; 
+                if (colorIdx >= nodeColors.length) colorIdx = 1; 
+            }
+            const fillColor = nodeColors[colorIdx % nodeColors.length];
+
+            const rect = createSVGElement('rect', {
+                class: 'node-rect',
+                x: -currentRectWidth / 2,
+                y: -currentRectHeight / 2,
+                width: currentRectWidth,
+                height: currentRectHeight,
+                rx: level < 2 ? 12 : 8, 
+                ry: level < 2 ? 12 : 8,
+                style: `fill: ${fillColor}; stroke: ${shadeColor(fillColor, -25)}; stroke-width: 1.5px;` 
+            });
+            
+            const textElement = createSVGElement('text', {
+                class: 'node-text',
+                'font-size': fontSize,
+                'font-weight': fontWeight
+            }, displayText);
+            group.dataset.fullText = originalText;
+
+            group.appendChild(rect);
+            group.appendChild(textElement);
+            return { group, width: currentRectWidth, height: currentRectHeight };
+        }
+        
+        function shadeColor(color, percent) { 
+            let R = parseInt(color.substring(1,3),16);
+            let G = parseInt(color.substring(3,5),16);
+            let B = parseInt(color.substring(5,7),16);
+
+            R = parseInt(R * (100 + percent) / 100);
+            G = parseInt(G * (100 + percent) / 100);
+            B = parseInt(B * (100 + percent) / 100);
+
+            R = (R<255)?R:255;  
+            G = (G<255)?G:255;  
+            B = (B<255)?B:255;  
+
+            R = Math.max(0,R);
+            G = Math.max(0,G);
+            B = Math.max(0,B);
+
+            const RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+            const GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+            const BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+
+            return `#${RR}${GG}${BB}`;
+        }
+
+        function createLinkElement(x1, y1, x2, y2, level, targetNodeHalfWidth, targetNodeHalfHeight) {
+            const path = createSVGElement('path', { class: 'link-path' });
+            
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            let ratio = 0.9; 
+            if (distance > 0) {
+                const angleToTarget = Math.atan2(dy, dx);
+                let intersectDist = Math.min(
+                    Math.abs(targetNodeHalfWidth / Math.cos(angleToTarget || 1e-9)), 
+                    Math.abs(targetNodeHalfHeight / Math.sin(angleToTarget || 1e-9))  
+                );
+                intersectDist = Math.min(intersectDist, distance * 0.8); 
+                ratio = (distance - intersectDist - 2) / distance; 
+            }
+            
+            const adjustedX2 = x1 + dx * ratio;
+            const adjustedY2 = y1 + dy * ratio;
+
+            const midX = (x1 + adjustedX2) / 2;
+            const midY = (y1 + adjustedY2) / 2;
+            const controlOffset = distance * 0.20 * (level % 2 === 0 ? 1 : -0.7); 
+            const controlX = midX + (dy / (distance || 1)) * controlOffset; 
+            const controlY = midY - (dx / (distance || 1)) * controlOffset; 
+            
+            path.setAttribute('d', `M ${x1} ${y1} Q ${controlX} ${controlY} ${adjustedX2} ${adjustedY2}`);
+            
+            const nodeColors = getCurrentNodeColors();
+            path.style.stroke = shadeColor(nodeColors[(level) % nodeColors.length], currentTheme === 'light' ? -15 : 15); 
+            return path;
+        }
+
+        function setupSVGInteractions() {
+            if (!svgElement) svgElement = document.getElementById('mindMapSvg');
+            svgElement.addEventListener('mousedown', onPointerDown);
+            svgElement.addEventListener('mousemove', onPointerMove);
+            svgElement.addEventListener('mouseup', onPointerUp);
+            svgElement.addEventListener('mouseleave', onPointerUp); 
+            svgElement.addEventListener('wheel', onWheelScroll, { passive: false }); 
+            svgElement.addEventListener('touchstart', onPointerDown, { passive: false });
+            svgElement.addEventListener('touchmove', onPointerMove, { passive: false });
+            svgElement.addEventListener('touchend', onPointerUp);
+            svgElement.addEventListener('touchcancel', onPointerUp);
+        }
+        
+        function getPointerCoordinates(event) {
+            if (event.touches && event.touches.length > 0) {
+                return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+            }
+            return { x: event.clientX, y: event.clientY };
+        }
+
+        function onPointerDown(e) {
+            e.preventDefault(); 
+            isDragging = true;
+            const coords = getPointerCoordinates(e);
+            lastPointerX = coords.x;
+            lastPointerY = coords.y;
+            svgElement.style.cursor = 'grabbing';
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const coords = getPointerCoordinates(e);
+            const deltaX = coords.x - lastPointerX;
+            const deltaY = coords.y - lastPointerY;
+            currentTranslateX += deltaX;
+            currentTranslateY += deltaY;
+            updateTransform();
+            lastPointerX = coords.x;
+            lastPointerY = coords.y;
+        }
+
+        function onPointerUp() {
+            if (isDragging) {
+                isDragging = false;
+                svgElement.style.cursor = 'grab';
+            }
+        }
+
+        function onWheelScroll(e) {
+            e.preventDefault(); 
+            const delta = e.deltaY > 0 ? 0.85 : 1.15; 
+            const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentScale * delta)); 
+            
+            const svgRect = svgElement.getBoundingClientRect();
+            const pointerX = e.clientX - svgRect.left; 
+            const pointerY = e.clientY - svgRect.top;  
+
+            currentTranslateX = pointerX - (pointerX - currentTranslateX) * (newScale / currentScale);
+            currentTranslateY = pointerY - (pointerY - currentTranslateY) * (newScale / currentScale);
+            currentScale = newScale;
+            updateTransform();
+        }
+
+        function updateTransform() {
+            if (!rootGroup) rootGroup = document.getElementById('mindMapRootGroup');
+            rootGroup.setAttribute('transform', `translate(${currentTranslateX}, ${currentTranslateY}) scale(${currentScale})`);
+            updateDebugInfo();
+        }
+        
+        function zoomHandler(zoomFactor) {
+            const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentScale * zoomFactor));
+            if (newScale === currentScale) return; 
+
+            const svgRect = svgElement.getBoundingClientRect();
+            const centerX = svgRect.width / 2;
+            const centerY = svgRect.height / 2;
+
+            currentTranslateX = centerX - (centerX - currentTranslateX) * (newScale / currentScale);
+            currentTranslateY = centerY - (centerY - currentTranslateY) * (newScale / currentScale);
+            currentScale = newScale;
+            updateTransform();
+        }
+
+        function zoomInHandler() { zoomHandler(1.25); }
+        function zoomOutHandler() { zoomHandler(0.8); }
+
+        function resetViewHandler() {
+            currentScale = 1; 
+            const svgWidth = mindMapContainerElement.clientWidth;
+            const svgHeight = mindMapContainerElement.clientHeight;
+            
+            if (rootGroup && typeof rootGroup.getBBox === 'function' && rootGroup.childNodes.length > 0) {
+                try {
+                    const contentBBox = rootGroup.getBBox();
+                     if (contentBBox.width > 0 && contentBBox.height > 0 && isFinite(contentBBox.x) && isFinite(contentBBox.y)) {
+                        const scaleToFitWidth = svgWidth / contentBBox.width;
+                        const scaleToFitHeight = svgHeight / contentBBox.height;
+                        currentScale = Math.min(scaleToFitWidth, scaleToFitHeight) * 0.90; 
+                        currentScale = Math.max(MIN_ZOOM, Math.min(1.2, currentScale)); 
+
+                        currentTranslateX = (svgWidth / 2) - (contentBBox.x + contentBBox.width / 2) * currentScale;
+                        currentTranslateY = (svgHeight / 2) - (contentBBox.y + contentBBox.height / 2) * currentScale;
+                    } else { 
+                        currentTranslateX = 0; 
+                        currentTranslateY = 0;
+                        currentScale = 1;
+                    }
+                } catch (e) { 
+                    console.warn("Erro ao calcular BBox para recentralizar:", e);
+                    currentTranslateX = 0; 
+                    currentTranslateY = 0;
+                    currentScale = 1;
+                }
+            } else { 
+                 currentTranslateX = 0; 
+                 currentTranslateY = 0;
+                 currentScale = 1;
+            }
+            updateTransform();
+        }
+        
+        function updateDebugInfo() {
+            if (debugInfoElement) {
+                 debugInfoElement.style.display = 'block';
+                 debugInfoElement.innerHTML = `
+                    Scale: ${currentScale.toFixed(2)}<br>
+                    TX: ${currentTranslateX.toFixed(0)}px, TY: ${currentTranslateY.toFixed(0)}px<br>
+                    Nodes: ${nodePositions.size}
+                `;
+            }
+        }
+
+        function showLoading(show) {
+            loadingElement.style.display = show ? 'block' : 'none';
+        }
+        function showError(message) {
+            errorContainerElement.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+        function clearError() {
+            errorContainerElement.innerHTML = '';
+        }
+        function clearAll() {
+            textInputElement.value = '';
+            mindMapContainerElement.classList.add('hidden');
+            if (rootGroup) rootGroup.innerHTML = '';
+            if (debugInfoElement) debugInfoElement.style.display = 'none';
+            nodePositions.clear();
+            clearError();
+            currentScale = 1;
+            currentTranslateX = 0;
+            currentTranslateY = 0;
+            updateTransform(); 
+        }
+
+        function askAndSetApiKey() {
+            userApiKey = prompt("Por favor, insira a sua chave da API Gemini para utilizar a aplicação:", "");
+            if (!userApiKey || userApiKey.trim() === "") {
+                showError("Chave da API não fornecida. A geração de mapas mentais está desativada. Recarregue a página para tentar novamente.");
+                if(generateMapButton) generateMapButton.disabled = true;
+            } else {
+                 if(generateMapButton) generateMapButton.disabled = false;
+                 clearError(); // Limpa a mensagem de erro se a chave for fornecida
+            }
+        }
+
+
+        textInputElement.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault(); 
+                generateMindMap();
+            }
         });
-      }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            svgElement = document.getElementById('mindMapSvg');
+            rootGroup = document.getElementById('mindMapRootGroup');
+            debugInfoElement = document.getElementById('debugInfo');
+            themeToggleBtn = document.getElementById('themeToggleBtn');
+            generateMapButton = document.getElementById('generateMapBtn');
+
+            askAndSetApiKey(); // Pede a chave API ao carregar
+
+            if (!svgElement || !rootGroup) {
+                console.error("Elementos SVG principais não encontrados!");
+            } else {
+                 setupSVGInteractions();
+                 resetViewHandler(); 
+            }
+             if (themeToggleBtn) {
+                 themeToggleBtn.textContent = currentTheme === 'light' ? '🌙 Tema Escuro' : '☀️ Tema Claro';
+             }
+        });
+
     </script>
 </body>
 </html>
