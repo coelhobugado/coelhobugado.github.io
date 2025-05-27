@@ -47,7 +47,7 @@
             --light-bg: #2d3748;    /* Cinza muito escuro para fundos principais */
             --text-color: #e2e8f0;   /* Cinza claro para texto geral */
             --node-text-color: #f7fafc; /* Branco quase puro para texto do nó */
-            
+
             --body-bg: linear-gradient(135deg, #2c3e50 0%, #1f2937 100%);
             --container-header-text-color: #e2e8f0;
             --input-section-bg: #2d3748; /* Cinza escuro para seções de input */
@@ -127,7 +127,7 @@
             margin-bottom: 8px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
         }
-        
+
         .header p {
             font-size: 1rem;
             opacity: 0.95;
@@ -219,7 +219,7 @@
             background: var(--btn-secondary-hover-bg);
             border-color: var(--btn-secondary-hover-border-color);
         }
-        
+
         .theme-toggle-btn {
         }
 
@@ -302,13 +302,13 @@
         #mindMapSvg:active {
             cursor: grabbing;
         }
-        
+
         .node-group .node-rect {
             stroke-width: 2px; 
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.15)); 
             transition: filter 0.2s ease, transform 0.2s ease, fill 0.3s ease, stroke 0.3s ease;
         }
-        
+
         .node-group:hover .node-rect {
              filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.25));
              transform: translateY(-1px) scale(1.02); 
@@ -323,7 +323,7 @@
             fill: var(--node-text-color);
             transition: fill 0.3s ease;
         }
-        
+
         .link-path {
             stroke-opacity: 0.7;
             stroke-width: 2.5px; 
@@ -393,7 +393,7 @@
             <div class="spinner"></div>
             <p>Criando seu mapa mental...</p>
         </div>
-        
+
         <div id="errorContainer"></div> 
         <div class="mindmap-container hidden" id="mindMapContainer">
             <div class="debug-info" id="debugInfo"></div>
@@ -417,7 +417,7 @@
     <script>
         let userApiKey = null; // Chave API será fornecida pelo utilizador
         const GEMINI_MODEL_NAME = "gemini-2.0-flash"; 
-        
+
         const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
         const NODE_COLORS_LIGHT = ['#5b86e5', '#45b6fe', '#36d1dc', '#f09819', '#cb356b', '#9b59b6', '#2ecc71', '#e74c3c'];
@@ -441,12 +441,12 @@
         let lastPointerY = 0;
         let nodePositions = new Map(); 
         let currentTheme = 'light';
-        
+
         const textInputElement = document.getElementById('textInput');
         const loadingElement = document.getElementById('loading');
         const mindMapContainerElement = document.getElementById('mindMapContainer');
         const errorContainerElement = document.getElementById('errorContainer');
-        
+
         function getCurrentNodeColors() {
             return currentTheme === 'light' ? NODE_COLORS_LIGHT : NODE_COLORS_DARK;
         }
@@ -458,7 +458,7 @@
             if (emojiThemeToggleElement) {
                 emojiThemeToggleElement.textContent = currentTheme === 'light' ? '☀️' : '🌙';
             }
-            
+
             if (rootGroup && rootGroup.dataset.mindmapData) {
                  const currentData = JSON.parse(rootGroup.dataset.mindmapData);
                  if (currentData.central) {
@@ -550,7 +550,7 @@
             }
             return { x: currentX, y: currentY };
         }
-        
+
         async function generateMindMap() {
             if (!userApiKey) {
                 showError('Chave da API Gemini não fornecida. Por favor, recarregue a página e insira a chave.');
@@ -566,7 +566,7 @@
                 showError('O texto precisa ter pelo menos 20 caracteres para gerar um mapa mental útil.');
                 return;
             }
-            
+
             showLoading(true);
             clearError(); 
             mindMapContainerElement.classList.add('hidden'); 
@@ -610,7 +610,7 @@
                 showLoading(false);
             }
         }
-        
+
         function validateMindMapStructure(data) {
             if (!data.central || typeof data.central !== 'string' || data.central.trim() === '') {
                 console.warn("Validação falhou: Tópico central ausente ou inválido.");
@@ -639,7 +639,7 @@
             }
             const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${userApiKey}`;
 
-            const prompt = `
+            const prompt = \`
 Analise o seguinte texto e crie uma estrutura de MAPA MENTAL hierárquica bem organizada em formato JSON.
 
 INSTRUÇÕES IMPORTANTES:
@@ -675,7 +675,7 @@ REGRAS OBRIGATÓRIAS PARA O JSON DE SAÍDA:
 
 Texto para análise:
 ${text}
-`;
+\`;
             const grandChildItemSchema = {
                 type: "OBJECT",
                 properties: { "title": { type: "STRING" } },
@@ -718,7 +718,7 @@ ${text}
                     maxOutputTokens: 2048
                 }
             };
-            
+
             const response = await fetch(GEMINI_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -727,31 +727,31 @@ ${text}
 
             if (!response.ok) {
                 const errorBody = await response.text();
-                throw new Error(`API Error: ${response.status}. Details: ${errorBody.substring(0, 300)}`);
+                throw new Error(\`API Error: ${response.status}. Details: ${errorBody.substring(0, 300)}\`);
             }
-            
+
             const data = await response.json();
             if (!data.candidates || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0].text) {
                 throw new Error('Resposta da API em formato inesperado.');
             }
-            
+
             const generatedText = data.candidates[0].content.parts[0].text;
             try {
                 const parsed = JSON.parse(generatedText);
-                
+
                 function  processNodeText(node) {
                     if (node.title) node.title = truncateText(node.title);
                     if (node.children) node.children.forEach(processNodeText);
                 }
                 if (parsed.central) parsed.central = truncateText(parsed.central);
                 if (parsed.branches) parsed.branches.forEach(processNodeText);
-                
+
                 return parsed;
             } catch (e) {
                 throw new Error('A IA retornou um JSON inválido.');
             }
         }
-        
+
         function renderMindMap(data, svgWidth, svgHeight) {
             svgElement = document.getElementById('mindMapSvg');
             rootGroup = document.getElementById('mindMapRootGroup');
@@ -762,11 +762,11 @@ ${text}
             const centerX = svgWidth / 2;
             const centerY = svgHeight / 2;
 
-            svgElement.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-            
+            svgElement.setAttribute('viewBox', \`0 0 ${svgWidth} ${svgHeight}\`);
+
             const centralNodeData = createNodeElement(data.central, centerX, centerY, 0, 0, true);
             rootGroup.appendChild(centralNodeData.group);
-            
+
             const centralNodeInfo = {
                 x: centerX, y: centerY,
                 width: centralNodeData.width, height: centralNodeData.height
@@ -777,30 +777,30 @@ ${text}
                 const numBranches = data.branches.length;
                 let angleStep = (2 * Math.PI) / numBranches;
                 if (numBranches > 1 && angleStep < MIN_ANGLE_BETWEEN_BRANCHES) {
-                    console.warn(`Ângulo entre ramos (${angleStep*180/Math.PI}°) é menor que o mínimo. Ajustando para ${MIN_ANGLE_BETWEEN_BRANCHES*180/Math.PI}°`);
+                    console.warn(\`Ângulo entre ramos (${angleStep*180/Math.PI}°) é menor que o mínimo. Ajustando para ${MIN_ANGLE_BETWEEN_BRANCHES*180/Math.PI}°\`);
                     angleStep = MIN_ANGLE_BETWEEN_BRANCHES;
                 }
 
 
                 data.branches.forEach((branch, index) => {
                     if (!branch || !branch.title || branch.title.trim() === '') return;
-                    
+
                     let angle = (index * angleStep) - (Math.PI / 2); 
                     if (numBranches === 1) angle = -Math.PI / 2; 
 
                     const branchRadius = LEVEL_DISTANCE_FACTOR * 0.9 + (Math.random() * 20 - 10);
                     const initialBranchX = centerX + Math.cos(angle) * branchRadius;
                     const initialBranchY = centerY + Math.sin(angle) * branchRadius;
-                    
+
                     drawBranchRecursive(branch, initialBranchX, initialBranchY, centralNodeInfo, 1, angle, rootGroup, index);
                 });
             }
-            
+
             updateDebugInfo();
             resetViewHandler();
             setupSVGInteractions();
         }
-        
+
         function calculateNodeMetrics(text, level, isCentral = false) {
             const displayText = truncateText(text);
             const fontSize = isCentral ? BASE_FONT_SIZE + 4 : BASE_FONT_SIZE + Math.max(0, 3 - level);
@@ -808,9 +808,9 @@ ${text}
             const fontWeight = isCentral ? '700' : (level === 1 ? '600' : '500');
 
             const tempText = createSVGElement('text', {
-                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`,
+                style: \`font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;\`,
             }, displayText);
-            
+
             if (!svgElement || !svgElement.appendChild) { 
                  console.warn("calculateNodeMetrics: svgElement não está pronto ou não tem appendChild.");
                  return { width: 150, height: rectHeight}; 
@@ -827,13 +827,13 @@ ${text}
             const originalNodeText = branchData.title;
             if (!originalNodeText || typeof originalNodeText !== 'string' || originalNodeText.trim() === "") return;
 
-            const nodeKey = `node-${level}-${branchIndex}-${parentSvgGroup.childNodes.length}`;
+            const nodeKey = \`node-${level}-${branchIndex}-${parentSvgGroup.childNodes.length}\`;
             const metrics = calculateNodeMetrics(originalNodeText, level, false);
             const { x: finalX, y: finalY } = adjustPosition(initialX, initialY, metrics.width, metrics.height, nodeKey);
 
             const nodeData = createNodeElement(originalNodeText, finalX, finalY, level, branchIndex, false);
             parentSvgGroup.appendChild(nodeData.group);
-            
+
             nodePositions.set(nodeKey, {
                 x: finalX, y: finalY, width: nodeData.width, height: nodeData.height
             });
@@ -852,20 +852,20 @@ ${text}
 
                 branchData.children.forEach((child, childIdx) => {
                     if (!child || !child.title || child.title.trim() === '') return;
-                    
+
                     let childAngle;
                     if (numChildren === 1) {
                         childAngle = parentAngle; 
                     } else {
                         childAngle = parentAngle - (currentSpreadAngle / 2) + (childIdx / (numChildren - 1)) * currentSpreadAngle;
                     }
-                    
+
                     const angleVariation = (Math.random() - 0.5) * (Math.PI / 18 / (level + 1)); 
                     childAngle += angleVariation;
-                    
+
                     const childInitialX = finalX + Math.cos(childAngle) * childRadius;
                     const childInitialY = finalY + Math.sin(childAngle) * childRadius;
-                    
+
                     drawBranchRecursive(child, childInitialX, childInitialY, { x: finalX, y: finalY, width: nodeData.width, height: nodeData.height }, level + 1, childAngle, parentSvgGroup, branchIndex);
                 });
             }
@@ -888,17 +888,17 @@ ${text}
 
             const group = createSVGElement('g', {
                 class: 'node-group',
-                transform: `translate(${x},${y})`
+                transform: \`translate(${x},${y})\`
             });
 
             const fontSize = isCentral ? BASE_FONT_SIZE + 3 : BASE_FONT_SIZE + Math.max(0, 2 - level);
             const currentRectHeight = isCentral ? BASE_NODE_HEIGHT + 8 : BASE_NODE_HEIGHT + Math.max(0, (2 - level) * 3);
             const fontWeight = isCentral ? '600' : (level === 1 ? '500' : '400');
-            
+
             const tempText = createSVGElement('text', {
-                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`
+                style: \`font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;\`
             }, displayText);
-            
+
             let computedTextWidth = displayText.length * fontSize * 0.6; 
             if (svgElement && svgElement.appendChild) {
                 svgElement.appendChild(tempText);
@@ -909,7 +909,7 @@ ${text}
             }
 
             const currentRectWidth = Math.max(computedTextWidth + NODE_PADDING.x * 2, isCentral ? 100 : 70);
-            
+
             let colorIdx;
             const nodeColors = getCurrentNodeColors();
             if (isCentral) {
@@ -928,9 +928,9 @@ ${text}
                 height: currentRectHeight,
                 rx: level < 2 ? 12 : 8, 
                 ry: level < 2 ? 12 : 8,
-                style: `fill: ${fillColor}; stroke: ${shadeColor(fillColor, -25)}; stroke-width: 1.5px;` 
+                style: \`fill: ${fillColor}; stroke: ${shadeColor(fillColor, -25)}; stroke-width: 1.5px;\` 
             });
-            
+
             const textElement = createSVGElement('text', {
                 class: 'node-text',
                 'font-size': fontSize,
@@ -942,7 +942,7 @@ ${text}
             group.appendChild(textElement);
             return { group, width: currentRectWidth, height: currentRectHeight };
         }
-        
+
         function shadeColor(color, percent) { 
             let R = parseInt(color.substring(1,3),16);
             let G = parseInt(color.substring(3,5),16);
@@ -964,16 +964,16 @@ ${text}
             const GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
             const BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
 
-            return `#${RR}${GG}${BB}`;
+            return \`#${RR}${GG}${BB}\`;
         }
 
         function createLinkElement(x1, y1, x2, y2, level, targetNodeHalfWidth, targetNodeHalfHeight) {
             const path = createSVGElement('path', { class: 'link-path' });
-            
+
             const dx = x2 - x1;
             const dy = y2 - y1;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             let ratio = 0.9; 
             if (distance > 0) {
                 const angleToTarget = Math.atan2(dy, dx);
@@ -984,7 +984,7 @@ ${text}
                 intersectDist = Math.min(intersectDist, distance * 0.8); 
                 ratio = (distance - intersectDist - 2) / distance; 
             }
-            
+
             const adjustedX2 = x1 + dx * ratio;
             const adjustedY2 = y1 + dy * ratio;
 
@@ -993,9 +993,9 @@ ${text}
             const controlOffset = distance * 0.20 * (level % 2 === 0 ? 1 : -0.7); 
             const controlX = midX + (dy / (distance || 1)) * controlOffset; 
             const controlY = midY - (dx / (distance || 1)) * controlOffset; 
-            
-            path.setAttribute('d', `M ${x1} ${y1} Q ${controlX} ${controlY} ${adjustedX2} ${adjustedY2}`);
-            
+
+            path.setAttribute('d', \`M ${x1} ${y1} Q ${controlX} ${controlY} ${adjustedX2} ${adjustedY2}\`);
+
             const nodeColors = getCurrentNodeColors();
             path.style.stroke = shadeColor(nodeColors[(level) % nodeColors.length], currentTheme === 'light' ? -15 : 15); 
             return path;
@@ -1013,7 +1013,7 @@ ${text}
             svgElement.addEventListener('touchend', onPointerUp);
             svgElement.addEventListener('touchcancel', onPointerUp);
         }
-        
+
         function getPointerCoordinates(event) {
             if (event.touches && event.touches.length > 0) {
                 return { x: event.touches[0].clientX, y: event.touches[0].clientY };
@@ -1054,7 +1054,7 @@ ${text}
             e.preventDefault(); 
             const delta = e.deltaY > 0 ? 0.85 : 1.15; 
             const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentScale * delta)); 
-            
+
             const svgRect = svgElement.getBoundingClientRect();
             const pointerX = e.clientX - svgRect.left; 
             const pointerY = e.clientY - svgRect.top;  
@@ -1067,10 +1067,10 @@ ${text}
 
         function updateTransform() {
             if (!rootGroup) rootGroup = document.getElementById('mindMapRootGroup');
-            rootGroup.setAttribute('transform', `translate(${currentTranslateX}, ${currentTranslateY}) scale(${currentScale})`);
+            rootGroup.setAttribute('transform', \`translate(${currentTranslateX}, ${currentTranslateY}) scale(${currentScale})\`);
             updateDebugInfo();
         }
-        
+
         function zoomHandler(zoomFactor) {
             const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentScale * zoomFactor));
             if (newScale === currentScale) return; 
@@ -1092,7 +1092,7 @@ ${text}
             currentScale = 1; 
             const svgWidth = mindMapContainerElement.clientWidth;
             const svgHeight = mindMapContainerElement.clientHeight;
-            
+
             if (rootGroup && typeof rootGroup.getBBox === 'function' && rootGroup.childNodes.length > 0) {
                 try {
                     const contentBBox = rootGroup.getBBox();
@@ -1122,15 +1122,15 @@ ${text}
             }
             updateTransform();
         }
-        
+
         function updateDebugInfo() {
             if (debugInfoElement) {
                  debugInfoElement.style.display = 'block';
-                 debugInfoElement.innerHTML = `
+                 debugInfoElement.innerHTML = \`
                     Scale: ${currentScale.toFixed(2)}<br>
                     TX: ${currentTranslateX.toFixed(0)}px, TY: ${currentTranslateY.toFixed(0)}px<br>
                     Nodes: ${nodePositions.size}
-                `;
+                \`;
             }
         }
 
@@ -1138,7 +1138,7 @@ ${text}
             loadingElement.style.display = show ? 'block' : 'none';
         }
         function showError(message) {
-            errorContainerElement.innerHTML = `<div class="error-message">${message}</div>`;
+            errorContainerElement.innerHTML = \`<div class="error-message">${message}</div>\`;
         }
         function clearError() {
             errorContainerElement.innerHTML = '';
@@ -1178,7 +1178,7 @@ ${text}
                 generateMindMap();
             }
         });
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             svgElement = document.getElementById('mindMapSvg');
             rootGroup = document.getElementById('mindMapRootGroup');
@@ -1187,7 +1187,7 @@ ${text}
             exportPngButtonElement = document.getElementById('exportPngBtn'); // Obtém o botão de exportar PNG
             emojiThemeToggleElement = document.createElement('div'); 
             emojiThemeToggleElement.id = 'emojiThemeToggle';
-            
+
             // Adiciona o novo controle de tema ao header
             const headerElement = document.querySelector('.header');
             if (headerElement) {
@@ -1195,7 +1195,7 @@ ${text}
             } else {
                 console.error("Elemento .header não encontrado para adicionar o seletor de tema emoji.");
             }
-            
+
             emojiThemeToggleElement.textContent = currentTheme === 'light' ? '☀️' : '🌙'; 
             emojiThemeToggleElement.onclick = toggleTheme; 
 
