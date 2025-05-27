@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Mapas Mentais Tradicionais com IA</title>
+    <script src="https://cdn.jsdelivr.net/npm/save-svg-as-png@1.4.17/lib/saveSvgAsPng.min.js"></script>
     <style>
         :root {
             --primary-color: #5b86e5;
@@ -103,6 +104,21 @@
             text-align: center;
             margin-bottom: 25px;
             color: var(--container-header-text-color);
+            position: relative; /* Added for positioning context for the emoji toggle */
+        }
+
+        #emojiThemeToggle {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.8rem; /* Larger emoji */
+            cursor: pointer;
+            padding: 5px;
+            user-select: none; /* Prevent text selection */
+            transition: transform 0.2s ease;
+        }
+        #emojiThemeToggle:hover {
+            transform: scale(1.15);
         }
 
         .header h1 {
@@ -368,7 +384,8 @@
             <div class="button-group">
                 <button class="btn-primary" id="generateMapBtn" onclick="generateMindMap()">💡 Gerar Mapa Mental</button>
                 <button class="btn-secondary" onclick="clearAll()">🗑️ Limpar Tudo</button>
-                <button class="btn-secondary theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn">🌓 Tema</button>
+                <button class="btn-secondary" id="exportPngBtn" disabled>🖼️ Exportar PNG</button> <!-- Adicionado disabled -->
+                <!-- Botão de tema removido daqui -->
             </div>
         </div>
 
@@ -415,7 +432,7 @@
         const MAX_TEXT_LENGTH = 30; 
         const MIN_ANGLE_BETWEEN_BRANCHES = Math.PI / 7; 
 
-        let svgElement, rootGroup, debugInfoElement, themeToggleBtn, generateMapButton;
+        let svgElement, rootGroup, debugInfoElement, generateMapButton, emojiThemeToggleElement, exportPngButtonElement; // exportPngButtonElement adicionado
         let currentScale = 1;
         let currentTranslateX = 0;
         let currentTranslateY = 0;
@@ -437,13 +454,61 @@
         function toggleTheme() {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.body.classList.toggle('dark-theme', currentTheme === 'dark');
-            themeToggleBtn.textContent = currentTheme === 'light' ? '🌙 Tema Escuro' : '☀️ Tema Claro';
+            // Atualiza o emoji do novo controle de tema
+            if (emojiThemeToggleElement) {
+                emojiThemeToggleElement.textContent = currentTheme === 'light' ? '☀️' : '🌙';
+            }
             
-            if (rootGroup && rootGroup.dataset.mindmapData) { 
+            if (rootGroup && rootGroup.dataset.mindmapData) {
                  const currentData = JSON.parse(rootGroup.dataset.mindmapData);
                  if (currentData.central) {
                     renderMindMap(currentData, mindMapContainerElement.clientWidth, mindMapContainerElement.clientHeight);
                  }
+            }
+        }
+
+        function exportMindMapAsPng() {
+            const svgToExport = document.getElementById('mindMapSvg');
+            if (!svgToExport) {
+                showError("Elemento SVG do mapa mental não encontrado para exportação.");
+                return;
+            }
+
+            let filename = "mapa_mental.png";
+            try {
+                // Tenta obter um nome mais descritivo do nó central, se existir
+                if (rootGroup && rootGroup.dataset.mindmapData) { // Verifica se rootGroup e o dataset existem
+                    const mindMapData = JSON.parse(rootGroup.dataset.mindmapData);
+                    if (mindMapData && mindMapData.central) {
+                        const centralTitle = mindMapData.central.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                        if (centralTitle) {
+                            filename = `${centralTitle.substring(0, 50)}_mapa_mental.png`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Não foi possível obter o título do mapa para o nome do arquivo, usando padrão.", e);
+            }
+
+            const options = {
+                backgroundColor: 'white', 
+                scale: 2, 
+                encoderOptions: 0.92,
+            };
+
+            console.log(`Tentando exportar SVG como PNG: ${filename} com opções:`, options);
+
+            if (typeof window.saveSvgAsPng !== 'undefined' && typeof window.saveSvgAsPng.saveSvgAsPng === 'function') {
+                try {
+                    window.saveSvgAsPng.saveSvgAsPng(svgToExport, filename, options);
+                    console.log("Tentativa de exportação PNG iniciada para:", filename);
+                } catch (error) {
+                    console.error("Erro durante a chamada de saveSvgAsPng:", error);
+                    showError(`Erro ao tentar exportar PNG: ${error.message}`);
+                }
+            } else {
+                console.error("Biblioteca saveSvgAsPng não carregada ou função saveSvgAsPng não encontrada.");
+                showError("Erro: A biblioteca de exportação PNG não foi carregada corretamente. Verifique sua conexão ou tente recarregar a página.");
             }
         }
 
@@ -511,31 +576,36 @@
                 const apiResponse = await callGeminiAPI(textInput);
                 console.log("Resposta da API Gemini (Mapa Mental):", JSON.stringify(apiResponse, null, 2));
 
-                if (rootGroup) { 
+                if (rootGroup) {
                     rootGroup.dataset.mindmapData = JSON.stringify(apiResponse);
                 }
 
                 if (apiResponse && apiResponse.central && validateMindMapStructure(apiResponse)) {
-                    mindMapContainerElement.classList.remove('hidden'); 
+                    mindMapContainerElement.classList.remove('hidden');
                     await new Promise(resolve => requestAnimationFrame(resolve));
-                    
+
                     const svgWidth = mindMapContainerElement.clientWidth;
                     const svgHeight = mindMapContainerElement.clientHeight;
 
                     if (svgWidth > 0 && svgHeight > 0) {
                        renderMindMap(apiResponse, svgWidth, svgHeight);
+                       // Habilitar botão de exportar PNG após renderização bem-sucedida
+                       if (exportPngButtonElement) exportPngButtonElement.disabled = false;
                     } else {
                        showError('Falha ao obter dimensões do container do mapa.');
                        mindMapContainerElement.classList.add('hidden');
+                       if (exportPngButtonElement) exportPngButtonElement.disabled = true;
                     }
                 } else {
                     showError('A IA não retornou uma estrutura de mapa mental válida ou completa. Tente novamente com um texto mais detalhado, ou ajuste o prompt na API.');
                     mindMapContainerElement.classList.add('hidden');
+                    if (exportPngButtonElement) exportPngButtonElement.disabled = true;
                 }
             } catch (error) {
                 console.error("Erro em generateMindMap:", error);
                 showError(`Erro ao gerar mapa mental: ${error.message}`);
                 mindMapContainerElement.classList.add('hidden');
+                if (exportPngButtonElement) exportPngButtonElement.disabled = true;
             } finally {
                 showLoading(false);
             }
@@ -1083,7 +1153,8 @@ ${text}
             currentScale = 1;
             currentTranslateX = 0;
             currentTranslateY = 0;
-            updateTransform(); 
+            updateTransform();
+            if (exportPngButtonElement) exportPngButtonElement.disabled = true; // Desabilitar ao limpar
         }
 
         function askAndSetApiKey() {
@@ -1091,9 +1162,12 @@ ${text}
             if (!userApiKey || userApiKey.trim() === "") {
                 showError("Chave da API não fornecida. A geração de mapas mentais está desativada. Recarregue a página para tentar novamente.");
                 if(generateMapButton) generateMapButton.disabled = true;
+                if(exportPngButtonElement) exportPngButtonElement.disabled = true; // Desabilitar exportação também
             } else {
                  if(generateMapButton) generateMapButton.disabled = false;
-                 clearError(); // Limpa a mensagem de erro se a chave for fornecida
+                 // O botão de exportar permanece desabilitado até que um mapa seja gerado
+                 if(exportPngButtonElement) exportPngButtonElement.disabled = true; 
+                 clearError(); 
             }
         }
 
@@ -1109,20 +1183,37 @@ ${text}
             svgElement = document.getElementById('mindMapSvg');
             rootGroup = document.getElementById('mindMapRootGroup');
             debugInfoElement = document.getElementById('debugInfo');
-            themeToggleBtn = document.getElementById('themeToggleBtn');
             generateMapButton = document.getElementById('generateMapBtn');
+            exportPngButtonElement = document.getElementById('exportPngBtn'); // Obtém o botão de exportar PNG
+            emojiThemeToggleElement = document.createElement('div'); 
+            emojiThemeToggleElement.id = 'emojiThemeToggle';
+            
+            // Adiciona o novo controle de tema ao header
+            const headerElement = document.querySelector('.header');
+            if (headerElement) {
+                headerElement.appendChild(emojiThemeToggleElement);
+            } else {
+                console.error("Elemento .header não encontrado para adicionar o seletor de tema emoji.");
+            }
+            
+            emojiThemeToggleElement.textContent = currentTheme === 'light' ? '☀️' : '🌙'; 
+            emojiThemeToggleElement.onclick = toggleTheme; 
 
-            askAndSetApiKey(); // Pede a chave API ao carregar
+            if (exportPngButtonElement) {
+                exportPngButtonElement.addEventListener('click', exportMindMapAsPng);
+            } else {
+                console.error("Botão de exportar PNG não encontrado.");
+            }
+
+            askAndSetApiKey(); 
 
             if (!svgElement || !rootGroup) {
                 console.error("Elementos SVG principais não encontrados!");
             } else {
                  setupSVGInteractions();
-                 resetViewHandler(); 
+                 resetViewHandler();
             }
-             if (themeToggleBtn) {
-                 themeToggleBtn.textContent = currentTheme === 'light' ? '🌙 Tema Escuro' : '☀️ Tema Claro';
-             }
+            // Não é mais necessário atualizar o texto do botão antigo
         });
 
     </script>
