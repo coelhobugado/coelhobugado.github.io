@@ -4,50 +4,52 @@
     --color-black: #000000;
 
     /* Tons de Cinza (Neutros) */
-    --color-gray-50: #f8fafc;
-    --color-gray-100: #f1f5f9;
-    --color-gray-200: #e2e8f0;
-    --color-gray-300: #cbd5e1;
-    --color-gray-400: #94a3b8;
-    --color-gray-600: #475569;
-    --color-gray-900: #0f172a;
+    --color-gray-50: #f8fafc;   /* Muito claro */
+    --color-gray-100: #f1f5f9;  /* Quase branco */
+    --color-gray-200: #e2e8f0;  /* Cinza claro para bordas/background */
+    --color-gray-300: #cbd5e1;  /* Cinza médio claro */
+    --color-gray-400: #94a3b8;  /* Cinza médio para textos/conexões */
+    --color-gray-500: #64748b;  /* Para conexões no tema escuro (adicionado) */
+    --color-gray-600: #475569;  /* Cinza escuro para texto secundário */
+    --color-gray-700: #334155;  /* Para bordas/background em tema escuro (adicionado) */
+    --color-gray-800: #1e293b;  /* Para background secundário em tema escuro (adicionado) */
+    --color-gray-900: #0f172a;  /* Quase preto para texto principal */
 
     /* Tons de Azul (Primário) */
-    --color-blue-50: #eff6ff;
-    --color-blue-100: #dbeafe;
-    --color-blue-300: #93c5fd;
-    --color-blue-600: #2563eb;
-    --color-blue-700: #1d4ed8;
-    --color-blue-800: #1e40af;
-    --color-blue-400: #60a5fa;
+    --color-blue-50: #eff6ff;   /* Azul muito claro para foco/highlight */
+    --color-blue-100: #dbeafe;  /* Azul claro para nós (adicionado) */
+    --color-blue-300: #93c5fd;  /* Azul médio claro para bordas */
+    --color-blue-400: #60a5fa;  /* Azul para seleção/foco em tema escuro */
+    --color-blue-600: #2563eb;  /* Azul primário */
+    --color-blue-700: #1d4ed8;  /* Azul mais escuro (hover) */
+    --color-blue-800: #1e40af;  /* Azul mais escuro (active) */
 
     /* Variáveis de Design Geral (Tema Claro) */
     --background-primary: var(--color-white);
     --background-secondary: var(--color-gray-50);
-    --background-tertiary: var(--color-gray-100);
+    --background-tertiary: var(--color-gray-100); /* Para botões e elementos secundários */
     
     --text-primary: var(--color-gray-900);
     --text-secondary: var(--color-gray-600);
     
     --border-primary: var(--color-gray-200);
     --border-secondary: var(--color-gray-300);
-    --border-focus: var(--color-blue-600);
+    --border-focus: var(--color-blue-600); /* Cor do foco para inputs/botões */
     
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
     /* Variáveis de Espaçamento e Fontes */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-base: 0.75rem;
-    --spacing-lg: 1rem;
-    --spacing-xl: 1.25rem;
+    --spacing-xs: 0.25rem; /* 4px */
+    --spacing-sm: 0.5rem;  /* 8px */
+    --spacing-base: 0.75rem; /* 12px */
+    --spacing-lg: 1rem;    /* 16px */
 
     --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-base: 1rem;
+    --font-size-xs: 0.75rem; /* 12px */
+    --font-size-sm: 0.875rem; /* 14px */
+    --font-size-base: 1rem; /* 16px */
     
     --font-weight-normal: 400;
     --font-weight-medium: 500;
@@ -56,16 +58,16 @@
     --line-height-tight: 1.25;
     --line-height-base: 1.5;
 
-    --border-radius-sm: 0.375rem;
-    --border-radius-base: 0.5rem;
-    --border-radius-lg: 0.75rem;
+    --border-radius-sm: 0.375rem; /* 6px */
+    --border-radius-base: 0.5rem; /* 8px */
+    --border-radius-lg: 0.75rem; /* 12px */
 
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    --z-fixed: 1030;
+    --z-fixed: 1030; /* Para elementos fixos como o painel de controle */
 
-    /* Variáveis para o Canvas */
+    /* Variáveis para o Canvas (se forem usadas no CSS, caso contrário, JS pode lidar) */
     --canvas-node-default: var(--color-blue-100);
     --canvas-node-text: var(--color-gray-900);
     --canvas-selection: var(--color-blue-600);
@@ -75,15 +77,15 @@
 /* Tema Escuro */
 html.dark-theme {
     --background-primary: var(--color-gray-900);
-    --background-secondary: #1e293b;
-    --background-tertiary: #334155;
+    --background-secondary: var(--color-gray-800);
+    --background-tertiary: var(--color-gray-700);
     
     --text-primary: var(--color-gray-100);
     --text-secondary: var(--color-gray-300);
     
-    --border-primary: #334155;
-    --border-secondary: #475569;
-    --border-focus: var(--color-blue-400);
+    --border-primary: var(--color-gray-700);
+    --border-secondary: var(--color-gray-600);
+    --border-focus: var(--color-blue-400); /* Ajustado para melhor visibilidade no tema escuro */
     
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
     --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
@@ -92,7 +94,7 @@ html.dark-theme {
     --canvas-node-default: var(--color-blue-800);
     --canvas-node-text: var(--color-gray-100);
     --canvas-selection: var(--color-blue-400);
-    --canvas-connection: var(--color-gray-500);
+    --canvas-connection: var(--color-gray-500); /* Cinza mais claro para conexões no tema escuro */
 }
 
 /* Reset Básico */
@@ -134,20 +136,12 @@ body {
     z-index: var(--z-fixed);
     transition: all var(--transition-fast);
     
-    display: grid;
-    gap: var(--spacing-sm);
+    display: grid; /* Grid para organizar os botões e as seções */
+    grid-template-columns: 1fr 1fr; /* Duas colunas fixas para os botões */
+    gap: var(--spacing-sm); /* Espaçamento entre os itens do grid */
     padding: var(--spacing-base);
-    max-width: min(90vw, 400px);
-    min-width: 280px;
-    
-    /* Grid responsivo que se adapta ao conteúdo */
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    grid-auto-rows: min-content;
-}
-
-/* Seção de botões principais - sempre visível */
-.main-controls {
-    display: contents; /* Os botões se comportam como filhos diretos do grid */
+    max-width: 380px; /* Largura máxima para o painel, como na imagem */
+    min-width: 280px; /* Garante uma largura mínima */
 }
 
 /* Container do Canvas */
@@ -164,7 +158,7 @@ canvas {
     user-select: none;
 }
 
-/* Estilo base para botões */
+/* Estilo base para todos os botões dentro de #controls */
 #controls button {
     display: inline-flex;
     align-items: center;
@@ -176,7 +170,7 @@ canvas {
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
     text-align: center;
-    white-space: nowrap;
+    white-space: nowrap; /* Evita que o texto quebre dentro do botão */
     cursor: pointer;
     user-select: none;
     border: 1px solid var(--border-secondary);
@@ -187,19 +181,19 @@ canvas {
     outline: none;
     position: relative;
     overflow: hidden;
-    min-height: 36px;
+    min-height: 36px; /* Altura mínima para consistência */
 }
 
 #controls button:hover:not(:disabled) {
     background-color: var(--border-primary);
     border-color: var(--border-secondary);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px); /* Efeito sutil de levantar */
+    box-shadow: var(--shadow-sm); /* Sombra sutil ao passar o mouse */
 }
 
 #controls button:active {
-    transform: translateY(0);
-    box-shadow: none;
+    transform: translateY(0); /* Volta à posição normal ao clicar */
+    box-shadow: none; /* Remove a sombra ao clicar */
 }
 
 #controls button:focus-visible {
@@ -213,7 +207,7 @@ canvas {
     pointer-events: none;
 }
 
-/* Botões de ação principal */
+/* Botões de ação principal (cor azul) */
 #addNode, #zoomIn, #zoomOut, #saveAsImage, #toggleBoldButton {
     background-color: var(--color-blue-600);
     border-color: var(--color-blue-600);
@@ -230,65 +224,34 @@ canvas {
     border-color: var(--color-blue-800);
 }
 
-/* Controles de Forma - Layout compacto */
+/* Controles de Forma - Seção com título e botões */
 #shapeControls {
     display: none; /* Controlado pelo JS */
-    grid-column: 1 / -1; /* Ocupa toda a largura do grid */
+    grid-column: 1 / -1; /* Ocupa toda a largura do grid principal */
     
-    /* Grid interno compacto */
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: var(--spacing-sm);
-    align-items: center;
-    
+    /* Estilo do container da seção */
     padding: var(--spacing-base);
     border: 1px solid var(--border-primary);
     border-radius: var(--border-radius-base);
     background-color: var(--background-primary);
     box-shadow: var(--shadow-sm);
-}
 
-#shapeControls.visible {
-    display: grid;
-}
-
-#shapeControls > span {
-    grid-column: 1 / -1;
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: var(--spacing-xs);
-    padding-bottom: var(--spacing-xs);
-    border-bottom: 1px solid var(--border-primary);
-}
-
-/* Controles de Texto - Layout horizontal compacto */
-#textFormatControls {
-    display: none; /* Controlado pelo JS */
-    grid-column: 1 / -1; /* Ocupa toda a largura do grid */
-    
-    /* Flexbox horizontal para controles de texto */
+    /* Layout interno dos botões de forma */
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     align-items: center;
-    
-    padding: var(--spacing-base);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--border-radius-base);
-    background-color: var(--background-primary);
-    box-shadow: var(--shadow-sm);
 }
 
-#textFormatControls.visible {
-    display: flex;
+/* Visibilidade controlada por JS */
+#shapeControls.visible {
+    display: flex; /* Exibe como flex */
 }
 
-#textFormatControls strong {
-    flex-basis: 100%;
-    font-size: var(--font-size-xs);
+#shapeControls > span {
+    display: block; /* Garante que o span ocupe a largura total */
+    width: 100%; 
+    font-size: var(--font-size-sm); /* Um pouco maior que xs, como título */
     font-weight: var(--font-weight-semibold);
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -298,23 +261,67 @@ canvas {
     border-bottom: 1px solid var(--border-primary);
 }
 
-/* Labels e inputs compactos */
+/* Botões de forma dentro de #shapeControls */
+#shapeControls button {
+    flex: 1 1 auto; /* Permite que os botões cresçam e dividam o espaço */
+    min-width: 80px; /* Garante um tamanho mínimo para os botões */
+}
+
+
+/* Controles de Texto - Seção com título, labels e inputs */
+#textFormatControls {
+    display: none; /* Controlado pelo JS */
+    grid-column: 1 / -1; /* Ocupa toda a largura do grid principal */
+    
+    /* Estilo do container da seção */
+    padding: var(--spacing-base);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-base);
+    background-color: var(--background-primary);
+    box-shadow: var(--shadow-sm);
+
+    /* Layout interno dos elementos de texto */
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+/* Visibilidade controlada por JS */
+#textFormatControls.visible {
+    display: flex; /* Exibe como flex */
+}
+
+#textFormatControls strong {
+    flex-basis: 100%; /* Ocupa toda a largura da linha */
+    font-size: var(--font-size-sm); /* Título */
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+/* Labels e inputs compactos dentro de #textFormatControls */
 #textFormatControls label {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm); /* Tamanho da fonte para a label */
     font-weight: var(--font-weight-medium);
     color: var(--text-secondary);
-    white-space: nowrap;
+    white-space: nowrap; /* Evita que o texto da label quebre */
+    flex: 1 1 auto; /* Permite que a label e input se ajustem */
 }
 
 /* Inputs de número e cor */
 #controls input[type="number"],
 #controls input[type="color"] {
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm); /* Padding mais compacto */
     font-family: inherit;
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm); /* Tamanho da fonte do input */
     line-height: var(--line-height-base);
     color: var(--text-primary);
     background-color: var(--background-primary);
@@ -327,11 +334,11 @@ canvas {
 #controls input[type="number"]:focus,
 #controls input[type="color"]:focus {
     border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--color-blue-50);
+    box-shadow: 0 0 0 3px var(--color-blue-50); /* Cor de foco do tema */
 }
 
 #controls input[type="color"] {
-    width: 32px;
+    width: 32px; /* Largura e altura fixas para o input de cor */
     height: 32px;
     padding: 2px;
     border-radius: var(--border-radius-sm);
@@ -349,51 +356,44 @@ canvas {
 }
 
 #controls input[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-    width: 50px;
+    -moz-appearance: textfield; /* Para Firefox */
+    appearance: textfield; /* Padrão */
+    width: 50px; /* Largura padrão para inputs numéricos */
 }
 
 #controls input[type="number"]::-webkit-outer-spin-button,
 #controls input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    -webkit-appearance: none; /* Remove botões de girar para Webkit */
     margin: 0;
 }
 
 #fontSizeInput {
-    width: 45px;
+    width: 45px; /* Largura específica para o input de tamanho da fonte */
 }
 
-/* Responsividade para tablets */
-@media (max-width: 1024px) {
-    #controls {
-        max-width: min(95vw, 350px);
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    }
-}
 
-/* Responsividade para smartphones */
+/* Media Queries para Responsividade */
 @media (max-width: 768px) {
     #controls {
-        position: fixed;
+        position: fixed; /* Fixado no topo */
         top: 0;
         left: 0;
-        right: 0;
+        right: 0; /* Ocupa toda a largura */
         width: 100%;
         max-width: none;
         min-width: auto;
-        border-radius: 0;
+        border-radius: 0; /* Sem bordas arredondadas nas laterais/topo */
         border-left: none;
         border-right: none;
         border-top: none;
         box-shadow: var(--shadow-base);
         
-        /* Grid simplificado para mobile */
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-        gap: var(--spacing-xs);
+        /* Grid mais simples para mobile */
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Colunas mais flexíveis */
+        gap: var(--spacing-xs); /* Espaçamento menor */
         padding: var(--spacing-sm);
-        max-height: 50vh;
-        overflow-y: auto;
+        max-height: 50vh; /* Limita a altura para evitar cobrir muito a tela */
+        overflow-y: auto; /* Adiciona barra de rolagem se o conteúdo exceder */
     }
     
     #controls button {
@@ -405,36 +405,32 @@ canvas {
     /* Controles de forma e texto em mobile */
     #shapeControls,
     #textFormatControls {
-        padding: var(--spacing-sm);
-    }
-    
-    #textFormatControls {
-        /* Em mobile, pode quebrar em mais linhas se necessário */
-        justify-content: space-between;
+        padding: var(--spacing-sm); /* Padding menor para seções */
+        gap: var(--spacing-xs); /* Gap menor dentro das seções */
     }
     
     #textFormatControls label {
-        flex: 0 1 auto;
+        flex: 0 1 auto; /* Permite que labels tenham larguras mais naturais */
         min-width: fit-content;
     }
     
     /* Ajusta o canvas para considerar o painel fixo */
     #canvas-container {
-        padding-top: 120px; /* Espaço para o painel de controles */
+        padding-top: 140px; /* Espaço para o painel de controles no topo */
     }
 }
 
-/* Telas muito pequenas */
+/* Telas muito pequenas (ex: iPhones SE) */
 @media (max-width: 480px) {
     :root {
-        --spacing-xs: 0.125rem;
-        --spacing-sm: 0.25rem;
-        --spacing-base: 0.5rem;
-        --spacing-lg: 0.75rem;
+        --spacing-xs: 0.125rem; /* 2px */
+        --spacing-sm: 0.25rem;  /* 4px */
+        --spacing-base: 0.5rem; /* 8px */
+        --spacing-lg: 0.75rem;  /* 12px */
     }
     
     #controls {
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); /* Colunas ainda menores */
         padding: var(--spacing-xs);
     }
     
@@ -459,7 +455,7 @@ canvas {
     }
     
     #canvas-container {
-        padding-top: 100px;
+        padding-top: 120px; /* Ajuste para o painel menor */
     }
 }
 
@@ -475,27 +471,27 @@ canvas {
     }
 }
 
-/* Suporte a Backdrop-Filter */
+/* Suporte a Backdrop-Filter (Efeito de Blur) */
 @supports (backdrop-filter: blur(10px)) {
     #controls {
-        background: rgba(248, 250, 252, 0.9);
+        background: rgba(248, 250, 252, 0.9); /* Corresponde a var(--color-gray-50) com opacidade */
         backdrop-filter: blur(10px);
     }
     
     html.dark-theme #controls {
-        background: rgba(30, 41, 59, 0.9);
+        background: rgba(30, 41, 59, 0.9); /* Corresponde a var(--color-gray-800) com opacidade */
     }
 }
 
-/* Dark theme específicos para inputs */
+/* Estilos de inputs no tema escuro para sobreescrever o background-primary */
 html.dark-theme #controls input[type="number"],
 html.dark-theme #controls input[type="color"] {
-    background-color: var(--background-secondary);
+    background-color: var(--background-secondary); /* Usa o background secundário do tema escuro */
     border-color: var(--border-primary);
     color: var(--text-primary);
 }
 
 html.dark-theme #controls input[type="number"]:focus,
 html.dark-theme #controls input[type="color"]:focus {
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1); /* Cor de foco adaptada para o tema escuro */
 }
