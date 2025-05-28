@@ -4,7 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criador de Mapas Mentais</title>
+    <!-- Opção 1: Usar um arquivo CSS externo (melhor prática) -->
     <link rel="stylesheet" href="style.css">
+    <!-- Se o 'style.css' não existir ou não tiver os estilos essenciais, você pode optar por ter as regras CSS inline aqui:
+    <style>
+        body { margin: 0; overflow: hidden; font-family: sans-serif; }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Ensure canvas is clipped to container if it grows */
+        }
+        canvas {
+            display: block; /* Removes default bottom margin */
+        }
+        #shapeControls {
+             margin-top: 10px; /* Adicionado do conflito do main */
+        }
+        #textFormatControls {
+            margin-top: 10px; /* Adicionado do conflito do main */
+        }
+        #fontSizeInput {
+            width: 60px; /* Adicionado do conflito do main */
+        }
+    </style>
+    -->
 </head>
 <body>
     <div id="canvas-container">
@@ -19,15 +51,15 @@
         <button id="zoomOut">🔍- Diminuir Zoom</button>
         <button id="saveAsImage">💾 Salvar como Imagem</button>
         <!-- More controls will be added later -->
-        <div id="shapeControls">
+        <div id="shapeControls"> <!-- Removido style="margin-top: 10px;" para ser definido em style.css -->
             <span>Forma:</span>
             <button id="setShapeRectangle">▭ Retângulo</button>
             <button id="setShapeEllipse">○ Elipse</button>
             <button id="setShapeDiamond">◇ Diamante</button>
         </div>
-        <div id="textFormatControls"> <!-- Initially hidden by style.css -->
+        <div id="textFormatControls" style="display: none;"> <!-- Mantido display: none; crucial para estado inicial, removido margin-top para ser definido em style.css -->
             <strong>Formatação de Texto:</strong><br>
-            <label>Tamanho da Fonte: <input type="number" id="fontSizeInput" min="8" max="72"></label>
+            <label>Tamanho da Fonte: <input type="number" id="fontSizeInput" min="8" max="72"></label> <!-- Removido style="width: 60px;" para ser definido em style.css -->
             <label>Cor do Texto: <input type="color" id="textColorInput"></label>
             <button id="toggleBoldButton">✏️ Negrito</button>
             <!-- <label>Font: <input type="text" id="fontFamilyInput" style="width: 100px;"></label> --> <!-- Optional: Add later if needed -->
