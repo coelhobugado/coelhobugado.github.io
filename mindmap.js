@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let connections = [];
     let isConnectingMode = false;
     let firstSelectedNodeForConnectionId = null;
-    let connectButton = null; // Will be assigned in DOMContentLoaded
+    let connectButton = null; // Será atribuído em DOMContentLoaded
 
     const textFormatControlsDiv = document.getElementById('textFormatControls');
     const fontSizeInput = document.getElementById('fontSizeInput');
@@ -31,32 +31,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Definição de constantes para facilitar a customização
+    const CANVAS_DEFAULTS = {
+        NODE_COLOR: 'lightblue',
+        NODE_FONT_FAMILY: 'Arial',
+        NODE_FONT_SIZE: 16,
+        NODE_TEXT_COLOR: '#000000',
+        NODE_BORDER_COLOR: 'black',
+        NODE_BORDER_WIDTH: 1,
+        CONNECTION_MODE_SELECTION_BORDER_COLOR: 'green',
+        STANDARD_SELECTION_BORDER_COLOR: 'red',
+        SELECTION_BORDER_WIDTH: 3,
+        CONNECTION_STROKE_COLOR: 'grey',
+        CONNECTION_LINE_WIDTH: 2
+    };
+
     let nodes = [];
-    let nextNodeId = 0; // Not used currently, Date.now() + Math.random() is used for unique IDs
-    let currentlySelectedNodeId = null; // For selection and deletion
+    let currentlySelectedNodeId = null; // Para seleção e exclusão
     let selectedNodeForDragging = null;
     let isDraggingNode = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
     function getNodeAt(targetX, targetY) {
-        // Iterate in reverse to select top-most node
+        // Itera de trás para frente para selecionar o nó mais acima (se houver sobreposição)
         for (let i = nodes.length - 1; i >= 0; i--) {
             const node = nodes[i];
-            // Check if point is inside the bounding box of the node (works for all shapes for initial click)
+            // Verifica se o ponto está dentro do retângulo delimitador do nó
             if (targetX >= node.x && targetX <= node.x + node.width &&
                 targetY >= node.y && targetY <= node.y + node.height) {
-                // For more precise hit detection, you'd check shape specifically here.
-                // For simplicity, bounding box is sufficient for most mind map nodes.
                 return node;
             }
         }
         return null;
     }
 
-    function createNode(x, y, text = 'Novo Nó', width = 150, height = 100, color = 'lightblue', shape = 'rectangle') {
+    function createNode(x, y, text = 'Novo Nó', width = 150, height = 100, color = CANVAS_DEFAULTS.NODE_COLOR, shape = 'rectangle') {
         return {
-            id: Date.now() + Math.random(), // Ensure unique ID
+            id: Date.now() + Math.random(), // Garante um ID único
             x,
             y,
             width,
@@ -64,9 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
             text,
             color,
             shape,
-            fontSize: 16,
-            fontFamily: 'Arial',
-            textColor: '#000000',
+            fontSize: CANVAS_DEFAULTS.NODE_FONT_SIZE,
+            fontFamily: CANVAS_DEFAULTS.NODE_FONT_FAMILY,
+            textColor: CANVAS_DEFAULTS.NODE_TEXT_COLOR,
             isBold: false
         };
     }
@@ -75,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let panY = 0;
     let zoom = 1;
 
-    // Helper to find the connection point on the edge of a node's bounding box
+    // Ajuda a encontrar o ponto de conexão na borda do retângulo delimitador de um nó
     function getEdgeConnectionPoint(node, outsidePoint) {
         const nodeCenterX = node.x + node.width / 2;
         const nodeCenterY = node.y + node.height / 2;
@@ -85,8 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let t = Infinity, edgeX, edgeY;
 
-        // Check intersection with each of the 4 sides of the bounding box
-        // Top edge: y = node.y
+        // Verifica a interseção com cada um dos 4 lados do retângulo delimitador
+        // Borda superior: y = node.y
         if (dy !== 0) {
             const currentT = (node.y - nodeCenterY) / dy;
             if (currentT > 0) {
@@ -96,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Bottom edge: y = node.y + node.height
+        // Borda inferior: y = node.y + node.height
         if (dy !== 0) {
             const currentT = (node.y + node.height - nodeCenterY) / dy;
             if (currentT > 0) {
@@ -106,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Left edge: x = node.x
+        // Borda esquerda: x = node.x
         if (dx !== 0) {
             const currentT = (node.x - nodeCenterX) / dx;
             if (currentT > 0) {
@@ -116,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Right edge: x = node.x + node.width
+        // Borda direita: x = node.x + node.width
         if (dx !== 0) {
             const currentT = (node.x + node.width - nodeCenterX) / dx;
             if (currentT > 0) {
@@ -126,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // If no intersection found (e.g. outsidePoint is inside node), return center or a fallback
+        // Se nenhuma interseção for encontrada (ex: outsidePoint está dentro do nó), retorna o centro ou um fallback
         if (t === Infinity) return { x: nodeCenterX, y: nodeCenterY }; 
         return { x: edgeX, y: edgeY };
     }
@@ -137,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resizeCanvas() {
         canvas.width = container.offsetWidth;
         canvas.height = container.offsetHeight;
-        draw(); // Redraw content after resize
+        draw(); // Redesenha o conteúdo após redimensionar
         console.log('Canvas redimensionado para:', canvas.width, 'x', canvas.height);
     }
 
@@ -149,20 +161,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return { x: (x - panX) / zoom, y: (y - panY) / zoom };
     }
 
-    function draw() {
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Save context and apply transformations
+    function drawCanvasBase(ctx, canvasElement, currentPanX, currentPanY, currentZoom) {
+        ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         ctx.save();
-        ctx.translate(panX, panY);
-        ctx.scale(zoom, zoom);
+        ctx.translate(currentPanX, currentPanY);
+        ctx.scale(currentZoom, currentZoom);
+    }
 
-        // Draw connections
-        ctx.save();
-        connections.forEach(conn => {
-            const fromNode = nodes.find(node => node.id === conn.fromNodeId);
-            const toNode = nodes.find(node => node.id === conn.toNodeId);
+    function drawConnections(ctx, connectionsArray, nodesArray /* nodesArray é mantido para buscar, mas a busca pelo ID é mais robusta */) {
+        connectionsArray.forEach(conn => {
+            // Buscando os nós pelos IDs, o que é mais seguro caso a array 'nodes' seja modificada
+            const fromNode = nodesArray.find(node => node.id === conn.fromNodeId);
+            const toNode = nodesArray.find(node => node.id === conn.toNodeId);
 
             if (fromNode && toNode) {
                 const fromNodeCenter = { x: fromNode.x + fromNode.width / 2, y: fromNode.y + fromNode.height / 2 };
@@ -171,48 +181,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 const startPoint = getEdgeConnectionPoint(fromNode, toNodeCenter);
                 const endPoint = getEdgeConnectionPoint(toNode, fromNodeCenter);
 
-                // Control points for bezier curve
+                // Pontos de controle para a curva de Bezier
                 let cp1 = { x: startPoint.x, y: startPoint.y };
                 let cp2 = { x: endPoint.x, y: endPoint.y };
 
-                // Calculate a dynamic offset for control points to make curves flow outwards
+                // Calcula um deslocamento dinâmico para os pontos de controle para fazer as curvas fluírem "para fora"
                 const horizontalDistance = Math.abs(startPoint.x - endPoint.x);
                 const verticalDistance = Math.abs(startPoint.y - endPoint.y);
-                let offset = Math.max(horizontalDistance * 0.3, verticalDistance * 0.3, 50); // Ensure minimum offset
+                let offset = Math.max(horizontalDistance * 0.3, verticalDistance * 0.3, 50); // Garante um deslocamento mínimo
 
-                // Adjust control points based on relative positions for a smoother, outward curve
-                // This logic can be quite complex to get perfect for all angles.
-                // A simpler approach might be to just use a fixed offset in x/y, or tangent to the node's edge.
+                // Ajusta os pontos de controle com base nas posições relativas para uma curva mais suave e para fora
+                // Esta lógica pode ser bastante complexa para ser perfeita em todos os ângulos.
+                // Uma abordagem mais simples pode ser usar apenas um deslocamento fixo em x/y, ou tangente à borda do nó.
                 if (startPoint.x < toNodeCenter.x) cp1.x += offset; else cp1.x -= offset;
                 if (startPoint.y < toNodeCenter.y) cp1.y += offset; else cp1.y -= offset;
 
                 if (endPoint.x < fromNodeCenter.x) cp2.x += offset; else cp2.x -= offset;
                 if (endPoint.y < fromNodeCenter.y) cp2.y += offset; else cp2.y -= offset;
 
-                // For a more 'mind-map-like' bend, sometimes a single control point (quadratic bezier)
-                // or just a straight line is preferred. For Bezier, these control points often need
-                // to be more intelligent, potentially using the midpoint and pushing perpendicular.
-                // For simplicity and common mind map aesthetic, often straight lines or simple bezier are used.
-                // The current calculation is a basic attempt to make it curve out.
-
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
                 ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, endPoint.x, endPoint.y);
-                ctx.strokeStyle = conn.color || 'grey';
-                ctx.lineWidth = conn.lineWidth || 2;
+                ctx.strokeStyle = conn.color || CANVAS_DEFAULTS.CONNECTION_STROKE_COLOR;
+                ctx.lineWidth = conn.lineWidth || CANVAS_DEFAULTS.CONNECTION_LINE_WIDTH;
                 ctx.stroke();
             }
         });
-        ctx.restore();
+    }
 
-        // Draw all nodes
-        nodes.forEach(node => {
-            ctx.save(); // Save context for each node to handle individual styles/paths
+    function drawNodes(ctx, nodesArray, isConnectingModeFlag, firstSelectedNodeId, currentSelectedNodeId) {
+        nodesArray.forEach(node => {
+            ctx.save(); // Salva o contexto para cada nó
 
-            ctx.fillStyle = node.color || 'lightblue';
-            ctx.strokeStyle = 'black'; // Default border color
-            ctx.lineWidth = 1;       // Default border width
+            ctx.fillStyle = node.color || CANVAS_DEFAULTS.NODE_COLOR;
+            ctx.strokeStyle = CANVAS_DEFAULTS.NODE_BORDER_COLOR;
+            ctx.lineWidth = CANVAS_DEFAULTS.NODE_BORDER_WIDTH;
 
+            // Desenha a forma
             if (node.shape === 'ellipse') {
                 ctx.beginPath();
                 ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
@@ -220,25 +225,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.stroke();
             } else if (node.shape === 'diamond') {
                 ctx.beginPath();
-                ctx.moveTo(node.x + node.width / 2, node.y); // Top-middle
-                ctx.lineTo(node.x + node.width, node.y + node.height / 2); // Middle-right
-                ctx.lineTo(node.x + node.width / 2, node.y + node.height); // Bottom-middle
-                ctx.lineTo(node.x, node.y + node.height / 2); // Middle-left
+                ctx.moveTo(node.x + node.width / 2, node.y);
+                ctx.lineTo(node.x + node.width, node.y + node.height / 2);
+                ctx.lineTo(node.x + node.width / 2, node.y + node.height);
+                ctx.lineTo(node.x, node.y + node.height / 2);
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
-            } else { // Default to rectangle
+            } else { // Retângulo
                 ctx.beginPath();
                 ctx.rect(node.x, node.y, node.width, node.height);
                 ctx.fill();
                 ctx.stroke();
             }
-            
-            // Draw selection indicator (AFTER shape is drawn)
-            if (isConnectingMode && node.id === firstSelectedNodeForConnectionId) {
-                ctx.strokeStyle = 'green'; // Special border for first node in connection mode
-                ctx.lineWidth = 3;
-                // Re-draw the path of the shape for the selection border
+
+            // Desenha o indicador de seleção
+            let selectionStrokeStyle = null;
+            if (isConnectingModeFlag && node.id === firstSelectedNodeId) {
+                selectionStrokeStyle = CANVAS_DEFAULTS.CONNECTION_MODE_SELECTION_BORDER_COLOR;
+            } else if (node.id === currentSelectedNodeId) {
+                selectionStrokeStyle = CANVAS_DEFAULTS.STANDARD_SELECTION_BORDER_COLOR;
+            }
+
+            if (selectionStrokeStyle) {
+                ctx.strokeStyle = selectionStrokeStyle;
+                ctx.lineWidth = CANVAS_DEFAULTS.SELECTION_BORDER_WIDTH;
+                // Redesenha o caminho da forma para a borda de seleção
                 if (node.shape === 'ellipse') {
                     ctx.beginPath();
                     ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
@@ -249,57 +261,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.lineTo(node.x + node.width / 2, node.y + node.height);
                     ctx.lineTo(node.x, node.y + node.height / 2);
                     ctx.closePath();
-                } else { // Rectangle
-                    ctx.beginPath();
-                    ctx.rect(node.x, node.y, node.width, node.height);
-                }
-                ctx.stroke();
-            } else if (node.id === currentlySelectedNodeId) {
-                ctx.strokeStyle = 'red'; // Standard selection border
-                ctx.lineWidth = 3; // Make it thicker
-                 // Re-draw the path of the shape for the selection border
-                if (node.shape === 'ellipse') {
-                    ctx.beginPath();
-                    ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
-                } else if (node.shape === 'diamond') {
-                    ctx.beginPath();
-                    ctx.moveTo(node.x + node.width / 2, node.y);
-                    ctx.lineTo(node.x + node.width, node.y + node.height / 2);
-                    ctx.lineTo(node.x + node.width / 2, node.y + node.height);
-                    ctx.lineTo(node.x, node.y + node.height / 2);
-                    ctx.closePath();
-                } else { // Rectangle
+                } else { // Retângulo
                     ctx.beginPath();
                     ctx.rect(node.x, node.y, node.width, node.height);
                 }
                 ctx.stroke();
             }
 
-            // Text drawing
-            const fontSize = node.fontSize || 16;
-            const fontFamily = node.fontFamily || 'Arial';
+            // Desenha o texto
+            const fontSize = node.fontSize || CANVAS_DEFAULTS.NODE_FONT_SIZE;
+            const fontFamily = node.fontFamily || CANVAS_DEFAULTS.NODE_FONT_FAMILY;
             const fontWeight = node.isBold ? 'bold' : 'normal';
             ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-            ctx.fillStyle = node.textColor || '#000000';
+            ctx.fillStyle = node.textColor || CANVAS_DEFAULTS.NODE_TEXT_COLOR;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(node.text, node.x + node.width / 2, node.y + node.height / 2);
             
-            ctx.restore(); // Restore context after drawing each node
+            ctx.restore(); // Restaura o contexto após desenhar cada nó
         });
+    }
 
-        // Restore context
+    function draw() {
+        drawCanvasBase(ctx, canvas, panX, panY, zoom);
+
+        ctx.save(); // Para estilos específicos de conexão (embora os padrões sejam usados agora)
+        drawConnections(ctx, connections, nodes);
         ctx.restore();
+
+        drawNodes(ctx, nodes, isConnectingMode, firstSelectedNodeForConnectionId, currentlySelectedNodeId);
+
+        ctx.restore(); // Corresponde ao save em drawCanvasBase
     }
 
     window.addEventListener('keydown', (event) => {
         if ((event.key === 'Delete' || event.key === 'Backspace') && currentlySelectedNodeId !== null) {
             const nodeIdToRemove = currentlySelectedNodeId;
             nodes = nodes.filter(node => node.id !== nodeIdToRemove);
-            // Remove connections associated with the deleted node
+            // Remove as conexões associadas ao nó excluído
             connections = connections.filter(conn => conn.fromNodeId !== nodeIdToRemove && conn.toNodeId !== nodeIdToRemove);
             currentlySelectedNodeId = null;
-            updateTextFormatControls(null); // Hide controls
+            updateTextFormatControls(null); // Oculta os controles
             draw();
         }
     });
@@ -323,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const worldAfterZoom = screenToWorld(mouseX, mouseY);
 
-        // Adjust pan to zoom towards mouse cursor
+        // Ajusta o pan para dar zoom em direção ao cursor do mouse
         panX += (worldAfterZoom.x - worldBeforeZoom.x) * zoom;
         panY += (worldAfterZoom.y - worldBeforeZoom.y) * zoom;
 
@@ -335,10 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const nodeToEdit = getNodeAt(worldMousePos.x, worldMousePos.y);
 
         if (nodeToEdit) {
-            event.stopPropagation(); // Prevent new node creation if a node was double-clicked
+            event.stopPropagation(); // Previne a criação de um novo nó se um nó foi clicado duas vezes
 
             if (isEditingText && textInput) {
-                textInput.blur(); // Save previous text editing before starting new
+                textInput.blur(); // Salva a edição de texto anterior antes de iniciar uma nova
             }
 
             isEditingText = true;
@@ -346,10 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             textInput = document.createElement('textarea');
             textInput.value = editingNode.text;
-            textInput.style.position = 'absolute'; // Position relative to viewport
+            textInput.style.position = 'absolute'; // Posição relativa à viewport
 
             const canvasRect = canvas.getBoundingClientRect();
-            // Calculate screen coordinates of the node's top-left corner
+            // Calcula as coordenadas de tela do canto superior esquerdo do nó
             const screenX = editingNode.x * zoom + panX + canvasRect.left;
             const screenY = editingNode.y * zoom + panY + canvasRect.top;
             const screenWidth = editingNode.width * zoom;
@@ -359,9 +361,9 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.top = `${screenY}px`;
             textInput.style.width = `${screenWidth}px`;
             textInput.style.height = `${screenHeight}px`;
-            // Apply font styles directly to textarea for consistency
+            // Aplica estilos de fonte diretamente na textarea para consistência
             textInput.style.fontFamily = editingNode.fontFamily || 'Arial';
-            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Scale font with zoom
+            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Escala a fonte com o zoom
             textInput.style.color = editingNode.textColor || '#000000';
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
             textInput.style.textAlign = 'center';
@@ -369,8 +371,8 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.boxSizing = 'border-box';
             textInput.style.border = '1px solid #777';
             textInput.style.outline = 'none';
-            textInput.style.resize = 'none'; // Prevent manual resizing of textarea
-            textInput.style.overflow = 'hidden'; // Hide scrollbars
+            textInput.style.resize = 'none'; // Previne o redimensionamento manual da textarea
+            textInput.style.overflow = 'hidden'; // Oculta as barras de rolagem
             
             document.body.appendChild(textInput);
             textInput.focus();
@@ -379,22 +381,22 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.addEventListener('blur', finishEditing);
             textInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault(); // Prevent newline in textarea on Enter
+                    e.preventDefault(); // Previne nova linha na textarea ao pressionar Enter
                     finishEditing();
                 }
                 if (e.key === 'Escape') {
-                    // Revert to original text before closing or just close
-                    if (textInput && editingNode) textInput.value = editingNode.text; // Optional: revert on Esc
+                    // Reverte para o texto original antes de fechar ou apenas fecha
+                    if (textInput && editingNode) textInput.value = editingNode.text; // Opcional: reverte no Esc
                     finishEditing();
                 }
             });
         } else {
-            // Existing logic for creating a new node if double-clicked on empty canvas
+            // Lógica existente para criar um novo nó se clicado duas vezes em uma área vazia do canvas
             const rect = canvas.getBoundingClientRect();
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
             const worldCoords = screenToWorld(mouseX, mouseY);
-            const newNode = createNode(worldCoords.x - 75, worldCoords.y - 50); // Center new node under cursor
+            const newNode = createNode(worldCoords.x - 75, worldCoords.y - 50); // Centraliza o novo nó sob o cursor
             nodes.push(newNode);
             draw();
         }
@@ -417,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.addEventListener('mousedown', (event) => {
         const worldMousePos = screenToWorld(event.offsetX, event.offsetY);
 
-        if (event.button === 0) { // Left mouse button
+        if (event.button === 0) { // Botão esquerdo do mouse
             if (!isConnectingMode) {
                 const clickedNode = getNodeAt(worldMousePos.x, worldMousePos.y);
                 if (clickedNode) {
@@ -426,49 +428,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     dragOffsetX = worldMousePos.x - selectedNodeForDragging.x;
                     dragOffsetY = worldMousePos.y - selectedNodeForDragging.y;
                     currentlySelectedNodeId = selectedNodeForDragging.id;
-                    updateTextFormatControls(selectedNodeForDragging); // Show controls
-                    event.stopPropagation(); // Prevent panning when clicking on a node
+                    updateTextFormatControls(selectedNodeForDragging); // Mostra os controles
+                    event.stopPropagation(); // Previne o pan ao clicar em um nó
                     draw();
                 } else {
-                    // Clicked on empty canvas, deselect
+                    // Clicou em uma área vazia do canvas, deseleciona
                     currentlySelectedNodeId = null;
-                    updateTextFormatControls(null); // Hide controls
+                    updateTextFormatControls(null); // Oculta os controles
                     draw();
                 }
-            } else { // isConnectingMode is true
+            } else { // isConnectingMode é verdadeiro
                 const clickedNode = getNodeAt(worldMousePos.x, worldMousePos.y);
                 if (clickedNode) {
                     if (firstSelectedNodeForConnectionId === null) {
                         firstSelectedNodeForConnectionId = clickedNode.id;
-                        currentlySelectedNodeId = null; // Ensure no node is selected for dragging/deletion actions
+                        currentlySelectedNodeId = null; // Garante que nenhum nó esteja selecionado para arrastar/excluir
                     } else if (firstSelectedNodeForConnectionId !== clickedNode.id) {
-                        // Check if connection already exists (bidirectional)
+                        // Verifica se a conexão já existe (bidirecional)
                         const existingConnection = connections.find(c =>
                             (c.fromNodeId === firstSelectedNodeForConnectionId && c.toNodeId === clickedNode.id) ||
                             (c.fromNodeId === clickedNode.id && c.toNodeId === firstSelectedNodeForConnectionId)
                         );
                         if (!existingConnection) {
                             connections.push({
-                                id: Date.now(), // Unique ID for connection
+                                id: Date.now(), // ID único para a conexão
                                 fromNodeId: firstSelectedNodeForConnectionId,
                                 toNodeId: clickedNode.id
                             });
                         }
-                        firstSelectedNodeForConnectionId = null; // Reset for next connection
-                        isConnectingMode = false; // Exit connection mode after successful connection
-                        if(connectButton) connectButton.textContent = '🔗 Criar Conexão'; // Reset button text
+                        firstSelectedNodeForConnectionId = null; // Reseta para a próxima conexão
+                        isConnectingMode = false; // Sai do modo de conexão após uma conexão bem-sucedida
+                        if(connectButton) connectButton.textContent = '🔗 Criar Conexão'; // Reseta o texto do botão
                     } else {
-                        // Clicked the same node again, cancel first selection
+                        // Clicou no mesmo nó novamente, cancela a primeira seleção
                         firstSelectedNodeForConnectionId = null;
                     }
                     draw();
                 }
             }
-        } else if (event.button === 1) { // Middle mouse button for panning
+        } else if (event.button === 1) { // Botão do meio do mouse para pan
             isPanning = true;
             lastMouseX = event.clientX;
             lastMouseY = event.clientY;
-            canvas.style.cursor = 'grabbing'; // Change cursor to indicate panning
+            canvas.style.cursor = 'grabbing'; // Muda o cursor para indicar pan
         }
     });
 
@@ -480,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
             draw();
         } else if (isPanning) {
             if (isEditingText && textInput) {
-                finishEditing(); // End text editing if panning starts
+                finishEditing(); // Termina a edição de texto se o pan começar
             }
             const dx = event.clientX - lastMouseX;
             const dy = event.clientY - lastMouseY;
@@ -499,34 +501,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (event.button === 1 && isPanning) {
             isPanning = false;
-            canvas.style.cursor = 'grab'; // Change cursor back
+            canvas.style.cursor = 'grab'; // Volta o cursor
         }
     });
 
     canvas.addEventListener('mouseleave', () => {
-        if (isPanning) { // Stop panning if mouse leaves canvas
+        if (isPanning) { // Para o pan se o mouse sair do canvas
             isPanning = false;
-            canvas.style.cursor = 'default'; // Or 'grab' if you prefer
+            canvas.style.cursor = 'default'; // Ou 'grab' se preferir
         }
-        if (isDraggingNode) { // Stop dragging if mouse leaves canvas
+        if (isDraggingNode) { // Para o arrasto se o mouse sair do canvas
             isDraggingNode = false;
             selectedNodeForDragging = null;
         }
     });
 
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas(); // Initial resize and draw
+    resizeCanvas(); // Redimensionamento e desenho iniciais
 
-    // Placeholder for future functionality
     console.log('Canvas do Mapa Mental Inicializado a partir de mindmap.js');
 
     const addNodeButton = document.getElementById('addNode');
-    connectButton = document.getElementById('toggleConnectionMode'); // Assign to global
+    connectButton = document.getElementById('toggleConnectionMode'); // Atribui à variável global
 
     addNodeButton.addEventListener('click', () => {
         const centerX = screenToWorld(canvas.width / 2, canvas.height / 2).x;
         const centerY = screenToWorld(canvas.width / 2, canvas.height / 2).y;
-        const newNode = createNode(centerX - 75, centerY - 50, 'Novo Nó (Botão)'); // Center new node
+        const newNode = createNode(centerX - 75, centerY - 50, 'Novo Nó (Botão)'); // Centraliza o novo nó
         nodes.push(newNode);
         draw();
     });
@@ -539,14 +540,14 @@ document.addEventListener('DOMContentLoaded', () => {
             isConnectingMode = !isConnectingMode;
             if (isConnectingMode) {
                 connectButton.textContent = 'Cancelar Modo de Conexão';
-                currentlySelectedNodeId = null; // Deselect any node for dragging/deletion
-                firstSelectedNodeForConnectionId = null; // Reset first selection
-                updateTextFormatControls(null); // Hide text controls
+                currentlySelectedNodeId = null; // Deseleciona qualquer nó para arrastar/excluir
+                firstSelectedNodeForConnectionId = null; // Reseta a primeira seleção
+                updateTextFormatControls(null); // Oculta os controles de texto
             } else {
                 connectButton.textContent = '🔗 Criar Conexão';
-                firstSelectedNodeForConnectionId = null; // Reset first selection
+                firstSelectedNodeForConnectionId = null; // Reseta a primeira seleção
             }
-            draw(); // To update visual feedback (e.g., green border)
+            draw(); // Para atualizar o feedback visual (ex: borda verde)
         });
     }
 
@@ -590,19 +591,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saveAsImageButton) {
         saveAsImageButton.addEventListener('click', () => {
             if (isEditingText && textInput) {
-                finishEditing(); // Finalize any ongoing text editing
+                finishEditing(); // Finaliza qualquer edição de texto em andamento
             }
-            // Create a temporary link element
+            // Cria um elemento de link temporário
             const link = document.createElement('a');
-            // Set the download attribute and filename
+            // Define o atributo download e o nome do arquivo
             link.download = 'mapa-mental.png';
-            // Convert the canvas content to a data URL (PNG format)
+            // Converte o conteúdo do canvas para uma URL de dados (formato PNG)
             link.href = canvas.toDataURL('image/png');
-            // Append the link to the body (required for Firefox)
+            // Anexa o link ao corpo (necessário para Firefox)
             document.body.appendChild(link);
-            // Programmatically click the link to trigger the download
+            // Clica programaticamente no link para iniciar o download
             link.click();
-            // Remove the link from the body
+            // Remove o link do corpo
             document.body.removeChild(link);
         });
     }
@@ -623,7 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (node) { node.fontSize = parseInt(fontSizeInput.value) || 16; draw(); updateTextEditingStyle(); }
         }
     });
-    textColorInput.addEventListener('input', () => { // 'input' for live preview
+    textColorInput.addEventListener('input', () => { // 'input' para pré-visualização ao vivo
         if (currentlySelectedNodeId !== null) {
             const node = nodes.find(n => n.id === currentlySelectedNodeId);
             if (node) { node.textColor = textColorInput.value; draw(); updateTextEditingStyle(); }
@@ -641,16 +642,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    // Helper function to update textarea style if it's active
+    // Função auxiliar para atualizar o estilo da textarea se ela estiver ativa
     function updateTextEditingStyle() {
         if (isEditingText && textInput && editingNode && editingNode.id === currentlySelectedNodeId) {
-            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Ensure font scales with zoom
+            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Garante que a fonte escala com o zoom
             textInput.style.color = editingNode.textColor || '#000000';
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
         }
     }
 
-    // Theme Switcher Logic
+    // Lógica do Tema
     const themeSwitcherButton = document.getElementById('themeSwitcherButton');
     const THEME_STORAGE_KEY = 'mindmap-theme';
 
@@ -666,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleTheme() {
         let currentThemeToSet;
-        // Check based on the class on <html>, which is the source of truth for current display
+        // Verifica com base na classe no <html>, que é a fonte da verdade para a exibição atual
         if (document.documentElement.classList.contains('dark-theme')) {
             currentThemeToSet = 'light';
         } else {
@@ -680,12 +681,12 @@ document.addEventListener('DOMContentLoaded', () => {
         themeSwitcherButton.addEventListener('click', toggleTheme);
     }
 
-    // Load saved theme on page load
+    // Carrega o tema salvo ao carregar a página
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
     if (savedTheme) {
         applyTheme(savedTheme);
     } else {
-        // Default to light theme if no preference is saved
+        // Padrão para tema claro se nenhuma preferência for salva
         applyTheme('light');
     }
 });
