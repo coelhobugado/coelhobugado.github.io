@@ -150,6 +150,11 @@
             margin-bottom: 20px;
         }
 
+        .input-group:last-of-type { /* Ensure last input group in a section also has margin if needed */
+            margin-bottom: 0; /* Or adjust as per visual design with buttons */
+        }
+
+
         label {
             display: block;
             font-weight: 500;
@@ -169,8 +174,29 @@
             min-height: 120px; 
             transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
             background-color: var(--input-section-bg); 
-            color: var(--text-color); 
+            color: var(--text-color);
         }
+        
+        select { /* New styles for select element */
+            width: 100%;
+            padding: 10px 12px; /* Adjusted padding */
+            border: 1px solid var(--textarea-border-color);
+            border-radius: 8px;
+            font-size: 0.9rem; /* Adjusted font size */
+            font-family: 'Poppins', sans-serif;
+            margin-top: 5px; /* Space between label and select */
+            background-color: var(--input-section-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--textarea-focus-border-color);
+            box-shadow: 0 0 0 2.5px var(--textarea-focus-shadow-color);
+        }
+
 
         textarea:focus {
             outline: none;
@@ -380,6 +406,16 @@
                 <label for="textInput">Insira o texto base para o seu mapa mental:</label>
                 <textarea id="textInput" placeholder="Ex: Planejamento de um projeto, resumo de um livro, ideias para um novo negócio..."></textarea>
             </div>
+            <div class="input-group" style="margin-bottom: 25px;"> {/* Added margin-bottom here */}
+                <label for="layoutSelect">Escolha o Layout do Mapa:</label>
+                <select id="layoutSelect">
+                    <option value="organic">Orgânico (Padrão)</option>
+                    <option value="hierarchical-top-down">Hierárquico (Cima para Baixo)</option>
+                    <option value="hierarchical-left-right">Hierárquico (Esquerda para Direita)</option>
+                    <option value="radial" disabled>Radial (Em breve)</option>
+                    {/* <option value="cluster" disabled>Cluster (Em breve)</option> */}
+                </select>
+            </div>
             <div class="button-group">
                 <button class="btn-primary" id="generateMapBtn" onclick="generateMindMap()">💡 Gerar Mapa Mental</button>
                 <button class="btn-secondary" onclick="clearAll()">🗑️ Limpar Tudo</button>
@@ -426,11 +462,17 @@
         const NODE_PADDING = { x: 20, y: 12 };
         const BASE_NODE_HEIGHT = 45;
         const BASE_FONT_SIZE = 12;
-        const LEVEL_DISTANCE_FACTOR = 200; 
+        const MAX_TEXT_LENGTH = 30; 
         const MIN_ZOOM = 0.1;
-        const MAX_ZOOM = 3; 
-        const MAX_TEXT_LENGTH = 30; // Limite de caracteres para os títulos dos nós
-        const MIN_ANGLE_BETWEEN_BRANCHES = Math.PI / 7; // Ângulo mínimo entre ramos para evitar sobreposição
+        const MAX_ZOOM = 3;
+
+        // Settings for 'default' (organic) layout
+        const LEVEL_DISTANCE_FACTOR = 200; 
+        const MIN_ANGLE_BETWEEN_BRANCHES = Math.PI / 7; 
+        
+        // Settings for 'hierarchical-top-down' layout
+        const HIERARCHICAL_LEVEL_GAP = 40; // Vertical distance between centers of node levels
+        const HIERARCHICAL_SIBLING_GAP = 25; // Horizontal distance between edges of sibling nodes/subtrees
 
         let svgElement, rootGroup, debugInfoElement, generateMapButton, emojiThemeToggleElement, exportPngButtonElement;
         let currentScale = 1;
@@ -439,7 +481,8 @@
         let isDragging = false;
         let lastPointerX = 0;
         let lastPointerY = 0;
-        let nodePositions = new Map(); // Armazena posições dos nós para detecção de colisão
+        // nodePositions agora armazenará { x, y, width, height, originalData, level, branchIndex, parentKey, id }
+        let nodePositions = new Map(); 
         let currentTheme = 'light'; // Estado inicial do tema
 
         const textInputElement = document.getElementById('textInput');
@@ -461,7 +504,11 @@
             if (rootGroup && rootGroup.dataset.mindmapData) {
                  const currentData = JSON.parse(rootGroup.dataset.mindmapData);
                  if (currentData.central) {
-                    renderMindMap(currentData, mindMapContainerElement.clientWidth, mindMapContainerElement.clientHeight);
+                    nodePositions.clear(); 
+                    // Get selected layout for re-rendering
+                    const layoutSelectElement = document.getElementById('layoutSelect');
+                    const selectedLayoutType = layoutSelectElement ? layoutSelectElement.value : 'organic';
+                    renderMindMap(currentData, mindMapContainerElement.clientWidth, mindMapContainerElement.clientHeight, selectedLayoutType);
                  }
             }
         }
@@ -572,31 +619,37 @@
             showLoading(true);
             clearError(); 
             mindMapContainerElement.classList.add('hidden'); 
-            nodePositions.clear(); // Limpa as posições de nós anteriores
+            // Limpa as posições de nós anteriores ANTES de qualquer nova lógica de cálculo.
+            nodePositions.clear(); 
 
             try {
                 const apiResponse = await callGeminiAPI(textInput);
                 console.log("Resposta da API Gemini (Mapa Mental):", JSON.stringify(apiResponse, null, 2));
 
-                if (rootGroup) { // Armazena os dados para re-renderização (ex: mudança de tema)
+                if (rootGroup) {
                     rootGroup.dataset.mindmapData = JSON.stringify(apiResponse);
                 }
 
                 if (apiResponse && apiResponse.central && validateMindMapStructure(apiResponse)) {
                     mindMapContainerElement.classList.remove('hidden');
-                    // Garante que o DOM esteja pronto para pegar as dimensões corretas do SVG
                     await new Promise(resolve => requestAnimationFrame(resolve));
 
                     const svgWidth = mindMapContainerElement.clientWidth;
                     const svgHeight = mindMapContainerElement.clientHeight;
 
+                    // Get selected layout
+                    const layoutSelectElement = document.getElementById('layoutSelect');
+                    const selectedLayoutType = layoutSelectElement ? layoutSelectElement.value : 'organic';
+
+
                     if (svgWidth > 0 && svgHeight > 0) {
-                       renderMindMap(apiResponse, svgWidth, svgHeight);
-                       if (exportPngButtonElement) exportPngButtonElement.disabled = false;
+                        // nodePositions será populado dentro de renderMindMap via calculateNodePositions
+                        renderMindMap(apiResponse, svgWidth, svgHeight, selectedLayoutType);
+                        if (exportPngButtonElement) exportPngButtonElement.disabled = false;
                     } else {
-                       showError('Falha ao obter dimensões do container do mapa. Tente recarregar.');
-                       mindMapContainerElement.classList.add('hidden');
-                       if (exportPngButtonElement) exportPngButtonElement.disabled = true;
+                        showError('Falha ao obter dimensões do container do mapa. Tente recarregar.');
+                        mindMapContainerElement.classList.add('hidden');
+                        if (exportPngButtonElement) exportPngButtonElement.disabled = true;
                     }
                 } else {
                     showError('A IA não retornou uma estrutura de mapa mental válida ou completa. Tente novamente com um texto mais detalhado, ou ajuste o prompt na API.');
@@ -766,133 +819,423 @@ ${text}
             }
         }
 
-        function renderMindMap(data, svgWidth, svgHeight) {
-            svgElement = document.getElementById('mindMapSvg');
-            rootGroup = document.getElementById('mindMapRootGroup');
-            debugInfoElement = document.getElementById('debugInfo');
-            rootGroup.innerHTML = ''; // Limpa qualquer mapa anterior
-            nodePositions.clear(); // Limpa as posições para um novo cálculo
+        }
 
-            const centerX = svgWidth / 2;
-            const centerY = svgHeight / 2;
 
-            svgElement.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+        // ==========================================================================================
+        // NOVA LÓGICA DE CÁLCULO DE POSIÇÃO
+        // ==========================================================================================
 
-            const centralNodeData = createNodeElement(data.central, centerX, centerY, 0, 0, true);
-            rootGroup.appendChild(centralNodeData.group);
+        function calculateNodePositions(mindMapData, layoutType, svgWidth, svgHeight, targetNodePositionsMap, baseSettings) {
+            targetNodePositionsMap.clear(); 
 
-            const centralNodeInfo = {
-                x: centerX, y: centerY,
-                width: centralNodeData.width, height: centralNodeData.height
-            };
-            nodePositions.set('central', centralNodeInfo);
+            // Ensure baseSettings has layout-specific default values if not already there
+            baseSettings.LEVEL_DISTANCE_FACTOR = baseSettings.LEVEL_DISTANCE_FACTOR || LEVEL_DISTANCE_FACTOR;
+            baseSettings.MIN_ANGLE_BETWEEN_BRANCHES = baseSettings.MIN_ANGLE_BETWEEN_BRANCHES || MIN_ANGLE_BETWEEN_BRANCHES;
+            baseSettings.HIERARCHICAL_LEVEL_GAP = baseSettings.HIERARCHICAL_LEVEL_GAP || HIERARCHICAL_LEVEL_GAP;
+            baseSettings.HIERARCHICAL_SIBLING_GAP = baseSettings.HIERARCHICAL_SIBLING_GAP || HIERARCHICAL_SIBLING_GAP;
 
-            if (data.branches && data.branches.length > 0) {
-                const numBranches = data.branches.length;
-                let angleStep = (2 * Math.PI) / numBranches;
-                if (numBranches > 1 && angleStep < MIN_ANGLE_BETWEEN_BRANCHES) {
-                    // Ajusta o ângulo para não sobrepor ramos se houver muitos
-                    console.warn(`Ângulo entre ramos (${(angleStep*180/Math.PI).toFixed(2)}°) é menor que o mínimo. Ajustando.`);
-                    angleStep = MIN_ANGLE_BETWEEN_BRANCHES; // Pode ser necessário re-calcular a posição inicial dos nós
-                }
-                
-                const startAngleOffset = (numBranches % 2 === 0) ? angleStep / 2 : 0; // Ajuda a centralizar ramos
-
-                data.branches.forEach((branch, index) => {
-                    if (!branch || !branch.title || branch.title.trim() === '') return;
-
-                    let angle = (index * angleStep) + startAngleOffset - (Math.PI / 2); // Começa em cima e gira
-                    if (numBranches === 1) angle = -Math.PI / 2; // Único ramo sempre para cima
-
-                    const branchRadius = LEVEL_DISTANCE_FACTOR * 0.9 + (Math.random() * 20 - 10); // Pequena variação
-                    const initialBranchX = centerX + Math.cos(angle) * branchRadius;
-                    const initialBranchY = centerY + Math.sin(angle) * branchRadius;
-
-                    drawBranchRecursive(branch, initialBranchX, initialBranchY, centralNodeInfo, 1, angle, rootGroup, index);
+            if (layoutType === 'hierarchical-top-down') {
+                return calculateTopDownHierarchicalPositions(mindMapData, svgWidth, svgHeight, targetNodePositionsMap, baseSettings);
+            } else if (layoutType === 'hierarchical-left-right') {
+                return calculateLeftRightHierarchicalPositions(mindMapData, svgWidth, svgHeight, targetNodePositionsMap, baseSettings);
+            }
+             else { // Default to 'organic' layout
+                const centerX = svgWidth / 2;
+                const centerY = svgHeight / 2;
+                const centralMetrics = calculateNodeMetrics(mindMapData.central, 0, true);
+                const centralNodeId = 'central-org'; // Unique ID for organic central node
+                targetNodePositionsMap.set(centralNodeId, {
+                    id: centralNodeId, x: centerX, y: centerY, width: centralMetrics.width, height: centralMetrics.height,
+                    originalData: { title: mindMapData.central, children: mindMapData.branches }, // Keep children accessible
+                    level: 0, branchIndex: 0, parentKey: null,
+                    displayText: centralMetrics.text, fontSize: centralMetrics.fontSize, fontWeight: centralMetrics.fontWeight
                 });
-            }
 
-            updateDebugInfo();
-            resetViewHandler(); // Centraliza e ajusta o zoom
-            setupSVGInteractions(); // Habilita pan e zoom
+                if (mindMapData.branches && mindMapData.branches.length > 0) {
+                    const numBranches = mindMapData.branches.length;
+                    let angleStep = (2 * Math.PI) / numBranches;
+                    if (numBranches > 1 && angleStep < baseSettings.MIN_ANGLE_BETWEEN_BRANCHES) {
+                        angleStep = baseSettings.MIN_ANGLE_BETWEEN_BRANCHES;
+                    }
+                    const startAngleOffset = (numBranches % 2 === 0) ? angleStep / 2 : 0;
+                    mindMapData.branches.forEach((branch, index) => {
+                        if (!branch || !branch.title || branch.title.trim() === '') return;
+                        let angle = (index * angleStep) + startAngleOffset - (Math.PI / 2);
+                        if (numBranches === 1) angle = -Math.PI / 2;
+                        const branchRadius = baseSettings.LEVEL_DISTANCE_FACTOR * 0.9 + (Math.random() * 20 - 10);
+                        const initialBranchX = centerX + Math.cos(angle) * branchRadius;
+                        const initialBranchY = centerY + Math.sin(angle) * branchRadius;
+                        calculateOrganicBranchPositionsRecursive(branch, initialBranchX, initialBranchY, 
+                            targetNodePositionsMap.get(centralNodeId), 1, angle, index, centralNodeId, 
+                            targetNodePositionsMap, baseSettings);
+                    });
+                }
+                return targetNodePositionsMap;
+            }
         }
 
-        function calculateNodeMetrics(text, level, isCentral = false) {
-            const displayText = truncateText(text, isCentral ? MAX_TEXT_LENGTH + 5 : MAX_TEXT_LENGTH);
-            const fontSize = isCentral ? BASE_FONT_SIZE + 4 : BASE_FONT_SIZE + Math.max(0, 3 - level);
-            const rectHeight = isCentral ? BASE_NODE_HEIGHT + 10 : BASE_NODE_HEIGHT + Math.max(0, (3 - level) * 4);
-            const fontWeight = isCentral ? '700' : (level === 1 ? '600' : '500');
-
-            // Cria um elemento temporário para medir a largura do texto
-            const tempText = createSVGElement('text', {
-                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`
-            }, displayText);
-
-            let computedTextWidth = 0;
-            if (svgElement && svgElement.appendChild) {
-                svgElement.appendChild(tempText);
-                computedTextWidth = tempText.getComputedTextLength();
-                svgElement.removeChild(tempText);
-            } else {
-                // Fallback aproximado se o SVG não estiver disponível para medição
-                computedTextWidth = displayText.length * fontSize * 0.6; 
-                console.warn("calculateNodeMetrics: svgElement não está pronto para medir texto, usando estimativa.");
-            }
-
-            const rectWidth = Math.max(computedTextWidth + NODE_PADDING.x * 2, isCentral ? 100 : 70);
-            return { width: rectWidth, height: rectHeight };
-        }
-
-        function drawBranchRecursive(branchData, initialX, initialY, parentNodeInfo, level, parentAngle, parentSvgGroup, branchIndex) {
-            const originalNodeText = branchData.title;
+        // Renamed from calculateBranchPositionsRecursive to be specific to organic layout
+        function calculateOrganicBranchPositionsRecursive(branchData, initialX, initialY, parentNodeInfo, level, parentAngle, branchIndex, parentKey, targetNodePositionsMap, baseSettings) {
+            const originalNodeText = branchData.title; 
             if (!originalNodeText || typeof originalNodeText !== 'string' || originalNodeText.trim() === "") return;
+            const nodeKey = `node-org-${level}-${branchIndex}-${parentKey}-${Math.random().toString(36).substring(2, 7)}`;
+            const metrics = calculateNodeMetrics(originalNodeText, level, false); 
 
-            const nodeKey = `node-${level}-${branchIndex}-${parentSvgGroup.childNodes.length}`;
-            const metrics = calculateNodeMetrics(originalNodeText, level, (level === 0)); // level 0 é o nó central
-            const { x: finalX, y: finalY } = adjustPosition(initialX, initialY, metrics.width, metrics.height, nodeKey);
+            // Usa uma cópia temporária do targetNodePositionsMap para checkCollision e adjustPosition
+            // para evitar que o nó atual colida consigo mesmo se já estiver no mapa (embora não devesse estar aqui)
+            const tempCollisionMap = new Map(targetNodePositionsMap);
 
-            const nodeData = createNodeElement(originalNodeText, finalX, finalY, level, branchIndex, (level === 0));
-            parentSvgGroup.appendChild(nodeData.group);
+            const { x: finalX, y: finalY } = adjustPositionInternal(initialX, initialY, metrics.width, metrics.height, nodeKey, tempCollisionMap, 60, 10);
 
-            nodePositions.set(nodeKey, {
-                x: finalX, y: finalY, width: nodeData.width, height: nodeData.height
+            targetNodePositionsMap.set(nodeKey, {
+                id: nodeKey, x: finalX, y: finalY, width: metrics.width, height: metrics.height,
+                originalData: branchData, level: level, branchIndex: branchIndex, parentKey: parentKey,
+                displayText: metrics.text, fontSize: metrics.fontSize, fontWeight: metrics.fontWeight
             });
-
-            // Desenha o link DO NÓ PAI PARA O NÓ ATUAL
-            const link = createLinkElement(parentNodeInfo.x, parentNodeInfo.y, finalX, finalY, level, nodeData.width/2, nodeData.height/2);
-            parentSvgGroup.insertBefore(link, nodeData.group); // Links devem ser desenhados antes dos nós
 
             if (branchData.children && branchData.children.length > 0) {
                 const numChildren = branchData.children.length;
-                // Ajuste dinâmico do spread angle baseado no número de filhos e no nível
-                const maxSpread = Math.PI / (1.5 + level * 0.2); 
+                const maxSpread = Math.PI / (1.5 + level * 0.2);
                 const minSpread = Math.PI / 8;
                 let currentSpreadAngle = Math.max(minSpread, Math.min(maxSpread, Math.PI / (1.2 + level * 0.4 + Math.max(0, numChildren - 2) * 0.3)));
-                if (numChildren === 1) currentSpreadAngle = 0; 
+                if (numChildren === 1) currentSpreadAngle = 0;
 
-                const childRadius = LEVEL_DISTANCE_FACTOR * Math.max(0.35, (0.75 - level * 0.12)); 
+                const childRadius = baseSettings.LEVEL_DISTANCE_FACTOR * Math.max(0.35, (0.75 - level * 0.12));
 
                 branchData.children.forEach((child, childIdx) => {
                     if (!child || !child.title || child.title.trim() === '') return;
 
                     let childAngle;
                     if (numChildren === 1) {
-                        childAngle = parentAngle; // Se apenas um filho, segue a direção do pai
+                        childAngle = parentAngle;
                     } else {
-                        // Distribui os filhos simetricamente em torno do ângulo do pai
                         childAngle = parentAngle - (currentSpreadAngle / 2) + (childIdx / (numChildren - 1)) * currentSpreadAngle;
                     }
-
-                    const angleVariation = (Math.random() - 0.5) * (Math.PI / 18 / (level + 1)); // Adiciona uma pequena variação para "organicidade"
+                    const angleVariation = (Math.random() - 0.5) * (Math.PI / 18 / (level + 1));
                     childAngle += angleVariation;
 
                     const childInitialX = finalX + Math.cos(childAngle) * childRadius;
                     const childInitialY = finalY + Math.sin(childAngle) * childRadius;
 
-                    drawBranchRecursive(child, childInitialX, childInitialY, { x: finalX, y: finalY, width: nodeData.width, height: nodeData.height }, level + 1, childAngle, parentSvgGroup, branchIndex);
+                    calculateBranchPositionsRecursive(
+                        child, 
+                        childInitialX, 
+                        childInitialY, 
+                        targetNodePositionsMap.get(nodeKey), level + 1, childAngle, branchIndex, nodeKey, 
+                        targetNodePositionsMap, baseSettings);
                 });
             }
         }
+
+        // Renomeado de checkCollisionInternal para evitar conflito e para ser usado internamente
+        function checkCollisionInternal(x, y, width, height, positionsMap) {
+            const R1 = { left: x - width / 2, right: x + width / 2, top: y - height / 2, bottom: y + height / 2 };
+            for (let pos of positionsMap.values()) { // Usa o mapa passado como argumento
+                const R2 = { left: pos.x - pos.width / 2, right: pos.x + pos.width / 2, top: pos.y - pos.height / 2, bottom: pos.y + pos.height / 2 };
+                const buffer = 15; 
+                if (R1.left < R2.right + buffer && R1.right + buffer > R2.left && 
+                    R1.top < R2.bottom + buffer && R1.bottom + buffer > R2.top) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Renomeado de adjustPosition para evitar conflito e para ser usado internamente
+        function adjustPositionInternal(initialX, initialY, width, height, nodeKeyPrefix, positionsMap, maxAttempts = 60, stepSize = 10) {
+            let currentX = initialX;
+            let currentY = initialY;
+            let attempt = 0;
+            const initialStepRadius = stepSize; 
+
+            // Usa checkCollisionInternal com o mapa de posições fornecido
+            while (checkCollisionInternal(currentX, currentY, width, height, positionsMap) && attempt < maxAttempts) {
+                attempt++;
+                const angle = attempt * (Math.PI * (3 - Math.sqrt(5))); 
+                const radius = initialStepRadius + (attempt * stepSize * 0.15); 
+                currentX = initialX + Math.cos(angle) * radius;
+                currentY = initialY + Math.sin(angle) * radius;
+            }
+            if (attempt >= maxAttempts) {
+                console.warn(`Não foi possível encontrar posição livre de colisão para ${nodeKeyPrefix} após ${maxAttempts} tentativas. Usando última posição tentada.`);
+            }
+            return { x: currentX, y: currentY };
+        }
+
+        // ==========================================================================================
+        // HIERARCHICAL TOP-DOWN LAYOUT LOGIC
+        // ==========================================================================================
+        function calculateTopDownHierarchicalPositions(mindMapData, svgWidth, svgHeight, targetNodePositionsMap, baseSettings) {
+            const centralNodeId = 'central-hier-td'; 
+            const centralMetrics = calculateNodeMetrics(mindMapData.central, 0, true);
+            const centralY = centralMetrics.height / 2 + baseSettings.HIERARCHICAL_LEVEL_GAP / 3; 
+
+            const centralNodeMapEntry = {
+                id: centralNodeId,
+                x: 0, // Initial X is relative (0), will be globally shifted later.
+                y: centralY,
+                width: centralMetrics.width,
+                height: centralMetrics.height,
+                originalData: { title: mindMapData.central, children: mindMapData.branches },
+                level: 0,
+                branchIndex: 0, 
+                parentKey: null,
+                displayText: centralMetrics.text,
+                fontSize: centralMetrics.fontSize,
+                fontWeight: centralMetrics.fontWeight,
+                subtreeWidth: 0, // To be calculated: total width of the subtree rooted here
+                xOffsetInSubtree: 0 
+            };
+            targetNodePositionsMap.set(centralNodeId, centralNodeMapEntry);
+
+            positionHierarchicalChildrenRecursiveTd(centralNodeMapEntry, targetNodePositionsMap, baseSettings); // TD specific
+            
+            const rootEntry = targetNodePositionsMap.get(centralNodeId);
+            const globalShiftX = (svgWidth / 2) - rootEntry.xOffsetInSubtree;
+
+            if (targetNodePositionsMap.size > 0) {
+                 targetNodePositionsMap.forEach(node => node.x += globalShiftX);
+            }
+            return targetNodePositionsMap;
+        }
+
+        // Recursive helper for TOP-DOWN layout.
+        function positionHierarchicalChildrenRecursiveTd(parentNodeMapEntry, targetNodePositionsMap, baseSettings) {
+            const childrenData = parentNodeMapEntry.originalData.children;
+            if (!childrenData || childrenData.length === 0) {
+                parentNodeMapEntry.subtreeWidth = parentNodeMapEntry.width;
+                parentNodeMapEntry.xOffsetInSubtree = parentNodeMapEntry.width / 2; 
+                return;
+            }
+            const childMapEntries = [];
+            let totalChildrenSubtreeWidthWithGaps = 0;
+            childrenData.forEach((childData, index) => {
+                const childMetrics = calculateNodeMetrics(childData.title, parentNodeMapEntry.level + 1, false);
+                const childNodeId = `node-hier-td-${parentNodeMapEntry.id}-${index}`; 
+                const childY = parentNodeMapEntry.y + parentNodeMapEntry.height / 2 + baseSettings.HIERARCHICAL_LEVEL_GAP + childMetrics.height / 2;
+                const childMapEntry = {
+                    id: childNodeId, x: 0, y: childY, width: childMetrics.width, height: childMetrics.height,
+                    originalData: childData, level: parentNodeMapEntry.level + 1, branchIndex: index, parentKey: parentNodeMapEntry.id,
+                    displayText: childMetrics.text, fontSize: childMetrics.fontSize, fontWeight: childMetrics.fontWeight,
+                    subtreeWidth: 0, xOffsetInSubtree: 0 
+                };
+                targetNodePositionsMap.set(childNodeId, childMapEntry);
+                childMapEntries.push(childMapEntry);
+                positionHierarchicalChildrenRecursiveTd(childMapEntry, targetNodePositionsMap, baseSettings);
+                totalChildrenSubtreeWidthWithGaps += childMapEntry.subtreeWidth;
+            });
+            totalChildrenSubtreeWidthWithGaps += Math.max(0, childMapEntries.length - 1) * baseSettings.HIERARCHICAL_SIBLING_GAP;
+            parentNodeMapEntry.subtreeWidth = Math.max(parentNodeMapEntry.width, totalChildrenSubtreeWidthWithGaps);
+            parentNodeMapEntry.xOffsetInSubtree = parentNodeMapEntry.subtreeWidth / 2; 
+            let currentChildX = parentNodeMapEntry.x - totalChildrenSubtreeWidthWithGaps / 2;
+            childMapEntries.forEach(childEntry => {
+                childEntry.x = currentChildX + childEntry.xOffsetInSubtree;
+                currentChildX += childEntry.subtreeWidth + baseSettings.HIERARCHICAL_SIBLING_GAP;
+            });
+        }
+
+        // ==========================================================================================
+        // HIERARCHICAL LEFT-RIGHT LAYOUT LOGIC
+        // ==========================================================================================
+        function calculateLeftRightHierarchicalPositions(mindMapData, svgWidth, svgHeight, targetNodePositionsMap, baseSettings) {
+            const centralNodeId = 'central-hier-lr'; 
+            const centralMetrics = calculateNodeMetrics(mindMapData.central, 0, true);
+            const centralX = centralMetrics.width / 2 + baseSettings.HIERARCHICAL_LEVEL_GAP / 3; 
+            
+            const centralNodeMapEntry = {
+                id: centralNodeId,
+                x: centralX, 
+                y: 0, 
+                width: centralMetrics.width,
+                height: centralMetrics.height,
+                originalData: { title: mindMapData.central, children: mindMapData.branches },
+                level: 0,
+                branchIndex: 0, 
+                parentKey: null,
+                displayText: centralMetrics.text,
+                fontSize: centralMetrics.fontSize,
+                fontWeight: centralMetrics.fontWeight,
+                subtreeHeight: 0, 
+                yOffsetInSubtree: 0 
+            };
+            targetNodePositionsMap.set(centralNodeId, centralNodeMapEntry);
+
+            positionHierarchicalChildrenRecursiveLr(centralNodeMapEntry, targetNodePositionsMap, baseSettings); 
+            
+            const rootEntry = targetNodePositionsMap.get(centralNodeId);
+            const globalShiftY = (svgHeight / 2) - (rootEntry.y + rootEntry.yOffsetInSubtree - rootEntry.subtreeHeight/2) - rootEntry.subtreeHeight/2;
+            // Simplified: const globalShiftY = (svgHeight / 2) - rootEntry.yOffsetInSubtree; if rootEntry.y is 0.
+
+            if (targetNodePositionsMap.size > 0) {
+                 targetNodePositionsMap.forEach(node => node.y += globalShiftY);
+            }
+            return targetNodePositionsMap;
+        }
+
+        function positionHierarchicalChildrenRecursiveLr(parentNodeMapEntry, targetNodePositionsMap, baseSettings) {
+            const childrenData = parentNodeMapEntry.originalData.children;
+            if (!childrenData || childrenData.length === 0) { 
+                parentNodeMapEntry.subtreeHeight = parentNodeMapEntry.height;
+                parentNodeMapEntry.yOffsetInSubtree = parentNodeMapEntry.height / 2; 
+                return;
+            }
+            const childMapEntries = [];
+            let totalChildrenSubtreeHeightWithGaps = 0;
+            childrenData.forEach((childData, index) => {
+                const childMetrics = calculateNodeMetrics(childData.title, parentNodeMapEntry.level + 1, false);
+                const childNodeId = `node-hier-lr-${parentNodeMapEntry.id}-${index}`; 
+                const childX = parentNodeMapEntry.x + parentNodeMapEntry.width / 2 + baseSettings.HIERARCHICAL_LEVEL_GAP + childMetrics.width / 2;
+                const childMapEntry = {
+                    id: childNodeId, x: childX, y: 0, 
+                    width: childMetrics.width, height: childMetrics.height,
+                    originalData: childData, level: parentNodeMapEntry.level + 1, branchIndex: index, parentKey: parentNodeMapEntry.id,
+                    displayText: childMetrics.text, fontSize: childMetrics.fontSize, fontWeight: childMetrics.fontWeight,
+                    subtreeHeight: 0, yOffsetInSubtree: 0 
+                };
+                targetNodePositionsMap.set(childNodeId, childMapEntry);
+                childMapEntries.push(childMapEntry);
+                positionHierarchicalChildrenRecursiveLr(childMapEntry, targetNodePositionsMap, baseSettings);
+                totalChildrenSubtreeHeightWithGaps += childMapEntry.subtreeHeight;
+            });
+            totalChildrenSubtreeHeightWithGaps += Math.max(0, childMapEntries.length - 1) * baseSettings.HIERARCHICAL_SIBLING_GAP; 
+            parentNodeMapEntry.subtreeHeight = Math.max(parentNodeMapEntry.height, totalChildrenSubtreeHeightWithGaps);
+            parentNodeMapEntry.yOffsetInSubtree = parentNodeMapEntry.subtreeHeight / 2; 
+            let currentChildY = parentNodeMapEntry.y - (totalChildrenSubtreeHeightWithGaps / 2); // Start Y for the first child's subtree block
+            childMapEntries.forEach(childEntry => {
+                childEntry.y = currentChildY + childEntry.yOffsetInSubtree; // Position child's center within its allocated slot
+                currentChildY += childEntry.subtreeHeight + baseSettings.HIERARCHICAL_SIBLING_GAP;
+            });
+        }
+
+        // ==========================================================================================
+        // RENDERING LOGIC
+        // ==========================================================================================
+        function renderMindMap(data, svgWidth, svgHeight, layoutType = 'organic') { // Default to 'organic' if not provided
+            svgElement = document.getElementById('mindMapSvg');
+            rootGroup = document.getElementById('mindMapRootGroup');
+            debugInfoElement = document.getElementById('debugInfo');
+            rootGroup.innerHTML = ''; 
+            
+            const baseSettings = {
+                LEVEL_DISTANCE_FACTOR, MIN_ANGLE_BETWEEN_BRANCHES, 
+                HIERARCHICAL_LEVEL_GAP, HIERARCHICAL_SIBLING_GAP,
+                NODE_PADDING, MAX_TEXT_LENGTH 
+            };
+
+            // TEMPORARY: Force hierarchical layout for testing the dispatcher
+            // calculateNodePositions(data, 'default', svgWidth, svgHeight, nodePositions, baseSettings); 
+            calculateNodePositions(data, 'hierarchical-top-down', svgWidth, svgHeight, nodePositions, baseSettings);
+
+
+            svgElement.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+
+            // Etapa 2: Renderizar os nós
+            nodePositions.forEach(nodeInfo => {
+                // createNodeElement precisa de: text, x, y, level, branchIndex, isCentral
+                const isCentral = (nodeInfo.level === 0);
+                const nodeElementData = createNodeElement(
+                    nodeInfo.displayText || nodeInfo.originalData.title, // Use displayText if available from nodePositions
+                    nodeInfo.x, 
+                    nodeInfo.y, 
+                    nodeInfo.level, 
+                    nodeInfo.branchIndex, 
+                    isCentral
+                );
+                rootGroup.appendChild(nodeElementData.group);
+            });
+            
+            // Etapa 3: Renderizar os links
+            let linksGroup = document.getElementById('linksGroup');
+            if (linksGroup) { // Clear old links if the group exists
+                linksGroup.innerHTML = '';
+            } else { // Create links group if it doesn't exist
+                linksGroup = createSVGElement('g', { id: 'linksGroup' });
+            }
+            
+            nodePositions.forEach(nodeInfo => {
+                if (nodeInfo.parentKey) {
+                    const parentNodeInfo = nodePositions.get(nodeInfo.parentKey);
+                    if (parentNodeInfo) {
+                        const link = createLinkElement(
+                            parentNodeInfo.x, 
+                            parentNodeInfo.y, 
+                            nodeInfo.x, 
+                            nodeInfo.y, 
+                            nodeInfo.level,
+                            nodeInfo.width / 2, 
+                            nodeInfo.height / 2 
+                        );
+                        linksGroup.appendChild(link);
+                    }
+                }
+            });
+            
+            // Ensure linksGroup is the first child of rootGroup to be drawn underneath nodes
+            if (rootGroup.firstChild !== linksGroup) {
+                rootGroup.insertBefore(linksGroup, rootGroup.firstChild);
+            } else if (!rootGroup.firstChild && linksGroup.childNodes.length > 0) { 
+                // If rootGroup was empty and links were added
+                rootGroup.appendChild(linksGroup);
+            }
+
+
+            updateDebugInfo();
+            resetViewHandler(); 
+            setupSVGInteractions();
+        }
+
+
+        function calculateNodeMetrics(text, level, isCentral = false) {
+            const displayText = truncateText(text, isCentral ? MAX_TEXT_LENGTH + 5 : MAX_TEXT_LENGTH);
+            const fontSize = isCentral ? BASE_FONT_SIZE + 4 : BASE_FONT_SIZE + Math.max(0, 3 - level); // Mantido como estava
+            const rectHeight = isCentral ? BASE_NODE_HEIGHT + 10 : BASE_NODE_HEIGHT + Math.max(0, (3 - level) * 4); // Mantido
+            const fontWeight = isCentral ? '700' : (level === 1 ? '600' : '500'); 
+            const tempTextElement = createSVGElement('text', { // Renamed to avoid conflict
+                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`
+            }, displayText);
+            const currentSvgElement = svgElement || document.getElementById('mindMapSvg'); // Ensure svgElement is available
+            let computedTextWidth = 0;
+            if (currentSvgElement && typeof currentSvgElement.appendChild === 'function') {
+                currentSvgElement.appendChild(tempTextElement);
+                computedTextWidth = tempTextElement.getComputedTextLength();
+                currentSvgElement.removeChild(tempTextElement);
+            } else {
+                // Fallback if SVG not ready for measurement (e.g. during initial load or if hidden)
+                computedTextWidth = displayText.length * fontSize * 0.6; 
+                console.warn("calculateNodeMetrics: svgElement not fully available for text measurement, using estimate.");
+            }
+            const rectWidth = Math.max(computedTextWidth + NODE_PADDING.x * 2, isCentral ? 100 : 70);
+            return { width: rectWidth, height: rectHeight, text: displayText, fontSize, fontWeight };
+        }
+
+        // drawBranchRecursive foi substituído por calculateOrganicBranchPositionsRecursive (para lógica)
+        // e a renderização de nós/links em renderMindMap.
+
+        function createSVGElement(tag, attributes = {}, textContent = null) {
+            const tempText = createSVGElement('text', {
+                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`
+            }, displayText);
+
+            let computedTextWidth = 0;
+            // Garante que svgElement esteja disponível para medição. Se não, usa fallback.
+            const currentSvgElement = svgElement || document.getElementById('mindMapSvg'); 
+            if (currentSvgElement && typeof currentSvgElement.appendChild === 'function') {
+                currentSvgElement.appendChild(tempText);
+                computedTextWidth = tempText.getComputedTextLength();
+                currentSvgElement.removeChild(tempText);
+            } else {
+                // Fallback aproximado se o SVG não estiver disponível para medição
+                computedTextWidth = displayText.length * fontSize * 0.6; 
+                console.warn("calculateNodeMetrics: svgElement não está pronto para medir texto, usando estimativa.");
+            }
+
+            const rectWidth = Math.max(computedTextWidth + NODE_PADDING.x * 2, isCentral ? 100 : 70); // Mantido
+            return { width: rectWidth, height: rectHeight, text: displayText, fontSize, fontWeight }; // Retorna também o texto e estilo para consistência
+        }
+
+        // drawBranchRecursive foi substituído por calculateBranchPositionsRecursive (para lógica)
+        // e a renderização de nós/links em renderMindMap.
 
         function createSVGElement(tag, attributes = {}, textContent = null) {
             const element = document.createElementNS(SVG_NAMESPACE, tag);
@@ -906,32 +1249,23 @@ ${text}
         }
 
         function createNodeElement(text, x, y, level, branchIndex, isCentral = false) {
-            const originalText = text;
-            const displayText = truncateText(originalText, isCentral ? MAX_TEXT_LENGTH + 5 : MAX_TEXT_LENGTH); 
+            // text (original), x, y, level, branchIndex, isCentral
+            // As métricas (width, height, displayText, fontSize, fontWeight) são agora pré-calculadas
+            // por calculateNodeMetrics e passadas através do objeto nodeInfo em nodePositions.
+            // No entanto, createNodeElement ainda precisa delas para criar os elementos.
+            // Para manter a consistência, vamos recalcular ou usar as métricas de calculateNodeMetrics.
+            // Idealmente, calculateNodeMetrics é a única fonte da verdade para as dimensões.
+
+            const metrics = calculateNodeMetrics(text, level, isCentral);
+            const displayText = metrics.text; // Texto truncado de calculateNodeMetrics
+            const currentRectWidth = metrics.width;
+            const currentRectHeight = metrics.height; 
+            // fontSize and fontWeight from metrics are used below
 
             const group = createSVGElement('g', {
                 class: 'node-group',
                 transform: `translate(${x},${y})`
             });
-
-            const fontSize = isCentral ? BASE_FONT_SIZE + 3 : BASE_FONT_SIZE + Math.max(0, 2 - level);
-            const currentRectHeight = isCentral ? BASE_NODE_HEIGHT + 8 : BASE_NODE_HEIGHT + Math.max(0, (2 - level) * 3);
-            const fontWeight = isCentral ? '600' : (level === 1 ? '500' : '400');
-
-            const tempText = createSVGElement('text', {
-                style: `font-size: ${fontSize}px; font-family: Poppins, sans-serif; font-weight: ${fontWeight}; visibility: hidden;`
-            }, displayText);
-
-            let computedTextWidth = displayText.length * fontSize * 0.6; // Estimativa inicial
-            if (svgElement && svgElement.appendChild) {
-                svgElement.appendChild(tempText);
-                computedTextWidth = tempText.getComputedTextLength();
-                svgElement.removeChild(tempText);
-            } else {
-                console.warn("createNodeElement: svgElement não está pronto para medir texto, usando estimativa.");
-            }
-
-            const currentRectWidth = Math.max(computedTextWidth + NODE_PADDING.x * 2, isCentral ? 100 : 70);
 
             let colorIdx;
             const nodeColors = getCurrentNodeColors();
@@ -952,15 +1286,16 @@ ${text}
                 height: currentRectHeight,
                 rx: level < 2 ? 12 : 8, // Borda mais arredondada para nós de alto nível
                 ry: level < 2 ? 12 : 8,
-                style: `fill: ${fillColor}; stroke: ${shadeColor(fillColor, -25)}; stroke-width: 1.5px;` 
+                style: `fill: ${fillColor}; stroke: ${shadeColor(fillColor, -25)}; stroke-width: 1.5px;`
             });
 
             const textElement = createSVGElement('text', {
                 class: 'node-text',
-                'font-size': fontSize,
-                'font-weight': fontWeight
-            }, displayText);
-            group.dataset.fullText = originalText; // Armazena o texto completo para referência futura
+                'font-size': metrics.fontSize, 
+                'font-weight': metrics.fontWeight, 
+                style: `fill: var(--node-text-color);` 
+            }, metrics.text); // Use displayText from metrics
+            group.dataset.fullText = text; // Store original, non-truncated text
 
             group.appendChild(rect);
             group.appendChild(textElement);

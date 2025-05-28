@@ -11,6 +11,11 @@ Bem-vindo ao Gerador de Mapas Mentais com IA! Esta é uma aplicação web que pe
     *   **Zoom:** Aproxime e afaste o mapa para melhor visualização.
     *   **Pan (Arrastar):** Mova a área visível do mapa.
     *   **Resetar Visualização:** Centralize e ajuste o zoom do mapa para a visualização padrão.
+*   **Tipos de Layout Selecionáveis:**
+    *   **Orgânico (Padrão):** O layout original, com nós se espalhando de forma mais livre e orgânica ao redor do nó central.
+    *   **Hierárquico (Cima para Baixo):** Organiza o mapa mental com o tópico central no topo, e os ramos e sub-ramos fluindo verticalmente para baixo. Ideal para estruturas de tópicos tradicionais.
+    *   **Hierárquico (Esquerda para Direita):** Organiza o mapa mental com o tópico central à esquerda, e os ramos e sub-ramos fluindo horizontalmente para a direita. Útil para cronogramas ou processos lineares.
+    *   *Radial e Cluster:* Estes layouts estão planejados para futuras versões (marcados como "Em breve" na interface).
 *   **Temas:**
     *   **Alternador de Tema:** Mude entre o tema claro e escuro para melhor conforto visual.
 *   **Nós Inteligentes:**
@@ -29,8 +34,9 @@ Bem-vindo ao Gerador de Mapas Mentais com IA! Esta é uma aplicação web que pe
     *   *Nota: A chave é armazenada localmente no navegador e não é enviada para nenhum servidor externo além da API do Google Gemini.*
 3.  **Forneça o Texto Base:** Na seção "Insira o texto base para o seu mapa mental:", digite ou cole o conteúdo que você deseja usar para criar o mapa.
     *   *Dica: Textos com uma estrutura clara ou tópicos bem definidos tendem a gerar mapas melhores.*
-4.  **Gere o Mapa:** Clique no botão "💡 Gerar Mapa Mental".
-5.  **Interaja com o Mapa:**
+4.  **Escolha o Layout (Opcional):** Antes de gerar, você pode selecionar o tipo de layout desejado (Orgânico, Hierárquico Cima para Baixo, ou Hierárquico Esquerda para Direita) no menu suspenso "Escolha o Layout do Mapa:" localizado acima dos botões de ação. O layout padrão é o "Orgânico".
+5.  **Gere o Mapa:** Clique no botão "💡 Gerar Mapa Mental".
+6.  **Interaja com o Mapa:**
     *   Use os botões `+`, `-` e `🎯` no canto superior direito do mapa para controlar o zoom e recentralizar.
     *   Clique e arraste no fundo do mapa para movê-lo.
     *   Use a roda do mouse (scroll) sobre o mapa para aplicar zoom.
@@ -48,5 +54,6 @@ Bem-vindo ao Gerador de Mapas Mentais com IA! Esta é uma aplicação web que pe
 
 *   A qualidade do mapa mental gerado depende da clareza e estrutura do texto de entrada, bem como da capacidade do modelo Gemini em interpretá-lo.
 *   O prompt enviado à API instrui o modelo a criar títulos com no máximo `MAX_TEXT_LENGTH` (definido no código como 30 caracteres) e a seguir uma estrutura hierárquica específica. Ocasionalmente, o modelo pode não seguir estas instruções perfeitamente.
+*   Diferentes tipos de layout podem ser mais adequados para visualizar diferentes tipos de informação ou para atender a preferências pessoais. Experimente os layouts para ver qual funciona melhor para o seu conteúdo!
 
 Divirta-se criando seus mapas mentais!
