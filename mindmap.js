@@ -1,4 +1,4 @@
-console.log('mindmap.js loaded');
+console.log('mindmap.js carregado');
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('mindMapCanvas');
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (node) {
             fontSizeInput.value = node.fontSize || 16;
             textColorInput.value = node.textColor || '#000000';
-            toggleBoldButton.textContent = node.isBold ? 'Un-Bold' : 'Bold';
+            toggleBoldButton.textContent = node.isBold ? 'Remover Negrito' : 'Negrito';
             toggleBoldButton.style.fontWeight = node.isBold ? 'bold' : 'normal';
             textFormatControlsDiv.style.display = 'block';
         } else {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    function createNode(x, y, text = 'New Node', width = 150, height = 100, color = 'lightblue', shape = 'rectangle') {
+    function createNode(x, y, text = 'Novo Nó', width = 150, height = 100, color = 'lightblue', shape = 'rectangle') {
         return {
             id: Date.now() + Math.random(), // Ensure unique ID
             x,
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = container.offsetWidth;
         canvas.height = container.offsetHeight;
         draw(); // Redraw content after resize
-        console.log('Canvas resized to:', canvas.width, 'x', canvas.height);
+        console.log('Canvas redimensionado para:', canvas.width, 'x', canvas.height);
     }
 
     function worldToScreen(x, y) {
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         firstSelectedNodeForConnectionId = null; // Reset for next connection
                         isConnectingMode = false; // Exit connection mode
-                        if(connectButton) connectButton.textContent = 'Create Connection';
+                        if(connectButton) connectButton.textContent = 'Criar Conexão';
                     } else {
                         // Clicked the same node again, cancel first selection
                         firstSelectedNodeForConnectionId = null;
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resizeCanvas(); // Initial resize and draw
 
     // Placeholder for future functionality
-    console.log('Mind Map Canvas Initialized from mindmap.js');
+    console.log('Canvas do Mapa Mental Inicializado a partir de mindmap.js');
 
     const addNodeButton = document.getElementById('addNode');
     connectButton = document.getElementById('toggleConnectionMode'); // Assign to global
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addNodeButton.addEventListener('click', () => {
         const centerX = screenToWorld(canvas.width / 2, canvas.height / 2).x;
         const centerY = screenToWorld(canvas.width / 2, canvas.height / 2).y;
-        const newNode = createNode(centerX, centerY, 'New Node from Button');
+        const newNode = createNode(centerX, centerY, 'Novo Nó (Botão)');
         nodes.push(newNode);
         draw();
     });
@@ -535,11 +535,11 @@ document.addEventListener('DOMContentLoaded', () => {
         connectButton.addEventListener('click', () => {
             isConnectingMode = !isConnectingMode;
             if (isConnectingMode) {
-                connectButton.textContent = 'Cancel Connection Mode';
+                connectButton.textContent = 'Cancelar Modo de Conexão';
                 currentlySelectedNodeId = null; // Deselect any node for dragging
                 firstSelectedNodeForConnectionId = null; // Reset first selection
             } else {
-                connectButton.textContent = 'Create Connection';
+                connectButton.textContent = 'Criar Conexão';
                 firstSelectedNodeForConnectionId = null; // Reset first selection
             }
             draw(); // To update visual feedback if any
@@ -582,6 +582,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('setShapeEllipse').addEventListener('click', () => setSelectedNodeShape('ellipse'));
     document.getElementById('setShapeDiamond').addEventListener('click', () => setSelectedNodeShape('diamond'));
 
+    const saveAsImageButton = document.getElementById('saveAsImage');
+    if (saveAsImageButton) {
+        saveAsImageButton.addEventListener('click', () => {
+            if (isEditingText && textInput) {
+                finishEditing(); // Finalize any ongoing text editing
+            }
+            // Create a temporary link element
+            const link = document.createElement('a');
+            // Set the download attribute and filename
+            link.download = 'mapa-mental.png';
+            // Convert the canvas content to a data URL (PNG format)
+            link.href = canvas.toDataURL('image/png');
+            // Append the link to the body (required for Firefox)
+            document.body.appendChild(link);
+            // Programmatically click the link to trigger the download
+            link.click();
+            // Remove the link from the body
+            document.body.removeChild(link);
+        });
+    }
+
     function setSelectedNodeShape(shape) {
         if (currentlySelectedNodeId !== null) {
             const selectedNode = nodes.find(node => node.id === currentlySelectedNodeId);
@@ -609,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const node = nodes.find(n => n.id === currentlySelectedNodeId);
             if (node) {
                 node.isBold = !node.isBold;
-                toggleBoldButton.textContent = node.isBold ? 'Un-Bold' : 'Bold';
+                toggleBoldButton.textContent = node.isBold ? 'Remover Negrito' : 'Negrito';
                 toggleBoldButton.style.fontWeight = node.isBold ? 'bold' : 'normal';
                 draw();
                 updateTextEditingStyle();
@@ -624,4 +645,5 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
         }
     }
+
 });
