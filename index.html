@@ -406,7 +406,7 @@
                 <label for="textInput">Insira o texto base para o seu mapa mental:</label>
                 <textarea id="textInput" placeholder="Ex: Planejamento de um projeto, resumo de um livro, ideias para um novo negócio..."></textarea>
             </div>
-            <div class="input-group" style="margin-bottom: 25px;"> {/* Added margin-bottom here */}
+            <div class="input-group" style="margin-bottom: 25px;"> <!-- Added margin-bottom here -->
                 <label for="layoutSelect">Escolha o Layout do Mapa:</label>
                 <select id="layoutSelect">
                     <option value="organic">Orgânico (Padrão)</option>
@@ -817,8 +817,6 @@ ${text}
             } catch (e) {
                 throw new Error(`A IA retornou um JSON inválido ou mal formatado: ${generatedText.substring(0, 200)}. Erro: ${e.message}`);
             }
-        }
-
         }
 
 
