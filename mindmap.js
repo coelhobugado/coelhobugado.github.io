@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let nodes = [];
-    let nextNodeId = 0;
+    let nextNodeId = 0; // Not used currently, Date.now() + Math.random() is used for unique IDs
     let currentlySelectedNodeId = null; // For selection and deletion
     let selectedNodeForDragging = null;
     let isDraggingNode = false;
@@ -43,8 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Iterate in reverse to select top-most node
         for (let i = nodes.length - 1; i >= 0; i--) {
             const node = nodes[i];
+            // Check if point is inside the bounding box of the node (works for all shapes for initial click)
             if (targetX >= node.x && targetX <= node.x + node.width &&
                 targetY >= node.y && targetY <= node.y + node.height) {
+                // For more precise hit detection, you'd check shape specifically here.
+                // For simplicity, bounding box is sufficient for most mind map nodes.
                 return node;
             }
         }
@@ -72,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let panY = 0;
     let zoom = 1;
 
+    // Helper to find the connection point on the edge of a node's bounding box
     function getEdgeConnectionPoint(node, outsidePoint) {
         const nodeCenterX = node.x + node.width / 2;
         const nodeCenterY = node.y + node.height / 2;
@@ -81,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let t = Infinity, edgeX, edgeY;
 
-        // Check intersection with each of the 4 sides
+        // Check intersection with each of the 4 sides of the bounding box
         // Top edge: y = node.y
         if (dy !== 0) {
             const currentT = (node.y - nodeCenterY) / dy;
@@ -126,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t === Infinity) return { x: nodeCenterX, y: nodeCenterY }; 
         return { x: edgeX, y: edgeY };
     }
+
     const minZoom = 0.1;
     const maxZoom = 5.0;
 
@@ -166,44 +171,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 const startPoint = getEdgeConnectionPoint(fromNode, toNodeCenter);
                 const endPoint = getEdgeConnectionPoint(toNode, fromNodeCenter);
 
-                const dx = Math.abs(startPoint.x - endPoint.x);
-                // const dy = Math.abs(startPoint.y - endPoint.y); // For potential vertical control
-
-                // Horizontal offset for control points - adjust factor as needed
-                let controlPointOffsetX = dx * 0.5;
-                if (controlPointOffsetX < 50) controlPointOffsetX = 50; // Minimum offset
-                // if (startPoint.x > endPoint.x) controlPointOffsetX *= -1; // If end is to the left - this logic is tricky, better to adjust based on relative position to center
-
-                const cp1x = startPoint.x + controlPointOffsetX;
-                const cp1y = startPoint.y;
-                const cp2x = endPoint.x - controlPointOffsetX;
-                const cp2y = endPoint.y;
-                
-                // A slightly more robust control point placement based on node relative positions
-                // This helps to ensure curves flow "outwards" from the node.
+                // Control points for bezier curve
                 let cp1 = { x: startPoint.x, y: startPoint.y };
                 let cp2 = { x: endPoint.x, y: endPoint.y };
 
+                // Calculate a dynamic offset for control points to make curves flow outwards
                 const horizontalDistance = Math.abs(startPoint.x - endPoint.x);
                 const verticalDistance = Math.abs(startPoint.y - endPoint.y);
                 let offset = Math.max(horizontalDistance * 0.3, verticalDistance * 0.3, 50); // Ensure minimum offset
-                
-                // Determine primary direction for control points
-                if (startPoint.x < toNodeCenter.x - fromNode.width/2) cp1.x += offset; // fromNode is to the left of toNode
-                else if (startPoint.x > toNodeCenter.x + fromNode.width/2) cp1.x -= offset; // fromNode is to the right
-                else if (startPoint.y < toNodeCenter.y) cp1.y += offset; // fromNode is above
-                else cp1.y -= offset; // fromNode is below
 
-                if (endPoint.x < fromNodeCenter.x - toNode.width/2) cp2.x += offset; // toNode is to the left of fromNode
-                else if (endPoint.x > fromNodeCenter.x + toNode.width/2) cp2.x -= offset; // toNode is to the right
-                else if (endPoint.y < fromNodeCenter.y) cp2.y += offset; // toNode is above
-                else cp2.y -= offset; // toNode is below
+                // Adjust control points based on relative positions for a smoother, outward curve
+                // This logic can be quite complex to get perfect for all angles.
+                // A simpler approach might be to just use a fixed offset in x/y, or tangent to the node's edge.
+                if (startPoint.x < toNodeCenter.x) cp1.x += offset; else cp1.x -= offset;
+                if (startPoint.y < toNodeCenter.y) cp1.y += offset; else cp1.y -= offset;
 
+                if (endPoint.x < fromNodeCenter.x) cp2.x += offset; else cp2.x -= offset;
+                if (endPoint.y < fromNodeCenter.y) cp2.y += offset; else cp2.y -= offset;
+
+                // For a more 'mind-map-like' bend, sometimes a single control point (quadratic bezier)
+                // or just a straight line is preferred. For Bezier, these control points often need
+                // to be more intelligent, potentially using the midpoint and pushing perpendicular.
+                // For simplicity and common mind map aesthetic, often straight lines or simple bezier are used.
+                // The current calculation is a basic attempt to make it curve out.
 
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
                 ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, endPoint.x, endPoint.y);
-                ctx.strokeStyle = conn.color || 'grey'; // Changed default to grey
+                ctx.strokeStyle = conn.color || 'grey';
                 ctx.lineWidth = conn.lineWidth || 2;
                 ctx.stroke();
             }
@@ -328,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const worldAfterZoom = screenToWorld(mouseX, mouseY);
 
+        // Adjust pan to zoom towards mouse cursor
         panX += (worldAfterZoom.x - worldBeforeZoom.x) * zoom;
         panY += (worldAfterZoom.y - worldBeforeZoom.y) * zoom;
 
@@ -339,10 +335,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const nodeToEdit = getNodeAt(worldMousePos.x, worldMousePos.y);
 
         if (nodeToEdit) {
-            event.stopPropagation(); // Prevent new node creation
+            event.stopPropagation(); // Prevent new node creation if a node was double-clicked
 
             if (isEditingText && textInput) {
-                textInput.blur(); // Save previous before starting new
+                textInput.blur(); // Save previous text editing before starting new
             }
 
             isEditingText = true;
@@ -353,6 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.position = 'absolute'; // Position relative to viewport
 
             const canvasRect = canvas.getBoundingClientRect();
+            // Calculate screen coordinates of the node's top-left corner
             const screenX = editingNode.x * zoom + panX + canvasRect.left;
             const screenY = editingNode.y * zoom + panY + canvasRect.top;
             const screenWidth = editingNode.width * zoom;
@@ -362,17 +359,19 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.top = `${screenY}px`;
             textInput.style.width = `${screenWidth}px`;
             textInput.style.height = `${screenHeight}px`;
-            textInput.style.fontSize = `${16 * zoom}px`; // Optional: scale font too
-            textInput.style.border = '1px solid #777';
-            textInput.style.outline = 'none';
-            textInput.style.resize = 'none';
+            // Apply font styles directly to textarea for consistency
             textInput.style.fontFamily = editingNode.fontFamily || 'Arial';
-            textInput.style.fontSize = `${editingNode.fontSize || 16}px`;
+            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Scale font with zoom
             textInput.style.color = editingNode.textColor || '#000000';
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
             textInput.style.textAlign = 'center';
             textInput.style.padding = '0';
             textInput.style.boxSizing = 'border-box';
+            textInput.style.border = '1px solid #777';
+            textInput.style.outline = 'none';
+            textInput.style.resize = 'none'; // Prevent manual resizing of textarea
+            textInput.style.overflow = 'hidden'; // Hide scrollbars
+            
             document.body.appendChild(textInput);
             textInput.focus();
             textInput.select();
@@ -380,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.addEventListener('blur', finishEditing);
             textInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault(); // Prevent newline in textarea
+                    e.preventDefault(); // Prevent newline in textarea on Enter
                     finishEditing();
                 }
                 if (e.key === 'Escape') {
@@ -390,12 +389,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         } else {
-            // Existing logic for creating a new node
-            const rect = canvas.getBoundingClientRect(); // already available via event.target.getBoundingClientRect()
+            // Existing logic for creating a new node if double-clicked on empty canvas
+            const rect = canvas.getBoundingClientRect();
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
-            const worldCoords = screenToWorld(mouseX, mouseY); // already available
-            const newNode = createNode(worldCoords.x, worldCoords.y);
+            const worldCoords = screenToWorld(mouseX, mouseY);
+            const newNode = createNode(worldCoords.x - 75, worldCoords.y - 50); // Center new node under cursor
             nodes.push(newNode);
             draw();
         }
@@ -443,21 +442,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         firstSelectedNodeForConnectionId = clickedNode.id;
                         currentlySelectedNodeId = null; // Ensure no node is selected for dragging/deletion actions
                     } else if (firstSelectedNodeForConnectionId !== clickedNode.id) {
-                        // Check if connection already exists
+                        // Check if connection already exists (bidirectional)
                         const existingConnection = connections.find(c =>
                             (c.fromNodeId === firstSelectedNodeForConnectionId && c.toNodeId === clickedNode.id) ||
                             (c.fromNodeId === clickedNode.id && c.toNodeId === firstSelectedNodeForConnectionId)
                         );
                         if (!existingConnection) {
                             connections.push({
-                                id: Date.now(),
+                                id: Date.now(), // Unique ID for connection
                                 fromNodeId: firstSelectedNodeForConnectionId,
                                 toNodeId: clickedNode.id
                             });
                         }
                         firstSelectedNodeForConnectionId = null; // Reset for next connection
-                        isConnectingMode = false; // Exit connection mode
-                        if(connectButton) connectButton.textContent = 'Criar Conexão';
+                        isConnectingMode = false; // Exit connection mode after successful connection
+                        if(connectButton) connectButton.textContent = '🔗 Criar Conexão'; // Reset button text
                     } else {
                         // Clicked the same node again, cancel first selection
                         firstSelectedNodeForConnectionId = null;
@@ -481,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
             draw();
         } else if (isPanning) {
             if (isEditingText && textInput) {
-                finishEditing();
+                finishEditing(); // End text editing if panning starts
             }
             const dx = event.clientX - lastMouseX;
             const dy = event.clientY - lastMouseY;
@@ -509,6 +508,10 @@ document.addEventListener('DOMContentLoaded', () => {
             isPanning = false;
             canvas.style.cursor = 'default'; // Or 'grab' if you prefer
         }
+        if (isDraggingNode) { // Stop dragging if mouse leaves canvas
+            isDraggingNode = false;
+            selectedNodeForDragging = null;
+        }
     });
 
     window.addEventListener('resize', resizeCanvas);
@@ -523,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addNodeButton.addEventListener('click', () => {
         const centerX = screenToWorld(canvas.width / 2, canvas.height / 2).x;
         const centerY = screenToWorld(canvas.width / 2, canvas.height / 2).y;
-        const newNode = createNode(centerX, centerY, 'Novo Nó (Botão)');
+        const newNode = createNode(centerX - 75, centerY - 50, 'Novo Nó (Botão)'); // Center new node
         nodes.push(newNode);
         draw();
     });
@@ -536,13 +539,14 @@ document.addEventListener('DOMContentLoaded', () => {
             isConnectingMode = !isConnectingMode;
             if (isConnectingMode) {
                 connectButton.textContent = 'Cancelar Modo de Conexão';
-                currentlySelectedNodeId = null; // Deselect any node for dragging
+                currentlySelectedNodeId = null; // Deselect any node for dragging/deletion
                 firstSelectedNodeForConnectionId = null; // Reset first selection
+                updateTextFormatControls(null); // Hide text controls
             } else {
-                connectButton.textContent = 'Criar Conexão';
+                connectButton.textContent = '🔗 Criar Conexão';
                 firstSelectedNodeForConnectionId = null; // Reset first selection
             }
-            draw(); // To update visual feedback if any
+            draw(); // To update visual feedback (e.g., green border)
         });
     }
 
@@ -640,10 +644,48 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to update textarea style if it's active
     function updateTextEditingStyle() {
         if (isEditingText && textInput && editingNode && editingNode.id === currentlySelectedNodeId) {
-            textInput.style.fontSize = `${editingNode.fontSize || 16}px`;
+            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Ensure font scales with zoom
             textInput.style.color = editingNode.textColor || '#000000';
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
         }
     }
 
+    // Theme Switcher Logic
+    const themeSwitcherButton = document.getElementById('themeSwitcherButton');
+    const THEME_STORAGE_KEY = 'mindmap-theme';
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            if (themeSwitcherButton) themeSwitcherButton.textContent = '☀️ Tema Claro';
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+            if (themeSwitcherButton) themeSwitcherButton.textContent = '🌙 Tema Escuro';
+        }
+    }
+
+    function toggleTheme() {
+        let currentThemeToSet;
+        // Check based on the class on <html>, which is the source of truth for current display
+        if (document.documentElement.classList.contains('dark-theme')) {
+            currentThemeToSet = 'light';
+        } else {
+            currentThemeToSet = 'dark';
+        }
+        localStorage.setItem(THEME_STORAGE_KEY, currentThemeToSet);
+        applyTheme(currentThemeToSet);
+    }
+
+    if (themeSwitcherButton) {
+        themeSwitcherButton.addEventListener('click', toggleTheme);
+    }
+
+    // Load saved theme on page load
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        // Default to light theme if no preference is saved
+        applyTheme('light');
+    }
 });
