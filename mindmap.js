@@ -1,4 +1,4 @@
-console.log('mindmap.js loaded');
+console.log('mindmap.js carregado');
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('mindMapCanvas');
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (node) {
             fontSizeInput.value = node.fontSize || 16;
             textColorInput.value = node.textColor || '#000000';
-            toggleBoldButton.textContent = node.isBold ? 'Un-Bold' : 'Bold';
+            toggleBoldButton.textContent = node.isBold ? 'Remover Negrito' : 'Negrito';
             toggleBoldButton.style.fontWeight = node.isBold ? 'bold' : 'normal';
             textFormatControlsDiv.style.display = 'block';
         } else {
@@ -31,8 +31,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const CANVAS_DEFAULTS = {
+        NODE_COLOR: 'lightblue',
+        NODE_FONT_FAMILY: 'Arial',
+        NODE_FONT_SIZE: 16,
+        NODE_TEXT_COLOR: '#000000',
+        NODE_BORDER_COLOR: 'black',
+        NODE_BORDER_WIDTH: 1,
+        CONNECTION_MODE_SELECTION_BORDER_COLOR: 'green',
+        STANDARD_SELECTION_BORDER_COLOR: 'red',
+        SELECTION_BORDER_WIDTH: 3,
+        CONNECTION_STROKE_COLOR: 'grey',
+        CONNECTION_LINE_WIDTH: 2
+    };
+
     let nodes = [];
-    let nextNodeId = 0;
     let currentlySelectedNodeId = null; // For selection and deletion
     let selectedNodeForDragging = null;
     let isDraggingNode = false;
@@ -51,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    function createNode(x, y, text = 'New Node', width = 150, height = 100, color = 'lightblue', shape = 'rectangle') {
+    function createNode(x, y, text = 'Novo Nó', width = 150, height = 100, color = CANVAS_DEFAULTS.NODE_COLOR, shape = 'rectangle') {
         return {
             id: Date.now() + Math.random(), // Ensure unique ID
             x,
@@ -59,11 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
             width,
             height,
             text,
-            color,
+            color, // This uses the parameter, which defaults to CANVAS_DEFAULTS.NODE_COLOR
             shape,
-            fontSize: 16,
-            fontFamily: 'Arial',
-            textColor: '#000000',
+            fontSize: CANVAS_DEFAULTS.NODE_FONT_SIZE,
+            fontFamily: CANVAS_DEFAULTS.NODE_FONT_FAMILY,
+            textColor: CANVAS_DEFAULTS.NODE_TEXT_COLOR,
             isBold: false
         };
     }
@@ -133,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = container.offsetWidth;
         canvas.height = container.offsetHeight;
         draw(); // Redraw content after resize
-        console.log('Canvas resized to:', canvas.width, 'x', canvas.height);
+        console.log('Canvas redimensionado para:', canvas.width, 'x', canvas.height);
     }
 
     function worldToScreen(x, y) {
@@ -144,20 +157,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return { x: (x - panX) / zoom, y: (y - panY) / zoom };
     }
 
-    function draw() {
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Save context and apply transformations
+    function drawCanvasBase(ctx, canvasElement, currentPanX, currentPanY, currentZoom) {
+        ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         ctx.save();
-        ctx.translate(panX, panY);
-        ctx.scale(zoom, zoom);
+        ctx.translate(currentPanX, currentPanY);
+        ctx.scale(currentZoom, currentZoom);
+    }
 
-        // Draw connections
-        ctx.save();
-        connections.forEach(conn => {
-            const fromNode = nodes.find(node => node.id === conn.fromNodeId);
-            const toNode = nodes.find(node => node.id === conn.toNodeId);
+    function drawConnections(ctx, connectionsArray, nodesArray /* nodesArray kept for now, though direct refs are primary */) {
+        connectionsArray.forEach(conn => {
+            const fromNode = conn.fromNode; // Use direct reference
+            const toNode = conn.toNode;   // Use direct reference
 
             if (fromNode && toNode) {
                 const fromNodeCenter = { x: fromNode.x + fromNode.width / 2, y: fromNode.y + fromNode.height / 2 };
@@ -166,58 +176,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 const startPoint = getEdgeConnectionPoint(fromNode, toNodeCenter);
                 const endPoint = getEdgeConnectionPoint(toNode, fromNodeCenter);
 
-                const dx = Math.abs(startPoint.x - endPoint.x);
-                // const dy = Math.abs(startPoint.y - endPoint.y); // For potential vertical control
+                // Bezier curve control point calculation (simplified for brevity, original logic assumed)
+                const horizontalDistance = Math.abs(startPoint.x - endPoint.x);
+                let offset = Math.max(horizontalDistance * 0.3, 50);
 
-                // Horizontal offset for control points - adjust factor as needed
-                let controlPointOffsetX = dx * 0.5;
-                if (controlPointOffsetX < 50) controlPointOffsetX = 50; // Minimum offset
-                // if (startPoint.x > endPoint.x) controlPointOffsetX *= -1; // If end is to the left - this logic is tricky, better to adjust based on relative position to center
-
-                const cp1x = startPoint.x + controlPointOffsetX;
-                const cp1y = startPoint.y;
-                const cp2x = endPoint.x - controlPointOffsetX;
-                const cp2y = endPoint.y;
-                
-                // A slightly more robust control point placement based on node relative positions
-                // This helps to ensure curves flow "outwards" from the node.
                 let cp1 = { x: startPoint.x, y: startPoint.y };
                 let cp2 = { x: endPoint.x, y: endPoint.y };
 
-                const horizontalDistance = Math.abs(startPoint.x - endPoint.x);
-                const verticalDistance = Math.abs(startPoint.y - endPoint.y);
-                let offset = Math.max(horizontalDistance * 0.3, verticalDistance * 0.3, 50); // Ensure minimum offset
-                
-                // Determine primary direction for control points
-                if (startPoint.x < toNodeCenter.x - fromNode.width/2) cp1.x += offset; // fromNode is to the left of toNode
-                else if (startPoint.x > toNodeCenter.x + fromNode.width/2) cp1.x -= offset; // fromNode is to the right
-                else if (startPoint.y < toNodeCenter.y) cp1.y += offset; // fromNode is above
-                else cp1.y -= offset; // fromNode is below
+                if (startPoint.x < toNodeCenter.x - fromNode.width/2) cp1.x += offset;
+                else if (startPoint.x > toNodeCenter.x + fromNode.width/2) cp1.x -= offset;
+                else if (startPoint.y < toNodeCenter.y) cp1.y += offset;
+                else cp1.y -= offset;
 
-                if (endPoint.x < fromNodeCenter.x - toNode.width/2) cp2.x += offset; // toNode is to the left of fromNode
-                else if (endPoint.x > fromNodeCenter.x + toNode.width/2) cp2.x -= offset; // toNode is to the right
-                else if (endPoint.y < fromNodeCenter.y) cp2.y += offset; // toNode is above
-                else cp2.y -= offset; // toNode is below
-
+                if (endPoint.x < fromNodeCenter.x - toNode.width/2) cp2.x += offset;
+                else if (endPoint.x > fromNodeCenter.x + toNode.width/2) cp2.x -= offset;
+                else if (endPoint.y < fromNodeCenter.y) cp2.y += offset;
+                else cp2.y -= offset;
 
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
                 ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, endPoint.x, endPoint.y);
-                ctx.strokeStyle = conn.color || 'grey'; // Changed default to grey
-                ctx.lineWidth = conn.lineWidth || 2;
+                ctx.strokeStyle = conn.color || CANVAS_DEFAULTS.CONNECTION_STROKE_COLOR;
+                ctx.lineWidth = conn.lineWidth || CANVAS_DEFAULTS.CONNECTION_LINE_WIDTH;
                 ctx.stroke();
             }
         });
-        ctx.restore();
+    }
 
-        // Draw all nodes
-        nodes.forEach(node => {
-            ctx.save(); // Save context for each node to handle individual styles/paths
+    function drawNodes(ctx, nodesArray, isConnectingModeFlag, firstSelectedNodeId, currentSelectedNodeId) {
+        nodesArray.forEach(node => {
+            ctx.save(); // Save context for each node
 
-            ctx.fillStyle = node.color || 'lightblue';
-            ctx.strokeStyle = 'black'; // Default border color
-            ctx.lineWidth = 1;       // Default border width
+            ctx.fillStyle = node.color || CANVAS_DEFAULTS.NODE_COLOR;
+            ctx.strokeStyle = CANVAS_DEFAULTS.NODE_BORDER_COLOR;
+            ctx.lineWidth = CANVAS_DEFAULTS.NODE_BORDER_WIDTH;
 
+            // Draw shape
             if (node.shape === 'ellipse') {
                 ctx.beginPath();
                 ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
@@ -225,44 +219,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.stroke();
             } else if (node.shape === 'diamond') {
                 ctx.beginPath();
-                ctx.moveTo(node.x + node.width / 2, node.y); // Top-middle
-                ctx.lineTo(node.x + node.width, node.y + node.height / 2); // Middle-right
-                ctx.lineTo(node.x + node.width / 2, node.y + node.height); // Bottom-middle
-                ctx.lineTo(node.x, node.y + node.height / 2); // Middle-left
+                ctx.moveTo(node.x + node.width / 2, node.y);
+                ctx.lineTo(node.x + node.width, node.y + node.height / 2);
+                ctx.lineTo(node.x + node.width / 2, node.y + node.height);
+                ctx.lineTo(node.x, node.y + node.height / 2);
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
-            } else { // Default to rectangle
+            } else { // Rectangle
                 ctx.beginPath();
                 ctx.rect(node.x, node.y, node.width, node.height);
                 ctx.fill();
                 ctx.stroke();
             }
-            
-            // Draw selection indicator (AFTER shape is drawn)
-            if (isConnectingMode && node.id === firstSelectedNodeForConnectionId) {
-                ctx.strokeStyle = 'green'; // Special border for first node in connection mode
-                ctx.lineWidth = 3;
-                // Re-draw the path of the shape for the selection border
-                if (node.shape === 'ellipse') {
-                    ctx.beginPath();
-                    ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
-                } else if (node.shape === 'diamond') {
-                    ctx.beginPath();
-                    ctx.moveTo(node.x + node.width / 2, node.y);
-                    ctx.lineTo(node.x + node.width, node.y + node.height / 2);
-                    ctx.lineTo(node.x + node.width / 2, node.y + node.height);
-                    ctx.lineTo(node.x, node.y + node.height / 2);
-                    ctx.closePath();
-                } else { // Rectangle
-                    ctx.beginPath();
-                    ctx.rect(node.x, node.y, node.width, node.height);
-                }
-                ctx.stroke();
-            } else if (node.id === currentlySelectedNodeId) {
-                ctx.strokeStyle = 'red'; // Standard selection border
-                ctx.lineWidth = 3; // Make it thicker
-                 // Re-draw the path of the shape for the selection border
+
+            // Draw selection indicator
+            let selectionStrokeStyle = null;
+            if (isConnectingModeFlag && node.id === firstSelectedNodeId) {
+                selectionStrokeStyle = CANVAS_DEFAULTS.CONNECTION_MODE_SELECTION_BORDER_COLOR;
+            } else if (node.id === currentSelectedNodeId) {
+                selectionStrokeStyle = CANVAS_DEFAULTS.STANDARD_SELECTION_BORDER_COLOR;
+            }
+
+            if (selectionStrokeStyle) {
+                ctx.strokeStyle = selectionStrokeStyle;
+                ctx.lineWidth = CANVAS_DEFAULTS.SELECTION_BORDER_WIDTH;
                 if (node.shape === 'ellipse') {
                     ctx.beginPath();
                     ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
@@ -280,21 +261,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.stroke();
             }
 
-            // Text drawing
-            const fontSize = node.fontSize || 16;
-            const fontFamily = node.fontFamily || 'Arial';
+            // Draw text
+            const fontSize = node.fontSize || CANVAS_DEFAULTS.NODE_FONT_SIZE;
+            const fontFamily = node.fontFamily || CANVAS_DEFAULTS.NODE_FONT_FAMILY;
             const fontWeight = node.isBold ? 'bold' : 'normal';
             ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-            ctx.fillStyle = node.textColor || '#000000';
+            ctx.fillStyle = node.textColor || CANVAS_DEFAULTS.NODE_TEXT_COLOR;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(node.text, node.x + node.width / 2, node.y + node.height / 2);
             
             ctx.restore(); // Restore context after drawing each node
         });
+    }
 
-        // Restore context
+    function draw() {
+        drawCanvasBase(ctx, canvas, panX, panY, zoom);
+
+        ctx.save(); // For connection-specific styles (though defaults are mostly used now)
+        drawConnections(ctx, connections, nodes);
         ctx.restore();
+
+        drawNodes(ctx, nodes, isConnectingMode, firstSelectedNodeForConnectionId, currentlySelectedNodeId);
+
+        ctx.restore(); // Matches the save in drawCanvasBase
     }
 
     window.addEventListener('keydown', (event) => {
@@ -449,15 +439,25 @@ document.addEventListener('DOMContentLoaded', () => {
                             (c.fromNodeId === clickedNode.id && c.toNodeId === firstSelectedNodeForConnectionId)
                         );
                         if (!existingConnection) {
-                            connections.push({
-                                id: Date.now(),
-                                fromNodeId: firstSelectedNodeForConnectionId,
-                                toNodeId: clickedNode.id
-                            });
+                            const fromNodeObject = nodes.find(node => node.id === firstSelectedNodeForConnectionId);
+                            const toNodeObject = clickedNode; // This is the second node clicked
+
+                            if (fromNodeObject && toNodeObject) {
+                                connections.push({
+                                    id: Date.now(),
+                                    fromNodeId: firstSelectedNodeForConnectionId, // Keep ID for potential future use/filtering
+                                    toNodeId: clickedNode.id,                   // Keep ID for potential future use/filtering
+                                    fromNode: fromNodeObject,                   // Store direct reference
+                                    toNode: toNodeObject                        // Store direct reference
+                                });
+                            } else {
+                                console.error("Error: Could not find one or both nodes for connection.", 
+                                              "From ID:", firstSelectedNodeForConnectionId, "To ID:", clickedNode.id);
+                            }
                         }
                         firstSelectedNodeForConnectionId = null; // Reset for next connection
                         isConnectingMode = false; // Exit connection mode
-                        if(connectButton) connectButton.textContent = 'Create Connection';
+                        if(connectButton) connectButton.textContent = 'Criar Conexão';
                     } else {
                         // Clicked the same node again, cancel first selection
                         firstSelectedNodeForConnectionId = null;
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resizeCanvas(); // Initial resize and draw
 
     // Placeholder for future functionality
-    console.log('Mind Map Canvas Initialized from mindmap.js');
+    console.log('Canvas do Mapa Mental Inicializado a partir de mindmap.js');
 
     const addNodeButton = document.getElementById('addNode');
     connectButton = document.getElementById('toggleConnectionMode'); // Assign to global
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addNodeButton.addEventListener('click', () => {
         const centerX = screenToWorld(canvas.width / 2, canvas.height / 2).x;
         const centerY = screenToWorld(canvas.width / 2, canvas.height / 2).y;
-        const newNode = createNode(centerX, centerY, 'New Node from Button');
+        const newNode = createNode(centerX, centerY, 'Novo Nó (Botão)');
         nodes.push(newNode);
         draw();
     });
@@ -535,11 +535,11 @@ document.addEventListener('DOMContentLoaded', () => {
         connectButton.addEventListener('click', () => {
             isConnectingMode = !isConnectingMode;
             if (isConnectingMode) {
-                connectButton.textContent = 'Cancel Connection Mode';
+                connectButton.textContent = 'Cancelar Modo de Conexão';
                 currentlySelectedNodeId = null; // Deselect any node for dragging
                 firstSelectedNodeForConnectionId = null; // Reset first selection
             } else {
-                connectButton.textContent = 'Create Connection';
+                connectButton.textContent = 'Criar Conexão';
                 firstSelectedNodeForConnectionId = null; // Reset first selection
             }
             draw(); // To update visual feedback if any
@@ -582,6 +582,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('setShapeEllipse').addEventListener('click', () => setSelectedNodeShape('ellipse'));
     document.getElementById('setShapeDiamond').addEventListener('click', () => setSelectedNodeShape('diamond'));
 
+    const saveAsImageButton = document.getElementById('saveAsImage');
+    if (saveAsImageButton) {
+        saveAsImageButton.addEventListener('click', () => {
+            if (isEditingText && textInput) {
+                finishEditing(); // Finalize any ongoing text editing
+            }
+            // Create a temporary link element
+            const link = document.createElement('a');
+            // Set the download attribute and filename
+            link.download = 'mapa-mental.png';
+            // Convert the canvas content to a data URL (PNG format)
+            link.href = canvas.toDataURL('image/png');
+            // Append the link to the body (required for Firefox)
+            document.body.appendChild(link);
+            // Programmatically click the link to trigger the download
+            link.click();
+            // Remove the link from the body
+            document.body.removeChild(link);
+        });
+    }
+
     function setSelectedNodeShape(shape) {
         if (currentlySelectedNodeId !== null) {
             const selectedNode = nodes.find(node => node.id === currentlySelectedNodeId);
@@ -609,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const node = nodes.find(n => n.id === currentlySelectedNodeId);
             if (node) {
                 node.isBold = !node.isBold;
-                toggleBoldButton.textContent = node.isBold ? 'Un-Bold' : 'Bold';
+                toggleBoldButton.textContent = node.isBold ? 'Remover Negrito' : 'Negrito';
                 toggleBoldButton.style.fontWeight = node.isBold ? 'bold' : 'normal';
                 draw();
                 updateTextEditingStyle();
@@ -623,5 +644,44 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.color = editingNode.textColor || '#000000';
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
         }
+    }
+
+    // Theme Switcher Logic
+    const themeSwitcherButton = document.getElementById('themeSwitcherButton');
+    const THEME_STORAGE_KEY = 'mindmap-theme';
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            if (themeSwitcherButton) themeSwitcherButton.textContent = '☀️ Tema Claro';
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+            if (themeSwitcherButton) themeSwitcherButton.textContent = '🌙 Tema Escuro';
+        }
+    }
+
+    function toggleTheme() {
+        let currentThemeToSet;
+        // Check based on the class on <html>, which is the source of truth for current display
+        if (document.documentElement.classList.contains('dark-theme')) {
+            currentThemeToSet = 'light';
+        } else {
+            currentThemeToSet = 'dark';
+        }
+        localStorage.setItem(THEME_STORAGE_KEY, currentThemeToSet);
+        applyTheme(currentThemeToSet);
+    }
+
+    if (themeSwitcherButton) {
+        themeSwitcherButton.addEventListener('click', toggleTheme);
+    }
+
+    // Load saved theme on page load
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        // Default to light theme if no preference is saved
+        applyTheme('light');
     }
 });
