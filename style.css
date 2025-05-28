@@ -1,0 +1,274 @@
+:root {
+    /* Font & Base Layout */
+    --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --font-size-base: 1rem;
+    --line-height-base: 1.5;
+    
+    --input-width-small: 60px; /* Retained for specific cases if needed, but general inputs will be flexible */
+    --button-margin-small: 0.375rem; /* 6px, good for tight layouts */
+    --controls-margin-top: 0.75rem; /* 12px, for sections */
+    --controls-padding: 0.75rem; /* 12px */
+    --controls-border-radius: 0.3rem; /* Slightly more modern radius */
+    --controls-z-index: 10;
+
+    /* Light Theme Colors */
+    --background-color-body: #ffffff;
+    --text-color-main: #212529;
+    --text-color-secondary: #6c757d; /* Bootstrap's secondary text color */
+    
+    --controls-background-color: #f8f9fa;
+    --controls-border-color: #dee2e6;
+    --controls-box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+
+    --button-padding: 0.375rem 0.75rem; /* Bootstrap's sm button padding */
+    --button-border-radius: var(--controls-border-radius);
+    --button-border-color: #ced4da;
+    --button-background-color: #007bff; /* Primary blue */
+    --button-text-color: #ffffff;
+    --button-hover-background-color: #0069d9; /* Darker primary blue */
+    --button-hover-border-color: #0062cc;
+    --button-active-background-color: #005cbf; /* Even darker */
+    --button-active-border-color: #0056b3;
+    --button-transition-duration: 0.1s;
+
+    --input-padding: 0.375rem 0.75rem;
+    --input-border-radius: var(--controls-border-radius);
+    --input-background-color: #ffffff;
+    --input-text-color: var(--text-color-main);
+    --input-border-color: #ced4da;
+    --input-focus-border-color: #86b7fe;
+    --input-focus-box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    --input-transition-duration: 0.15s;
+
+    /* Canvas related - placeholders */
+    --node-default-color: lightblue;
+    --node-text-color: #000000;
+    --selection-color: red; 
+    --connection-color: grey;
+}
+
+html.dark-theme {
+    --background-color-body: #1a1a1a; /* Darker body */
+    --text-color-main: #e9ecef; /* Lighter text */
+    --text-color-secondary: #adb5bd;
+
+    --controls-background-color: #2c2c2c; /* Darker controls panel */
+    --controls-border-color: #444444; /* Subtler border */
+    --controls-box-shadow: 0 0.125rem 0.25rem rgba(255,255,255,0.05);
+
+    --button-border-color: #0056b3; /* Using the active color from light for borders in dark */
+    --button-background-color: #0069d9; /* Primary blue, slightly lighter for dark mode contrast */
+    --button-text-color: #ffffff;
+    --button-hover-background-color: #007bff; /* Lighter on hover */
+    --button-hover-border-color: #0069d9;
+    --button-active-background-color: #005cbf;
+    --button-active-border-color: #0056b3;
+
+    --input-background-color: #2c2c2c; /* Dark inputs */
+    --input-text-color: var(--text-color-main);
+    --input-border-color: #555555; /* Darker border for inputs */
+    --input-focus-border-color: #589CFD; 
+    --input-focus-box-shadow: 0 0 0 0.25rem rgba(88, 157, 253, 0.35);
+
+    /* Canvas related - placeholders */
+    --node-default-color: #0b506b;
+    --node-text-color: #f0f0f0;
+    --selection-color: lightcoral; 
+    --connection-color: #999999;
+}
+
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    background-color: var(--background-color-body);
+    color: var(--text-color-main);
+}
+
+#controls {
+    position: var(--controls-position, absolute);
+    top: var(--controls-top, 10px);
+    left: var(--controls-left, 10px);
+    background: var(--controls-background-color);
+    padding: var(--controls-padding);
+    border-radius: var(--controls-border-radius);
+    box-shadow: var(--controls-box-shadow);
+    z-index: var(--controls-z-index);
+    border: 1px solid var(--controls-border-color);
+    max-width: 320px; /* Limit width for larger screens for a sidebar feel */
+}
+
+#canvas-container {
+    width: var(--canvas-container-width, 100vw);
+    height: var(--canvas-container-height, 100vh);
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+}
+
+#shapeControls, #textFormatControls {
+    margin-top: var(--controls-margin-top);
+    padding-top: var(--controls-margin-top); /* Add padding for separation */
+    border-top: 1px solid var(--controls-border-color); /* Separator line */
+}
+#controls > button:first-of-type { /* No top margin/border for the first button if it's at the top */
+    margin-top:0; 
+}
+#controls div:first-of-type { /* No top border for the first div group */
+    border-top: none;
+    padding-top: 0;
+}
+
+
+#textFormatControls {
+    display: none; /* Keep initial state */
+}
+
+#textFormatControls strong, #shapeControls > span {
+    display: block;
+    margin-bottom: var(--button-margin-small);
+    color: var(--text-color-secondary);
+    font-weight: 600; /* Slightly bolder for section titles */
+}
+
+/* General button styling */
+#controls button {
+    font-family: var(--font-family-sans);
+    font-size: 0.875rem; /* Slightly smaller button text */
+    line-height: var(--line-height-base);
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: 1px solid var(--button-border-color);
+    padding: var(--button-padding);
+    border-radius: var(--button-border-radius);
+    margin-bottom: var(--button-margin-small);
+    cursor: pointer;
+    display: inline-flex; /* For icon alignment */
+    align-items: center;   /* Vertical alignment */
+    justify-content: center; /* Horizontal alignment */
+    transition: background-color var(--button-transition-duration) ease-in-out,
+                border-color var(--button-transition-duration) ease-in-out,
+                color var(--button-transition-duration) ease-in-out,
+                box-shadow var(--button-transition-duration) ease-in-out;
+}
+#controls button:hover {
+    background-color: var(--button-hover-background-color);
+    border-color: var(--button-hover-border-color);
+}
+#controls button:active {
+    background-color: var(--button-active-background-color);
+    border-color: var(--button-active-border-color);
+}
+#controls button:focus {
+    outline: 0;
+    box-shadow: var(--input-focus-box-shadow); /* Consistent focus shadow */
+}
+
+
+/* Input fields styling */
+#controls input[type="number"],
+#controls input[type="color"],
+#controls input[type="text"] {
+    font-family: var(--font-family-sans);
+    font-size: 0.875rem;
+    line-height: var(--line-height-base);
+    background-color: var(--input-background-color);
+    color: var(--input-text-color);
+    border: 1px solid var(--input-border-color);
+    padding: var(--input-padding);
+    border-radius: var(--input-border-radius);
+    margin-bottom: var(--button-margin-small);
+    box-sizing: border-box; /* Ensure padding doesn't expand width */
+    transition: border-color var(--input-transition-duration) ease-in-out,
+                box-shadow var(--input-transition-duration) ease-in-out;
+}
+
+#controls input[type="number"]:focus,
+#controls input[type="color"]:focus,
+#controls input[type="text"]:focus {
+    border-color: var(--input-focus-border-color);
+    box-shadow: var(--input-focus-box-shadow);
+    outline: none;
+}
+
+
+#fontSizeInput {
+    width: var(--input-width-small); /* This can still be used if a specifically small input is needed */
+}
+
+#controls label {
+    display: block; /* Make labels block for better spacing with inputs */
+    margin-bottom: calc(var(--button-margin-small) / 2); /* Smaller margin above input */
+    color: var(--text-color-secondary);
+    font-size: 0.875rem; /* Match input font size */
+}
+
+
+@media (max-width: 600px) {
+    #controls {
+        position: relative;
+        width: 95%; 
+        top: 5px;
+        left: 0; 
+        margin-left: auto; 
+        margin-right: auto;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch; 
+        max-height: 50vh; /* Increased max-height for mobile */
+        overflow-y: auto;
+        max-width: none; /* Override max-width for mobile full width */
+    }
+
+    #controls > button,
+    #controls > div {
+        margin-bottom: var(--controls-margin-top);
+        width: 100%; 
+        box-sizing: border-box;
+    }
+    
+    #controls > button:last-of-type, /* Use last-of-type for more robustness */
+    #controls > div:last-of-type {
+        margin-bottom: 0;
+    }
+
+    #controls div > button, /* Buttons within groups */
+    #controls div > span, 
+    #controls div > label {
+        display: block; 
+        width: 100%;    
+        margin-bottom: var(--button-margin-small); 
+        box-sizing: border-box;
+        text-align: left; 
+    }
+    #controls div > span { 
+        padding: 0.375rem 0; /* Adjusted padding */
+        font-weight: 600;
+    }
+
+    #controls div > label input[type="number"],
+    #controls div > label input[type="color"] {
+        width: 100%; 
+        box-sizing: border-box;
+        margin-top: calc(var(--button-margin-small) / 2);
+    }
+
+    #fontSizeInput {
+        width: 100%; 
+    }
+
+    #textFormatControls {
+        display: none; 
+    }
+    #textFormatControls.active-format-controls { 
+        display: block !important; 
+    }
+}
+
+/* TODO: Canvas theming via JS */
