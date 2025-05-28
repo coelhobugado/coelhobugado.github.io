@@ -3,50 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mind Map Creator</title>
-    <style>
-        body { margin: 0; overflow: hidden; font-family: sans-serif; }
-        #controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-        }
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden; /* Ensure canvas is clipped to container if it grows */
-        }
-        canvas {
-            display: block; /* Removes default bottom margin */
-        }
-    </style>
+    <title>Criador de Mapas Mentais</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="canvas-container">
         <canvas id="mindMapCanvas"></canvas>
     </div>
     <div id="controls">
+        <button id="themeSwitcherButton">🌙 Tema Escuro</button>
         <!-- UI controls will go here -->
-        <button id="addNode">Add Node</button>
-        <button id="toggleConnectionMode">Create Connection</button>
-        <button id="zoomIn">Zoom In</button>
-        <button id="zoomOut">Zoom Out</button>
+        <button id="addNode">➕ Adicionar Nó</button>
+        <button id="toggleConnectionMode">🔗 Criar Conexão</button>
+        <button id="zoomIn">🔍+ Aumentar Zoom</button>
+        <button id="zoomOut">🔍- Diminuir Zoom</button>
+        <button id="saveAsImage">💾 Salvar como Imagem</button>
         <!-- More controls will be added later -->
-        <div id="shapeControls" style="margin-top: 10px;">
-            <span>Shape:</span>
-            <button id="setShapeRectangle">Rect</button>
-            <button id="setShapeEllipse">Ellipse</button>
-            <button id="setShapeDiamond">Diamond</button>
+        <div id="shapeControls">
+            <span>Forma:</span>
+            <button id="setShapeRectangle">▭ Retângulo</button>
+            <button id="setShapeEllipse">○ Elipse</button>
+            <button id="setShapeDiamond">◇ Diamante</button>
         </div>
-        <div id="textFormatControls" style="margin-top: 10px; display: none;"> <!-- Initially hidden -->
-            <strong>Text Formatting:</strong><br>
-            <label>Font Size: <input type="number" id="fontSizeInput" min="8" max="72" style="width: 60px;"></label>
-            <label>Text Color: <input type="color" id="textColorInput"></label>
-            <button id="toggleBoldButton">Bold</button>
+        <div id="textFormatControls"> <!-- Initially hidden by style.css -->
+            <strong>Formatação de Texto:</strong><br>
+            <label>Tamanho da Fonte: <input type="number" id="fontSizeInput" min="8" max="72"></label>
+            <label>Cor do Texto: <input type="color" id="textColorInput"></label>
+            <button id="toggleBoldButton">✏️ Negrito</button>
             <!-- <label>Font: <input type="text" id="fontFamilyInput" style="width: 100px;"></label> --> <!-- Optional: Add later if needed -->
         </div>
     </div>
