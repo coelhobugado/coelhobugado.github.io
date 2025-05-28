@@ -1,5 +1,3 @@
-console.log('mindmap.js carregado');
-
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('mindMapCanvas');
     const ctx = canvas.getContext('2d');
@@ -12,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let connections = [];
     let isConnectingMode = false;
     let firstSelectedNodeForConnectionId = null;
-    let connectButton = null; // Será atribuído em DOMContentLoaded
+    let connectButton = null;
 
     const textFormatControlsDiv = document.getElementById('textFormatControls');
     const fontSizeInput = document.getElementById('fontSizeInput');
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Definição de constantes para facilitar a customização
     const CANVAS_DEFAULTS = {
         NODE_COLOR: 'lightblue',
         NODE_FONT_FAMILY: 'Arial',
@@ -47,17 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     let nodes = [];
-    let currentlySelectedNodeId = null; // Para seleção e exclusão
+    let currentlySelectedNodeId = null;
     let selectedNodeForDragging = null;
     let isDraggingNode = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
     function getNodeAt(targetX, targetY) {
-        // Itera de trás para frente para selecionar o nó mais acima (se houver sobreposição)
         for (let i = nodes.length - 1; i >= 0; i--) {
             const node = nodes[i];
-            // Verifica se o ponto está dentro do retângulo delimitador do nó
             if (targetX >= node.x && targetX <= node.x + node.width &&
                 targetY >= node.y && targetY <= node.y + node.height) {
                 return node;
@@ -68,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createNode(x, y, text = 'Novo Nó', width = 150, height = 100, color = CANVAS_DEFAULTS.NODE_COLOR, shape = 'rectangle') {
         return {
-            id: Date.now() + Math.random(), // Garante um ID único
+            id: Date.now() + Math.random(),
             x,
             y,
             width,
@@ -87,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let panY = 0;
     let zoom = 1;
 
-    // Ajuda a encontrar o ponto de conexão na borda do retângulo delimitador de um nó
     function getEdgeConnectionPoint(node, outsidePoint) {
         const nodeCenterX = node.x + node.width / 2;
         const nodeCenterY = node.y + node.height / 2;
@@ -97,8 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let t = Infinity, edgeX, edgeY;
 
-        // Verifica a interseção com cada um dos 4 lados do retângulo delimitador
-        // Borda superior: y = node.y
         if (dy !== 0) {
             const currentT = (node.y - nodeCenterY) / dy;
             if (currentT > 0) {
@@ -108,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Borda inferior: y = node.y + node.height
         if (dy !== 0) {
             const currentT = (node.y + node.height - nodeCenterY) / dy;
             if (currentT > 0) {
@@ -118,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Borda esquerda: x = node.x
         if (dx !== 0) {
             const currentT = (node.x - nodeCenterX) / dx;
             if (currentT > 0) {
@@ -128,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Borda direita: x = node.x + node.width
         if (dx !== 0) {
             const currentT = (node.x + node.width - nodeCenterX) / dx;
             if (currentT > 0) {
@@ -138,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        // Se nenhuma interseção for encontrada (ex: outsidePoint está dentro do nó), retorna o centro ou um fallback
         if (t === Infinity) return { x: nodeCenterX, y: nodeCenterY }; 
         return { x: edgeX, y: edgeY };
     }
@@ -149,8 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resizeCanvas() {
         canvas.width = container.offsetWidth;
         canvas.height = container.offsetHeight;
-        draw(); // Redesenha o conteúdo após redimensionar
-        console.log('Canvas redimensionado para:', canvas.width, 'x', canvas.height);
+        draw();
     }
 
     function worldToScreen(x, y) {
@@ -168,9 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.scale(currentZoom, currentZoom);
     }
 
-    function drawConnections(ctx, connectionsArray, nodesArray /* nodesArray é mantido para buscar, mas a busca pelo ID é mais robusta */) {
+    function drawConnections(ctx, connectionsArray, nodesArray) {
         connectionsArray.forEach(conn => {
-            // Buscando os nós pelos IDs, o que é mais seguro caso a array 'nodes' seja modificada
             const fromNode = nodesArray.find(node => node.id === conn.fromNodeId);
             const toNode = nodesArray.find(node => node.id === conn.toNodeId);
 
@@ -181,23 +167,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 const startPoint = getEdgeConnectionPoint(fromNode, toNodeCenter);
                 const endPoint = getEdgeConnectionPoint(toNode, fromNodeCenter);
 
-                // Pontos de controle para a curva de Bezier
-                let cp1 = { x: startPoint.x, y: startPoint.y };
-                let cp2 = { x: endPoint.x, y: endPoint.y };
+                const cp1 = { x: startPoint.x, y: startPoint.y };
+                const cp2 = { x: endPoint.x, y: endPoint.y };
 
-                // Calcula um deslocamento dinâmico para os pontos de controle para fazer as curvas fluírem "para fora"
-                const horizontalDistance = Math.abs(startPoint.x - endPoint.x);
-                const verticalDistance = Math.abs(startPoint.y - endPoint.y);
-                let offset = Math.max(horizontalDistance * 0.3, verticalDistance * 0.3, 50); // Garante um deslocamento mínimo
+                const distance = Math.sqrt(Math.pow(endPoint.x - startPoint.x, 2) + Math.pow(endPoint.y - startPoint.y, 2));
+                const offset = Math.max(distance / 3, 50);
 
-                // Ajusta os pontos de controle com base nas posições relativas para uma curva mais suave e para fora
-                // Esta lógica pode ser bastante complexa para ser perfeita em todos os ângulos.
-                // Uma abordagem mais simples pode ser usar apenas um deslocamento fixo em x/y, ou tangente à borda do nó.
-                if (startPoint.x < toNodeCenter.x) cp1.x += offset; else cp1.x -= offset;
-                if (startPoint.y < toNodeCenter.y) cp1.y += offset; else cp1.y -= offset;
-
-                if (endPoint.x < fromNodeCenter.x) cp2.x += offset; else cp2.x -= offset;
-                if (endPoint.y < fromNodeCenter.y) cp2.y += offset; else cp2.y -= offset;
+                if (Math.abs(startPoint.x - endPoint.x) > Math.abs(startPoint.y - endPoint.y)) {
+                    if (startPoint.y < endPoint.y) {
+                        cp1.y += offset;
+                        cp2.y -= offset;
+                    } else {
+                        cp1.y -= offset;
+                        cp2.y += offset;
+                    }
+                } else {
+                    if (startPoint.x < endPoint.x) {
+                        cp1.x += offset;
+                        cp2.x -= offset;
+                    } else {
+                        cp1.x -= offset;
+                        cp2.x += offset;
+                    }
+                }
 
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
@@ -211,13 +203,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function drawNodes(ctx, nodesArray, isConnectingModeFlag, firstSelectedNodeId, currentSelectedNodeId) {
         nodesArray.forEach(node => {
-            ctx.save(); // Salva o contexto para cada nó
+            ctx.save();
 
             ctx.fillStyle = node.color || CANVAS_DEFAULTS.NODE_COLOR;
             ctx.strokeStyle = CANVAS_DEFAULTS.NODE_BORDER_COLOR;
             ctx.lineWidth = CANVAS_DEFAULTS.NODE_BORDER_WIDTH;
 
-            // Desenha a forma
             if (node.shape === 'ellipse') {
                 ctx.beginPath();
                 ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
@@ -232,14 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
-            } else { // Retângulo
+            } else {
                 ctx.beginPath();
                 ctx.rect(node.x, node.y, node.width, node.height);
                 ctx.fill();
                 ctx.stroke();
             }
 
-            // Desenha o indicador de seleção
             let selectionStrokeStyle = null;
             if (isConnectingModeFlag && node.id === firstSelectedNodeId) {
                 selectionStrokeStyle = CANVAS_DEFAULTS.CONNECTION_MODE_SELECTION_BORDER_COLOR;
@@ -250,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectionStrokeStyle) {
                 ctx.strokeStyle = selectionStrokeStyle;
                 ctx.lineWidth = CANVAS_DEFAULTS.SELECTION_BORDER_WIDTH;
-                // Redesenha o caminho da forma para a borda de seleção
                 if (node.shape === 'ellipse') {
                     ctx.beginPath();
                     ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
@@ -261,14 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.lineTo(node.x + node.width / 2, node.y + node.height);
                     ctx.lineTo(node.x, node.y + node.height / 2);
                     ctx.closePath();
-                } else { // Retângulo
+                } else {
                     ctx.beginPath();
                     ctx.rect(node.x, node.y, node.width, node.height);
                 }
                 ctx.stroke();
             }
 
-            // Desenha o texto
             const fontSize = node.fontSize || CANVAS_DEFAULTS.NODE_FONT_SIZE;
             const fontFamily = node.fontFamily || CANVAS_DEFAULTS.NODE_FONT_FAMILY;
             const fontWeight = node.isBold ? 'bold' : 'normal';
@@ -278,38 +266,37 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.textBaseline = 'middle';
             ctx.fillText(node.text, node.x + node.width / 2, node.y + node.height / 2);
             
-            ctx.restore(); // Restaura o contexto após desenhar cada nó
+            ctx.restore();
         });
     }
 
     function draw() {
         drawCanvasBase(ctx, canvas, panX, panY, zoom);
 
-        ctx.save(); // Para estilos específicos de conexão (embora os padrões sejam usados agora)
+        ctx.save();
         drawConnections(ctx, connections, nodes);
         ctx.restore();
 
         drawNodes(ctx, nodes, isConnectingMode, firstSelectedNodeForConnectionId, currentlySelectedNodeId);
 
-        ctx.restore(); // Corresponde ao save em drawCanvasBase
+        ctx.restore();
     }
 
     window.addEventListener('keydown', (event) => {
         if ((event.key === 'Delete' || event.key === 'Backspace') && currentlySelectedNodeId !== null) {
             const nodeIdToRemove = currentlySelectedNodeId;
             nodes = nodes.filter(node => node.id !== nodeIdToRemove);
-            // Remove as conexões associadas ao nó excluído
             connections = connections.filter(conn => conn.fromNodeId !== nodeIdToRemove && conn.toNodeId !== nodeIdToRemove);
+            
+            finishEditing();
             currentlySelectedNodeId = null;
-            updateTextFormatControls(null); // Oculta os controles
+            updateTextFormatControls(null);
             draw();
         }
     });
 
     canvas.addEventListener('wheel', (event) => {
-        if (isEditingText && textInput) {
-            finishEditing();
-        }
+        finishEditing();
         event.preventDefault();
         const zoomFactor = 1.1;
         const mouseX = event.offsetX;
@@ -317,15 +304,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const worldBeforeZoom = screenToWorld(mouseX, mouseY);
 
-        if (event.deltaY < 0) { // Zoom in
+        if (event.deltaY < 0) {
             zoom = Math.min(zoom * zoomFactor, maxZoom);
-        } else { // Zoom out
+        } else {
             zoom = Math.max(zoom / zoomFactor, minZoom);
         }
 
         const worldAfterZoom = screenToWorld(mouseX, mouseY);
 
-        // Ajusta o pan para dar zoom em direção ao cursor do mouse
         panX += (worldAfterZoom.x - worldBeforeZoom.x) * zoom;
         panY += (worldAfterZoom.y - worldBeforeZoom.y) * zoom;
 
@@ -337,21 +323,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const nodeToEdit = getNodeAt(worldMousePos.x, worldMousePos.y);
 
         if (nodeToEdit) {
-            event.stopPropagation(); // Previne a criação de um novo nó se um nó foi clicado duas vezes
+            event.stopPropagation();
 
-            if (isEditingText && textInput) {
-                textInput.blur(); // Salva a edição de texto anterior antes de iniciar uma nova
-            }
+            finishEditing();
 
             isEditingText = true;
             editingNode = nodeToEdit;
 
             textInput = document.createElement('textarea');
             textInput.value = editingNode.text;
-            textInput.style.position = 'absolute'; // Posição relativa à viewport
+            textInput.style.position = 'absolute';
 
             const canvasRect = canvas.getBoundingClientRect();
-            // Calcula as coordenadas de tela do canto superior esquerdo do nó
             const screenX = editingNode.x * zoom + panX + canvasRect.left;
             const screenY = editingNode.y * zoom + panY + canvasRect.top;
             const screenWidth = editingNode.width * zoom;
@@ -361,9 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.top = `${screenY}px`;
             textInput.style.width = `${screenWidth}px`;
             textInput.style.height = `${screenHeight}px`;
-            // Aplica estilos de fonte diretamente na textarea para consistência
             textInput.style.fontFamily = editingNode.fontFamily || 'Arial';
-            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Escala a fonte com o zoom
+            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`;
             textInput.style.color = editingNode.textColor || '#000000';
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
             textInput.style.textAlign = 'center';
@@ -371,8 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.boxSizing = 'border-box';
             textInput.style.border = '1px solid #777';
             textInput.style.outline = 'none';
-            textInput.style.resize = 'none'; // Previne o redimensionamento manual da textarea
-            textInput.style.overflow = 'hidden'; // Oculta as barras de rolagem
+            textInput.style.resize = 'none';
+            textInput.style.overflow = 'hidden';
             
             document.body.appendChild(textInput);
             textInput.focus();
@@ -381,22 +363,20 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.addEventListener('blur', finishEditing);
             textInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault(); // Previne nova linha na textarea ao pressionar Enter
+                    e.preventDefault();
                     finishEditing();
                 }
                 if (e.key === 'Escape') {
-                    // Reverte para o texto original antes de fechar ou apenas fecha
-                    if (textInput && editingNode) textInput.value = editingNode.text; // Opcional: reverte no Esc
+                    if (textInput && editingNode) textInput.value = editingNode.text;
                     finishEditing();
                 }
             });
         } else {
-            // Lógica existente para criar um novo nó se clicado duas vezes em uma área vazia do canvas
             const rect = canvas.getBoundingClientRect();
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
             const worldCoords = screenToWorld(mouseX, mouseY);
-            const newNode = createNode(worldCoords.x - 75, worldCoords.y - 50); // Centraliza o novo nó sob o cursor
+            const newNode = createNode(worldCoords.x - 75, worldCoords.y - 50);
             nodes.push(newNode);
             draw();
         }
@@ -419,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.addEventListener('mousedown', (event) => {
         const worldMousePos = screenToWorld(event.offsetX, event.offsetY);
 
-        if (event.button === 0) { // Botão esquerdo do mouse
+        if (event.button === 0) {
             if (!isConnectingMode) {
                 const clickedNode = getNodeAt(worldMousePos.x, worldMousePos.y);
                 if (clickedNode) {
@@ -427,50 +407,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     isDraggingNode = true;
                     dragOffsetX = worldMousePos.x - selectedNodeForDragging.x;
                     dragOffsetY = worldMousePos.y - selectedNodeForDragging.y;
+                    
+                    finishEditing();
                     currentlySelectedNodeId = selectedNodeForDragging.id;
-                    updateTextFormatControls(selectedNodeForDragging); // Mostra os controles
-                    event.stopPropagation(); // Previne o pan ao clicar em um nó
+                    updateTextFormatControls(selectedNodeForDragging);
+                    event.stopPropagation();
                     draw();
                 } else {
-                    // Clicou em uma área vazia do canvas, deseleciona
+                    finishEditing();
                     currentlySelectedNodeId = null;
-                    updateTextFormatControls(null); // Oculta os controles
+                    updateTextFormatControls(null);
                     draw();
                 }
-            } else { // isConnectingMode é verdadeiro
+            } else {
                 const clickedNode = getNodeAt(worldMousePos.x, worldMousePos.y);
                 if (clickedNode) {
                     if (firstSelectedNodeForConnectionId === null) {
                         firstSelectedNodeForConnectionId = clickedNode.id;
-                        currentlySelectedNodeId = null; // Garante que nenhum nó esteja selecionado para arrastar/excluir
+                        currentlySelectedNodeId = null;
                     } else if (firstSelectedNodeForConnectionId !== clickedNode.id) {
-                        // Verifica se a conexão já existe (bidirecional)
                         const existingConnection = connections.find(c =>
                             (c.fromNodeId === firstSelectedNodeForConnectionId && c.toNodeId === clickedNode.id) ||
                             (c.fromNodeId === clickedNode.id && c.toNodeId === firstSelectedNodeForConnectionId)
                         );
                         if (!existingConnection) {
                             connections.push({
-                                id: Date.now(), // ID único para a conexão
+                                id: Date.now(),
                                 fromNodeId: firstSelectedNodeForConnectionId,
                                 toNodeId: clickedNode.id
                             });
                         }
-                        firstSelectedNodeForConnectionId = null; // Reseta para a próxima conexão
-                        isConnectingMode = false; // Sai do modo de conexão após uma conexão bem-sucedida
-                        if(connectButton) connectButton.textContent = '🔗 Criar Conexão'; // Reseta o texto do botão
+                        firstSelectedNodeForConnectionId = null;
+                        isConnectingMode = false;
+                        if(connectButton) connectButton.textContent = '🔗 Criar Conexão';
                     } else {
-                        // Clicou no mesmo nó novamente, cancela a primeira seleção
                         firstSelectedNodeForConnectionId = null;
                     }
                     draw();
                 }
             }
-        } else if (event.button === 1) { // Botão do meio do mouse para pan
+        } else if (event.button === 1) {
             isPanning = true;
             lastMouseX = event.clientX;
             lastMouseY = event.clientY;
-            canvas.style.cursor = 'grabbing'; // Muda o cursor para indicar pan
+            canvas.style.cursor = 'grabbing';
         }
     });
 
@@ -481,9 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedNodeForDragging.y = worldMousePos.y - dragOffsetY;
             draw();
         } else if (isPanning) {
-            if (isEditingText && textInput) {
-                finishEditing(); // Termina a edição de texto se o pan começar
-            }
+            finishEditing();
             const dx = event.clientX - lastMouseX;
             const dy = event.clientY - lastMouseY;
             panX += dx;
@@ -501,33 +479,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (event.button === 1 && isPanning) {
             isPanning = false;
-            canvas.style.cursor = 'grab'; // Volta o cursor
+            canvas.style.cursor = 'grab';
         }
     });
 
     canvas.addEventListener('mouseleave', () => {
-        if (isPanning) { // Para o pan se o mouse sair do canvas
+        if (isPanning) {
             isPanning = false;
-            canvas.style.cursor = 'default'; // Ou 'grab' se preferir
+            canvas.style.cursor = 'default';
         }
-        if (isDraggingNode) { // Para o arrasto se o mouse sair do canvas
+        if (isDraggingNode) {
             isDraggingNode = false;
             selectedNodeForDragging = null;
         }
     });
 
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas(); // Redimensionamento e desenho iniciais
-
-    console.log('Canvas do Mapa Mental Inicializado a partir de mindmap.js');
+    resizeCanvas();
 
     const addNodeButton = document.getElementById('addNode');
-    connectButton = document.getElementById('toggleConnectionMode'); // Atribui à variável global
+    connectButton = document.getElementById('toggleConnectionMode');
 
     addNodeButton.addEventListener('click', () => {
         const centerX = screenToWorld(canvas.width / 2, canvas.height / 2).x;
         const centerY = screenToWorld(canvas.width / 2, canvas.height / 2).y;
-        const newNode = createNode(centerX - 75, centerY - 50, 'Novo Nó (Botão)'); // Centraliza o novo nó
+        const newNode = createNode(centerX - 75, centerY - 50, 'Novo Nó (Botão)');
         nodes.push(newNode);
         draw();
     });
@@ -537,24 +513,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (connectButton) {
         connectButton.addEventListener('click', () => {
+            finishEditing();
             isConnectingMode = !isConnectingMode;
             if (isConnectingMode) {
                 connectButton.textContent = 'Cancelar Modo de Conexão';
-                currentlySelectedNodeId = null; // Deseleciona qualquer nó para arrastar/excluir
-                firstSelectedNodeForConnectionId = null; // Reseta a primeira seleção
-                updateTextFormatControls(null); // Oculta os controles de texto
+                currentlySelectedNodeId = null;
+                firstSelectedNodeForConnectionId = null;
+                updateTextFormatControls(null);
             } else {
                 connectButton.textContent = '🔗 Criar Conexão';
-                firstSelectedNodeForConnectionId = null; // Reseta a primeira seleção
+                firstSelectedNodeForConnectionId = null;
             }
-            draw(); // Para atualizar o feedback visual (ex: borda verde)
+            draw();
         });
     }
 
     zoomInButton.addEventListener('click', () => {
-        if (isEditingText && textInput) {
-            finishEditing();
-        }
+        finishEditing();
         const zoomFactor = 1.2;
         const center = { x: canvas.width / 2, y: canvas.height / 2 };
         const worldCenterBeforeZoom = screenToWorld(center.x, center.y);
@@ -568,9 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     zoomOutButton.addEventListener('click', () => {
-        if (isEditingText && textInput) {
-            finishEditing();
-        }
+        finishEditing();
         const zoomFactor = 1 / 1.2;
         const center = { x: canvas.width / 2, y: canvas.height / 2 };
         const worldCenterBeforeZoom = screenToWorld(center.x, center.y);
@@ -590,20 +563,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveAsImageButton = document.getElementById('saveAsImage');
     if (saveAsImageButton) {
         saveAsImageButton.addEventListener('click', () => {
-            if (isEditingText && textInput) {
-                finishEditing(); // Finaliza qualquer edição de texto em andamento
-            }
-            // Cria um elemento de link temporário
+            finishEditing();
             const link = document.createElement('a');
-            // Define o atributo download e o nome do arquivo
             link.download = 'mapa-mental.png';
-            // Converte o conteúdo do canvas para uma URL de dados (formato PNG)
             link.href = canvas.toDataURL('image/png');
-            // Anexa o link ao corpo (necessário para Firefox)
             document.body.appendChild(link);
-            // Clica programaticamente no link para iniciar o download
             link.click();
-            // Remove o link do corpo
             document.body.removeChild(link);
         });
     }
@@ -624,7 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (node) { node.fontSize = parseInt(fontSizeInput.value) || 16; draw(); updateTextEditingStyle(); }
         }
     });
-    textColorInput.addEventListener('input', () => { // 'input' para pré-visualização ao vivo
+    textColorInput.addEventListener('input', () => {
         if (currentlySelectedNodeId !== null) {
             const node = nodes.find(n => n.id === currentlySelectedNodeId);
             if (node) { node.textColor = textColorInput.value; draw(); updateTextEditingStyle(); }
@@ -642,16 +607,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    // Função auxiliar para atualizar o estilo da textarea se ela estiver ativa
+    
     function updateTextEditingStyle() {
         if (isEditingText && textInput && editingNode && editingNode.id === currentlySelectedNodeId) {
-            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`; // Garante que a fonte escala com o zoom
+            textInput.style.fontSize = `${editingNode.fontSize * zoom}px`;
             textInput.style.color = editingNode.textColor || '#000000';
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
         }
     }
 
-    // Lógica do Tema
     const themeSwitcherButton = document.getElementById('themeSwitcherButton');
     const THEME_STORAGE_KEY = 'mindmap-theme';
 
@@ -667,7 +631,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleTheme() {
         let currentThemeToSet;
-        // Verifica com base na classe no <html>, que é a fonte da verdade para a exibição atual
         if (document.documentElement.classList.contains('dark-theme')) {
             currentThemeToSet = 'light';
         } else {
@@ -681,12 +644,10 @@ document.addEventListener('DOMContentLoaded', () => {
         themeSwitcherButton.addEventListener('click', toggleTheme);
     }
 
-    // Carrega o tema salvo ao carregar a página
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
     if (savedTheme) {
         applyTheme(savedTheme);
     } else {
-        // Padrão para tema claro se nenhuma preferência for salva
         applyTheme('light');
     }
 });
