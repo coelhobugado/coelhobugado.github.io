@@ -467,12 +467,12 @@
         const MAX_ZOOM = 3;
 
         // Settings for 'default' (organic) layout
-        const LEVEL_DISTANCE_FACTOR = 200; 
+        const LEVEL_DISTANCE_FACTOR = 220; 
         const MIN_ANGLE_BETWEEN_BRANCHES = Math.PI / 7; 
         
         // Settings for 'hierarchical-top-down' layout
-        const HIERARCHICAL_LEVEL_GAP = 40; // Vertical distance between centers of node levels
-        const HIERARCHICAL_SIBLING_GAP = 25; // Horizontal distance between edges of sibling nodes/subtrees
+        const HIERARCHICAL_LEVEL_GAP = 50; // Vertical distance between centers of node levels
+        const HIERARCHICAL_SIBLING_GAP = 35; // Horizontal distance between edges of sibling nodes/subtrees
 
         let svgElement, rootGroup, debugInfoElement, generateMapButton, emojiThemeToggleElement, exportPngButtonElement;
         let currentScale = 1;
@@ -931,7 +931,7 @@ ${text}
             const R1 = { left: x - width / 2, right: x + width / 2, top: y - height / 2, bottom: y + height / 2 };
             for (let pos of positionsMap.values()) { // Usa o mapa passado como argumento
                 const R2 = { left: pos.x - pos.width / 2, right: pos.x + pos.width / 2, top: pos.y - pos.height / 2, bottom: pos.y + pos.height / 2 };
-                const buffer = 15; 
+                const buffer = 25; 
                 if (R1.left < R2.right + buffer && R1.right + buffer > R2.left && 
                     R1.top < R2.bottom + buffer && R1.bottom + buffer > R2.top) {
                     return true;
@@ -1575,6 +1575,11 @@ ${text}
                 exportPngButtonElement.addEventListener('click', exportMindMapAsPng);
             } else {
                 console.error("Botão de exportar PNG não encontrado.");
+            }
+
+            if (typeof saveSvgAsPng === 'undefined' || typeof saveSvgAsPng.saveSvgAsPng !== 'function') {
+                console.warn('Aviso: A biblioteca saveSvgAsPng (para exportação PNG) não parece ter sido carregada corretamente após o DOMContentLoaded. A exportação PNG pode falhar.');
+                // Opcionalmente, poderia desabilitar o botão aqui também, mas ele já é gerenciado em outros lugares.
             }
 
             askAndSetApiKey(); // Solicita a chave da API ao carregar
