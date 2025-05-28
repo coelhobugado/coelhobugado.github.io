@@ -13,34 +13,36 @@ document.addEventListener('DOMContentLoaded', () => {
     let connectButton = null;
 
     const textFormatControlsDiv = document.getElementById('textFormatControls');
+    const shapeControlsDiv = document.getElementById('shapeControls'); // Adicionado
     const fontSizeInput = document.getElementById('fontSizeInput');
     const textColorInput = document.getElementById('textColorInput');
     const toggleBoldButton = document.getElementById('toggleBoldButton');
 
-    function updateTextFormatControls(node) {
-        if (node) {
-            fontSizeInput.value = node.fontSize || 16;
-            textColorInput.value = node.textColor || '#000000';
-            toggleBoldButton.textContent = node.isBold ? 'Remover Negrito' : 'Negrito';
-            toggleBoldButton.style.fontWeight = node.isBold ? 'bold' : 'normal';
-            textFormatControlsDiv.style.display = 'block';
-        } else {
-            textFormatControlsDiv.style.display = 'none';
-        }
+    // Função auxiliar para obter variáveis CSS
+    function getCssVariable(variableName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
     }
 
-    const CANVAS_DEFAULTS = {
-        NODE_COLOR: 'lightblue',
-        NODE_FONT_FAMILY: 'Arial',
-        NODE_FONT_SIZE: 16,
-        NODE_TEXT_COLOR: '#000000',
-        NODE_BORDER_COLOR: 'black',
-        NODE_BORDER_WIDTH: 1,
-        CONNECTION_MODE_SELECTION_BORDER_COLOR: 'green',
-        STANDARD_SELECTION_BORDER_COLOR: 'red',
-        SELECTION_BORDER_WIDTH: 3,
-        CONNECTION_STROKE_COLOR: 'grey',
-        CONNECTION_LINE_WIDTH: 2
+    // Esta função substitui o CANVAS_DEFAULTS e lê as propriedades do CSS
+    // Retorna um valor padrão se a variável CSS não for encontrada.
+    const getCanvasDefault = (prop) => {
+        const rootStyles = getComputedStyle(document.documentElement);
+        switch (prop) {
+            case 'NODE_COLOR': return rootStyles.getPropertyValue('--canvas-node-default').trim() || 'lightblue';
+            case 'NODE_FONT_FAMILY': return rootStyles.getPropertyValue('--font-family-primary').trim() || 'Arial';
+            // Para font-size, lemos a variável base e a convertemos para pixels se necessário.
+            // Assumimos que --font-size-base é em rems e que 1rem = 16px por padrão do navegador.
+            case 'NODE_FONT_SIZE': return parseFloat(rootStyles.getPropertyValue('--font-size-base')) * 16 || 16;
+            case 'NODE_TEXT_COLOR': return rootStyles.getPropertyValue('--canvas-node-text').trim() || '#000000';
+            case 'NODE_BORDER_COLOR': return rootStyles.getPropertyValue('--border-primary').trim() || 'black';
+            case 'NODE_BORDER_WIDTH': return 1; // Manter fixo, ou adicionar variável CSS se houver.
+            case 'CONNECTION_MODE_SELECTION_BORDER_COLOR': return getCssVariable('--color-blue-600') || 'green'; // Usando uma cor do tema
+            case 'STANDARD_SELECTION_BORDER_COLOR': return getCssVariable('--canvas-selection') || 'red';
+            case 'SELECTION_BORDER_WIDTH': return 3; // Manter fixo
+            case 'CONNECTION_STROKE_COLOR': return getCssVariable('--canvas-connection') || 'grey';
+            case 'CONNECTION_LINE_WIDTH': return 2; // Manter fixo
+            default: return null;
+        }
     };
 
     let nodes = [];
@@ -49,6 +51,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDraggingNode = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
+
+    // Função para atualizar a visibilidade dos painéis de controle
+    // Esta substitui a antiga updateTextFormatControls
+    function updateControlPanelsVisibility(node) {
+        const isNodeSelected = !!node;
+
+        // Alterna a classe 'visible' nos painéis de controle
+        textFormatControlsDiv.classList.toggle('visible', isNodeSelected);
+        shapeControlsDiv.classList.toggle('visible', isNodeSelected);
+
+        if (isNodeSelected) {
+            fontSizeInput.value = node.fontSize || getCanvasDefault('NODE_FONT_SIZE');
+            textColorInput.value = node.textColor || getCanvasDefault('NODE_TEXT_COLOR');
+            toggleBoldButton.textContent = node.isBold ? 'Remover Negrito' : 'Negrito';
+            toggleBoldButton.style.fontWeight = node.isBold ? 'bold' : 'normal';
+        }
+    }
 
     function getNodeAt(targetX, targetY) {
         for (let i = nodes.length - 1; i >= 0; i--) {
@@ -61,7 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    function createNode(x, y, text = 'Novo Nó', width = 150, height = 100, color = CANVAS_DEFAULTS.NODE_COLOR, shape = 'rectangle') {
+    // Criar nó usando os novos padrões do canvas
+    function createNode(x, y, text = 'Novo Nó', width = 150, height = 100, color = getCanvasDefault('NODE_COLOR'), shape = 'rectangle') {
         return {
             id: Date.now() + Math.random(),
             x,
@@ -71,9 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
             text,
             color,
             shape,
-            fontSize: CANVAS_DEFAULTS.NODE_FONT_SIZE,
-            fontFamily: CANVAS_DEFAULTS.NODE_FONT_FAMILY,
-            textColor: CANVAS_DEFAULTS.NODE_TEXT_COLOR,
+            fontSize: getCanvasDefault('NODE_FONT_SIZE'),
+            fontFamily: getCanvasDefault('NODE_FONT_FAMILY'),
+            textColor: getCanvasDefault('NODE_TEXT_COLOR'),
             isBold: false
         };
     }
@@ -194,8 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
                 ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, endPoint.x, endPoint.y);
-                ctx.strokeStyle = conn.color || CANVAS_DEFAULTS.CONNECTION_STROKE_COLOR;
-                ctx.lineWidth = conn.lineWidth || CANVAS_DEFAULTS.CONNECTION_LINE_WIDTH;
+                ctx.strokeStyle = conn.color || getCanvasDefault('CONNECTION_STROKE_COLOR'); // Usa default do CSS
+                ctx.lineWidth = conn.lineWidth || getCanvasDefault('CONNECTION_LINE_WIDTH'); // Usa default do CSS
                 ctx.stroke();
             }
         });
@@ -205,9 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
         nodesArray.forEach(node => {
             ctx.save();
 
-            ctx.fillStyle = node.color || CANVAS_DEFAULTS.NODE_COLOR;
-            ctx.strokeStyle = CANVAS_DEFAULTS.NODE_BORDER_COLOR;
-            ctx.lineWidth = CANVAS_DEFAULTS.NODE_BORDER_WIDTH;
+            ctx.fillStyle = node.color || getCanvasDefault('NODE_COLOR'); // Usa default do CSS
+            ctx.strokeStyle = getCanvasDefault('NODE_BORDER_COLOR'); // Usa default do CSS
+            ctx.lineWidth = getCanvasDefault('NODE_BORDER_WIDTH'); // Usa default do CSS
 
             if (node.shape === 'ellipse') {
                 ctx.beginPath();
@@ -232,14 +252,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let selectionStrokeStyle = null;
             if (isConnectingModeFlag && node.id === firstSelectedNodeId) {
-                selectionStrokeStyle = CANVAS_DEFAULTS.CONNECTION_MODE_SELECTION_BORDER_COLOR;
+                selectionStrokeStyle = getCanvasDefault('CONNECTION_MODE_SELECTION_BORDER_COLOR'); // Usa default do CSS
             } else if (node.id === currentSelectedNodeId) {
-                selectionStrokeStyle = CANVAS_DEFAULTS.STANDARD_SELECTION_BORDER_COLOR;
+                selectionStrokeStyle = getCanvasDefault('STANDARD_SELECTION_BORDER_COLOR'); // Usa default do CSS
             }
 
             if (selectionStrokeStyle) {
                 ctx.strokeStyle = selectionStrokeStyle;
-                ctx.lineWidth = CANVAS_DEFAULTS.SELECTION_BORDER_WIDTH;
+                ctx.lineWidth = getCanvasDefault('SELECTION_BORDER_WIDTH'); // Usa default do CSS
                 if (node.shape === 'ellipse') {
                     ctx.beginPath();
                     ctx.ellipse(node.x + node.width / 2, node.y + node.height / 2, node.width / 2, node.height / 2, 0, 0, 2 * Math.PI);
@@ -257,11 +277,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.stroke();
             }
 
-            const fontSize = node.fontSize || CANVAS_DEFAULTS.NODE_FONT_SIZE;
-            const fontFamily = node.fontFamily || CANVAS_DEFAULTS.NODE_FONT_FAMILY;
+            const fontSize = node.fontSize || getCanvasDefault('NODE_FONT_SIZE'); // Usa default do CSS
+            const fontFamily = node.fontFamily || getCanvasDefault('NODE_FONT_FAMILY'); // Usa default do CSS
             const fontWeight = node.isBold ? 'bold' : 'normal';
             ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-            ctx.fillStyle = node.textColor || CANVAS_DEFAULTS.NODE_TEXT_COLOR;
+            ctx.fillStyle = node.textColor || getCanvasDefault('NODE_TEXT_COLOR'); // Usa default do CSS
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(node.text, node.x + node.width / 2, node.y + node.height / 2);
@@ -290,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             finishEditing();
             currentlySelectedNodeId = null;
-            updateTextFormatControls(null);
+            updateControlPanelsVisibility(null); // Atualizado
             draw();
         }
     });
@@ -344,14 +364,14 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.style.top = `${screenY}px`;
             textInput.style.width = `${screenWidth}px`;
             textInput.style.height = `${screenHeight}px`;
-            textInput.style.fontFamily = editingNode.fontFamily || 'Arial';
+            textInput.style.fontFamily = editingNode.fontFamily || getCanvasDefault('NODE_FONT_FAMILY'); // Usa default do CSS
             textInput.style.fontSize = `${editingNode.fontSize * zoom}px`;
-            textInput.style.color = editingNode.textColor || '#000000';
+            textInput.style.color = editingNode.textColor || getCanvasDefault('NODE_TEXT_COLOR'); // Usa default do CSS
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
             textInput.style.textAlign = 'center';
             textInput.style.padding = '0';
             textInput.style.boxSizing = 'border-box';
-            textInput.style.border = '1px solid #777';
+            textInput.style.border = `1px solid ${getCssVariable('--border-secondary')}`; // Usa cor do CSS
             textInput.style.outline = 'none';
             textInput.style.resize = 'none';
             textInput.style.overflow = 'hidden';
@@ -410,13 +430,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     finishEditing();
                     currentlySelectedNodeId = selectedNodeForDragging.id;
-                    updateTextFormatControls(selectedNodeForDragging);
+                    updateControlPanelsVisibility(selectedNodeForDragging); // Atualizado
                     event.stopPropagation();
                     draw();
                 } else {
                     finishEditing();
                     currentlySelectedNodeId = null;
-                    updateTextFormatControls(null);
+                    updateControlPanelsVisibility(null); // Atualizado
                     draw();
                 }
             } else {
@@ -519,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 connectButton.textContent = 'Cancelar Modo de Conexão';
                 currentlySelectedNodeId = null;
                 firstSelectedNodeForConnectionId = null;
-                updateTextFormatControls(null);
+                updateControlPanelsVisibility(null); // Atualizado
             } else {
                 connectButton.textContent = '🔗 Criar Conexão';
                 firstSelectedNodeForConnectionId = null;
@@ -586,7 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fontSizeInput.addEventListener('change', () => {
         if (currentlySelectedNodeId !== null) {
             const node = nodes.find(n => n.id === currentlySelectedNodeId);
-            if (node) { node.fontSize = parseInt(fontSizeInput.value) || 16; draw(); updateTextEditingStyle(); }
+            if (node) { node.fontSize = parseInt(fontSizeInput.value) || getCanvasDefault('NODE_FONT_SIZE'); draw(); updateTextEditingStyle(); } // Usa default do CSS
         }
     });
     textColorInput.addEventListener('input', () => {
@@ -608,11 +628,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    // Função auxiliar para atualizar o estilo da textarea se ela estiver ativa
     function updateTextEditingStyle() {
         if (isEditingText && textInput && editingNode && editingNode.id === currentlySelectedNodeId) {
             textInput.style.fontSize = `${editingNode.fontSize * zoom}px`;
-            textInput.style.color = editingNode.textColor || '#000000';
+            textInput.style.color = editingNode.textColor || getCanvasDefault('NODE_TEXT_COLOR'); // Usa default do CSS
             textInput.style.fontWeight = editingNode.isBold ? 'bold' : 'normal';
+            textInput.style.border = `1px solid ${getCssVariable('--border-secondary')}`; // Usa cor do CSS
         }
     }
 
@@ -627,6 +649,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.classList.remove('dark-theme');
             if (themeSwitcherButton) themeSwitcherButton.textContent = '🌙 Tema Escuro';
         }
+        // Redraw canvas to apply new theme colors from CSS variables
+        draw(); 
     }
 
     function toggleTheme() {
