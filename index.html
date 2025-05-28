@@ -739,8 +739,8 @@ ${text}
             const grandChildItemSchema = {
                 type: "object",
                 properties: { "title": { type: "string" } },
-                required: ["title"],
-                additionalProperties: false // Impede propriedades extras
+                required: ["title"]
+                // additionalProperties: false // Impede propriedades extras
             };
 
             const childItemSchema = {
@@ -749,8 +749,8 @@ ${text}
                     "title": { type: "string" },
                     "children": { type: "array", items: grandChildItemSchema }
                 },
-                required: ["title"],
-                additionalProperties: false
+                required: ["title"]
+                // additionalProperties: false
             };
 
             const branchItemSchema = {
@@ -759,8 +759,8 @@ ${text}
                     "title": { type: "string" },
                     "children": { type: "array", items: childItemSchema }
                 },
-                required: ["title"],
-                additionalProperties: false
+                required: ["title"]
+                // additionalProperties: false
             };
 
             const mindMapSchema = {
@@ -769,8 +769,8 @@ ${text}
                     "central": { type: "string" },
                     "branches": { type: "array", items: branchItemSchema }
                 },
-                required: ["central"],
-                additionalProperties: false
+                required: ["central"]
+                // additionalProperties: false
             };
 
             const payload = {
