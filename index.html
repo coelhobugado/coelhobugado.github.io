@@ -261,9 +261,29 @@
             text-align: center;
         }
 
-        @media (min-width: 768px) {
+        @media (max-width: 600px) {
             .game-container {
-                max-width: 800px;
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            .game-board {
+                max-width: 100%;
+                gap: 10px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .stat-box {
+                padding: 5px;
+                font-size: 0.7rem;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 0.8rem;
             }
         }
 
