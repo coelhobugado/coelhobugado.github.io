@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Acerte o Coelho</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
@@ -12,7 +12,6 @@
             --background-color: #1a1a1a;
             --container-background: #2a2a2a;
             --text-color: #e0e0e0;
-            --hole-color: #111;
         }
 
         * {
@@ -30,6 +29,9 @@
             justify-content: center;
             align-items: center;
             color: var(--text-color);
+            user-select: none;
+            overflow: hidden;
+            touch-action: manipulation;
         }
 
         .game-container {
@@ -38,11 +40,12 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), 0 0 40px var(--primary-color), 0 0 60px var(--secondary-color);
-            border: 3px solid var(--primary-color);
+            padding: min(15px, 2vh);
+            gap: clamp(8px, 1.5vh, 15px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--primary-color);
             position: relative;
             overflow: hidden;
         }
@@ -67,48 +70,62 @@
 
         .game-header {
             text-align: center;
+            width: 100%;
         }
 
         h1 {
             color: var(--primary-color);
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color);
+            font-size: clamp(0.8rem, 4vw, 1.5rem);
+            text-shadow: 0 0 5px var(--primary-color);
             animation: flicker 1.5s infinite alternate;
+            margin-bottom: 10px;
+        }
+
+        .level-indicator, .high-score {
+            font-size: clamp(0.5rem, 2vw, 0.7rem);
+            margin: 5px 0;
         }
 
         .stats {
             display: flex;
             justify-content: space-around;
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
             gap: 10px;
+            margin: 10px 0;
         }
 
         .stat-box {
             background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
             color: var(--background-color);
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: clamp(0.8rem, 2vw, 1rem);
+            padding: clamp(5px, 1.5vh, 10px);
+            border-radius: 8px;
+            font-size: clamp(0.5rem, 2vw, 0.8rem);
             font-weight: bold;
-            box-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--secondary-color);
+            box-shadow: 0 0 10px var(--primary-color);
             flex: 1;
             text-align: center;
             border: 2px solid var(--secondary-color);
         }
 
+        .stat-label {
+            display: block;
+            font-size: 0.7em;
+        }
+
         .stat-value {
-            font-size: 1.5em;
-            margin-top: 5px;
-            animation: score-pop 0.3s ease-out;
+            font-size: 1.3em;
+            margin-top: 3px;
         }
 
         .game-board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: clamp(8px, 2vw, 15px);
             width: 100%;
-            max-width: 400px;
+            max-width: min(90vw, 90vh, 500px);
+            aspect-ratio: 1;
+            margin: auto;
         }
 
         .hole {
@@ -119,6 +136,7 @@
             overflow: hidden;
             border: 2px solid #A0522D;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            cursor: pointer;
         }
 
         .bunny {
@@ -128,17 +146,22 @@
             transform: translateX(-50%) translateY(100%);
             width: 80%;
             height: 80%;
-            transition: transform 0.2s ease-in-out;
-            cursor: pointer;
+            transition: transform 0.15s ease-out;
             pointer-events: none;
         }
 
         .bunny.up {
             transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
         }
 
         .bunny.golden .bunny-head {
             background: gold;
+            box-shadow: 0 0 10px gold;
+        }
+
+        .bunny.hit {
+            animation: bunny-hit 0.3s ease-out;
         }
 
         .bunny.hit .bunny-eye {
@@ -197,7 +220,7 @@
 
         .bunny-eye-hit {
             display: none;
-            font-size: 1.2rem;
+            font-size: clamp(0.8rem, 3vw, 1.2rem);
             position: absolute;
             top: 28%;
             color: #333;
@@ -237,53 +260,66 @@
         .controls {
             display: flex;
             justify-content: center;
+            width: 100%;
+            padding: 10px 0;
         }
 
         button {
             background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
             color: var(--background-color);
             border: 2px solid var(--secondary-color);
-            padding: 15px 30px;
+            padding: clamp(10px, 2vh, 15px) clamp(20px, 5vw, 30px);
             font-family: 'Press Start 2P', cursive;
-            font-size: 1rem;
+            font-size: clamp(0.6rem, 2vw, 0.9rem);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--secondary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+            touch-action: manipulation;
         }
 
         button:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 0 15px var(--primary-color), 0 0 30px var(--secondary-color), 0 0 45px var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px var(--primary-color), 0 0 30px var(--secondary-color);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .game-over {
-            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--container-background);
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 15px;
+            border: 3px solid var(--primary-color);
             text-align: center;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 0 30px var(--primary-color);
         }
 
-        @media (max-width: 600px) {
-            .game-container {
-                padding: 10px;
-            }
+        .game-over.show {
+            display: block;
+        }
 
-            .game-board {
-                gap: 10px;
-            }
+        .game-over h2 {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
 
-            h1 {
-                font-size: 1.2rem;
-            }
-
-            .stat-box {
-                padding: 5px;
-                font-size: 0.7rem;
-            }
-
-            button {
-                padding: 10px 20px;
-                font-size: 0.8rem;
-            }
+        .game-over p {
+            font-size: clamp(0.6rem, 2vw, 0.9rem);
+            margin: 10px 0;
         }
 
         @keyframes flicker {
@@ -291,30 +327,62 @@
             50% { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color); }
         }
 
-        @keyframes bunny-hit-2 {
-            0% {
-                transform: rotate(0) scale(1);
-                opacity: 1;
+        @keyframes bunny-hit {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0) rotate(0deg) scale(1);
             }
-            50% {
-                transform: rotate(15deg) scale(1.1);
-                opacity: 0.5;
+            25% {
+                transform: translateX(-50%) translateY(0) rotate(-10deg) scale(1.1);
             }
-            100% {
-                transform: rotate(0) scale(1);
-                opacity: 1;
+            75% {
+                transform: translateX(-50%) translateY(0) rotate(10deg) scale(1.1);
             }
         }
 
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 10px;
+            }
+
+            .stats {
+                gap: 5px;
+            }
+
+            .game-board {
+                gap: 8px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .game-container {
+                padding: 5px;
+            }
+
+            h1 {
+                font-size: 0.7rem;
+                margin-bottom: 5px;
+            }
+
+            .level-indicator, .high-score {
+                font-size: 0.4rem;
+            }
+
+            .stats {
+                margin: 5px 0;
+            }
+
+            .stat-box {
+                padding: 3px;
+            }
+        }
     </style>
 </head>
-<body onload="initBoard()">
-
+<body>
     <div class="game-container" id="gameContainer">
         <div class="game-header">
             <h1>🐰 Acerte o Coelho! 🐰</h1>
             <div class="level-indicator">Nível: <span id="level">1</span></div>
-            <div>Maior Pontuação: <span id="highScore">0</span></div>
+            <div class="high-score">Recorde: <span id="highScore">0</span></div>
         </div>
 
         <div class="stats">
@@ -335,14 +403,14 @@
         <div class="game-board" id="gameBoard"></div>
 
         <div class="controls">
-            <button id="startBtn" onclick="startGame()">Iniciar Jogo</button>
+            <button id="startBtn">Iniciar Jogo</button>
         </div>
 
         <div class="game-over" id="gameOver">
             <h2>Jogo Finalizado!</h2>
-            <p>Pontuação Final: <span id="finalScore">0</span></p>
+            <p>Pontuação: <span id="finalScore">0</span></p>
             <p>Acertos: <span id="finalHits">0</span></p>
-            <button onclick="startGame()">Jogar Novamente</button>
+            <button id="restartBtn">Jogar Novamente</button>
         </div>
     </div>
 
@@ -351,40 +419,51 @@
         let time = 30;
         let hits = 0;
         let isPlaying = false;
-        let timer;
+        let timer = null;
+        let bunnyTimer = null;
         let level = 1;
-        let highScore = localStorage.getItem('highScore') || 0;
-        document.getElementById('highScore').textContent = highScore;
+        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+        let audioContext = null;
 
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Inicializa o contexto de áudio apenas após interação do usuário
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
 
         function playSound(type) {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+            if (!audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-            if (type === 'hit') {
-                oscillator.type = 'triangle';
-                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                gainNode.gain.setValueAtTime(1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.2);
-            } else if (type === 'gameOver') {
-                oscillator.type = 'sawtooth';
-                oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
-                gainNode.gain.setValueAtTime(1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.5);
+                if (type === 'hit') {
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                } else if (type === 'gameOver') {
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                }
+            } catch (e) {
+                console.error('Erro ao reproduzir som:', e);
             }
         }
 
         function createBunny(bunnyContainer) {
             const isGolden = Math.random() < 0.1;
-            const bunnyClass = isGolden ? 'bunny golden' : 'bunny';
-            bunnyContainer.className = bunnyClass;
+            bunnyContainer.className = isGolden ? 'bunny golden' : 'bunny';
 
             const bunnyHead = document.createElement('div');
             bunnyHead.className = 'bunny-head';
@@ -407,12 +486,12 @@
 
             const leftEyeHit = document.createElement('div');
             leftEyeHit.className = 'bunny-eye-hit left';
-            leftEyeHit.textContent = '@';
+            leftEyeHit.textContent = 'X';
             bunnyHead.appendChild(leftEyeHit);
 
             const rightEyeHit = document.createElement('div');
             rightEyeHit.className = 'bunny-eye-hit right';
-            rightEyeHit.textContent = '@';
+            rightEyeHit.textContent = 'X';
             bunnyHead.appendChild(rightEyeHit);
 
             const nose = document.createElement('div');
@@ -427,98 +506,150 @@
         }
 
         function initBoard() {
-            console.log("Initializing board...");
             const board = document.getElementById('gameBoard');
             board.innerHTML = '';
+            
             for (let i = 0; i < 9; i++) {
                 const hole = document.createElement('div');
                 hole.className = 'hole';
+                
                 const bunnyContainer = document.createElement('div');
                 createBunny(bunnyContainer);
                 hole.appendChild(bunnyContainer);
-                hole.addEventListener('click', () => {
-                    console.log("Hole clicked:", hole);
-                    whackBunny(hole)
+                
+                // Suporte para touch e click
+                hole.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    whackBunny(hole);
                 });
+                
+                hole.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    whackBunny(hole);
+                }, { passive: false });
+                
                 board.appendChild(hole);
             }
         }
 
         function whackBunny(hole) {
             const bunny = hole.querySelector('.bunny');
-            console.log("Whacking bunny:", bunny, bunny.classList);
-            if (!bunny.classList.contains('up') || !isPlaying) return;
+            if (!bunny || !bunny.classList.contains('up') || !isPlaying) return;
             
             let points = 10;
             if (bunny.classList.contains('golden')) {
                 points = 50;
             }
+            
             score += points;
+            hits++;
             document.getElementById('score').textContent = score;
+            document.getElementById('hits').textContent = hits;
             
             bunny.classList.add('hit');
-            bunny.style.animation = 'bunny-hit-2 0.3s ease-out';
             playSound('hit');
+            
             setTimeout(() => {
-                bunny.classList.remove('up');
-                bunny.classList.remove('hit');
-                bunny.style.animation = '';
+                bunny.classList.remove('up', 'hit');
             }, 300);
         }
 
         function popUpBunny() {
             if (!isPlaying) return;
+            
             const holes = document.querySelectorAll('.hole');
             const randomHole = holes[Math.floor(Math.random() * holes.length)];
             const bunny = randomHole.querySelector('.bunny');
-            console.log("Popping up bunny:", bunny);
+            
             if (bunny && !bunny.classList.contains('up')) {
+                // Recria o coelho com chance de ser dourado
+                const isGolden = Math.random() < 0.1;
+                bunny.className = isGolden ? 'bunny golden' : 'bunny';
+                
                 bunny.classList.add('up');
+                const displayTime = Math.max(400, 800 - (level * 40));
+                
                 setTimeout(() => {
-                    bunny.classList.remove('up');
-                }, 800 - (level * 40));
+                    if (bunny.classList.contains('up')) {
+                        bunny.classList.remove('up');
+                    }
+                }, displayTime);
             }
         }
 
         function startGame() {
+            initAudio(); // Inicializa áudio ao iniciar jogo
+            
+            // Limpa timers anteriores
+            if (timer) clearInterval(timer);
+            if (bunnyTimer) clearInterval(bunnyTimer);
+            
             score = 0;
             time = 30;
             hits = 0;
             level = 1;
             isPlaying = true;
+            
             document.getElementById('score').textContent = score;
             document.getElementById('time').textContent = time;
             document.getElementById('hits').textContent = hits;
             document.getElementById('level').textContent = level;
-            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('gameOver').classList.remove('show');
             document.getElementById('startBtn').disabled = true;
 
+            // Timer do jogo
             timer = setInterval(() => {
                 time--;
                 document.getElementById('time').textContent = time;
+                
+                // Aumenta nível a cada 10 segundos
+                if (time % 10 === 0 && time > 0 && level < 5) {
+                    level++;
+                    document.getElementById('level').textContent = level;
+                }
+                
                 if (time <= 0) {
                     endGame();
                 }
             }, 1000);
 
-            setInterval(popUpBunny, 700 - (level * 40));
+            // Timer dos coelhos
+            const bunnyInterval = Math.max(300, 700 - (level * 40));
+            bunnyTimer = setInterval(popUpBunny, bunnyInterval);
         }
 
         function endGame() {
             isPlaying = false;
-            clearInterval(timer);
+            
+            if (timer) clearInterval(timer);
+            if (bunnyTimer) clearInterval(bunnyTimer);
+            
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem('highScore', highScore);
                 document.getElementById('highScore').textContent = highScore;
             }
+            
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalHits').textContent = hits;
-            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('gameOver').classList.add('show');
             document.getElementById('startBtn').disabled = false;
+            
             playSound('gameOver');
         }
 
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
+        document.getElementById('highScore').textContent = highScore;
+
+        // Inicializa o tabuleiro ao carregar
+        window.addEventListener('load', initBoard);
+        
+        // Previne zoom em dispositivos móveis
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 </html>
