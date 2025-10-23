@@ -40,14 +40,13 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: min(15px, 2vh);
-            gap: clamp(8px, 1.5vh, 15px);
+            padding: 1vh 2vw;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             border: 2px solid var(--primary-color);
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .game-container::after {
@@ -71,61 +70,67 @@
         .game-header {
             text-align: center;
             width: 100%;
+            flex-shrink: 0;
         }
 
         h1 {
             color: var(--primary-color);
-            font-size: clamp(0.8rem, 4vw, 1.5rem);
+            font-size: clamp(0.5rem, 2.5vw, 1rem);
             text-shadow: 0 0 5px var(--primary-color);
             animation: flicker 1.5s infinite alternate;
-            margin-bottom: 10px;
+            margin-bottom: 0.3vh;
+            line-height: 1.2;
         }
 
         .level-indicator, .high-score {
-            font-size: clamp(0.5rem, 2vw, 0.7rem);
-            margin: 5px 0;
+            font-size: clamp(0.35rem, 1.5vw, 0.6rem);
+            margin: 0.2vh 0;
+            line-height: 1.3;
         }
 
         .stats {
             display: flex;
             justify-content: space-around;
             width: 100%;
-            max-width: 600px;
-            gap: 10px;
-            margin: 10px 0;
+            max-width: 500px;
+            gap: 1vw;
+            margin: 1vh 0;
+            flex-shrink: 0;
         }
 
         .stat-box {
             background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
             color: var(--background-color);
-            padding: clamp(5px, 1.5vh, 10px);
-            border-radius: 8px;
-            font-size: clamp(0.5rem, 2vw, 0.8rem);
+            padding: 0.5vh 1vw;
+            border-radius: 6px;
+            font-size: clamp(0.4rem, 1.5vw, 0.65rem);
             font-weight: bold;
-            box-shadow: 0 0 10px var(--primary-color);
+            box-shadow: 0 0 8px var(--primary-color);
             flex: 1;
             text-align: center;
-            border: 2px solid var(--secondary-color);
+            border: 1.5px solid var(--secondary-color);
+            line-height: 1.2;
         }
 
         .stat-label {
             display: block;
-            font-size: 0.7em;
+            font-size: 0.8em;
+            margin-bottom: 0.2vh;
         }
 
         .stat-value {
             font-size: 1.3em;
-            margin-top: 3px;
         }
 
         .game-board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: clamp(8px, 2vw, 15px);
-            width: 100%;
-            max-width: min(90vw, 90vh, 500px);
+            gap: 1vw;
+            width: 90%;
+            max-width: 400px;
             aspect-ratio: 1;
-            margin: auto;
+            margin: 1vh auto;
+            flex-shrink: 1;
         }
 
         .hole {
@@ -135,7 +140,7 @@
             position: relative;
             overflow: hidden;
             border: 2px solid #A0522D;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
             cursor: pointer;
         }
 
@@ -220,7 +225,7 @@
 
         .bunny-eye-hit {
             display: none;
-            font-size: clamp(0.8rem, 3vw, 1.2rem);
+            font-size: clamp(0.6rem, 2vw, 1rem);
             position: absolute;
             top: 28%;
             color: #333;
@@ -261,21 +266,23 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            padding: 10px 0;
+            padding: 1vh 0;
+            flex-shrink: 0;
         }
 
         button {
             background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
             color: var(--background-color);
             border: 2px solid var(--secondary-color);
-            padding: clamp(10px, 2vh, 15px) clamp(20px, 5vw, 30px);
+            padding: 1.2vh 4vw;
             font-family: 'Press Start 2P', cursive;
-            font-size: clamp(0.6rem, 2vw, 0.9rem);
-            border-radius: 10px;
+            font-size: clamp(0.45rem, 1.8vw, 0.75rem);
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 0 10px var(--primary-color);
             touch-action: manipulation;
+            line-height: 1.3;
         }
 
         button:hover:not(:disabled) {
@@ -293,18 +300,19 @@
         }
 
         .game-over {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: var(--container-background);
-            padding: clamp(20px, 5vw, 40px);
-            border-radius: 15px;
+            padding: 3vh 5vw;
+            border-radius: 12px;
             border: 3px solid var(--primary-color);
             text-align: center;
             display: none;
             z-index: 2000;
             box-shadow: 0 0 30px var(--primary-color);
+            max-width: 90vw;
         }
 
         .game-over.show {
@@ -312,14 +320,16 @@
         }
 
         .game-over h2 {
-            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-size: clamp(0.7rem, 3vw, 1.2rem);
             color: var(--secondary-color);
-            margin-bottom: 15px;
+            margin-bottom: 2vh;
+            line-height: 1.3;
         }
 
         .game-over p {
-            font-size: clamp(0.6rem, 2vw, 0.9rem);
-            margin: 10px 0;
+            font-size: clamp(0.5rem, 2vw, 0.8rem);
+            margin: 1vh 0;
+            line-height: 1.4;
         }
 
         @keyframes flicker {
@@ -339,40 +349,78 @@
             }
         }
 
-        @media (max-width: 600px) {
-            .game-container {
-                padding: 10px;
-            }
-
-            .stats {
-                gap: 5px;
-            }
-
+        /* Ajustes para telas muito pequenas */
+        @media (max-height: 600px) {
             .game-board {
-                gap: 8px;
-            }
-        }
-
-        @media (orientation: landscape) and (max-height: 500px) {
-            .game-container {
-                padding: 5px;
+                width: 80%;
+                max-width: 300px;
             }
 
             h1 {
-                font-size: 0.7rem;
-                margin-bottom: 5px;
+                font-size: clamp(0.4rem, 2vw, 0.8rem);
+            }
+        }
+
+        /* Ajustes para landscape em mobile */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .game-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-content: center;
+                padding: 1vh 2vw;
             }
 
-            .level-indicator, .high-score {
-                font-size: 0.4rem;
+            .game-header {
+                width: 100%;
+                order: 1;
             }
 
             .stats {
-                margin: 5px 0;
+                width: 30%;
+                flex-direction: column;
+                order: 2;
+                margin: 0 1vw;
+            }
+
+            .game-board {
+                width: 50%;
+                max-width: 40vh;
+                order: 3;
+                margin: 0;
+            }
+
+            .controls {
+                width: 100%;
+                order: 4;
+            }
+
+            h1 {
+                font-size: clamp(0.4rem, 2vh, 0.7rem);
+                margin-bottom: 0.5vh;
+            }
+
+            .level-indicator, .high-score {
+                font-size: clamp(0.3rem, 1.5vh, 0.5rem);
+            }
+        }
+
+        /* Telas muito grandes */
+        @media (min-width: 1200px) {
+            .game-board {
+                max-width: 450px;
+            }
+
+            h1 {
+                font-size: 1.1rem;
             }
 
             .stat-box {
-                padding: 3px;
+                font-size: 0.7rem;
+            }
+
+            button {
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -425,7 +473,6 @@
         let highScore = parseInt(localStorage.getItem('highScore')) || 0;
         let audioContext = null;
 
-        // Inicializa o contexto de áudio apenas após interação do usuário
         function initAudio() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -517,7 +564,6 @@
                 createBunny(bunnyContainer);
                 hole.appendChild(bunnyContainer);
                 
-                // Suporte para touch e click
                 hole.addEventListener('click', (e) => {
                     e.preventDefault();
                     whackBunny(hole);
@@ -562,7 +608,6 @@
             const bunny = randomHole.querySelector('.bunny');
             
             if (bunny && !bunny.classList.contains('up')) {
-                // Recria o coelho com chance de ser dourado
                 const isGolden = Math.random() < 0.1;
                 bunny.className = isGolden ? 'bunny golden' : 'bunny';
                 
@@ -578,9 +623,8 @@
         }
 
         function startGame() {
-            initAudio(); // Inicializa áudio ao iniciar jogo
+            initAudio();
             
-            // Limpa timers anteriores
             if (timer) clearInterval(timer);
             if (bunnyTimer) clearInterval(bunnyTimer);
             
@@ -597,12 +641,10 @@
             document.getElementById('gameOver').classList.remove('show');
             document.getElementById('startBtn').disabled = true;
 
-            // Timer do jogo
             timer = setInterval(() => {
                 time--;
                 document.getElementById('time').textContent = time;
                 
-                // Aumenta nível a cada 10 segundos
                 if (time % 10 === 0 && time > 0 && level < 5) {
                     level++;
                     document.getElementById('level').textContent = level;
@@ -613,7 +655,6 @@
                 }
             }, 1000);
 
-            // Timer dos coelhos
             const bunnyInterval = Math.max(300, 700 - (level * 40));
             bunnyTimer = setInterval(popUpBunny, bunnyInterval);
         }
@@ -638,15 +679,12 @@
             playSound('gameOver');
         }
 
-        // Event listeners
         document.getElementById('startBtn').addEventListener('click', startGame);
         document.getElementById('restartBtn').addEventListener('click', startGame);
         document.getElementById('highScore').textContent = highScore;
 
-        // Inicializa o tabuleiro ao carregar
         window.addEventListener('load', initBoard);
         
-        // Previne zoom em dispositivos móveis
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
         });
