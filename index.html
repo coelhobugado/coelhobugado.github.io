@@ -29,17 +29,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
             color: var(--text-color);
         }
 
         .game-container {
             background: var(--container-background);
-            border-radius: 15px;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
             padding: 20px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), 0 0 40px var(--primary-color), 0 0 60px var(--secondary-color);
-            max-width: 600px;
-            width: 100%;
             border: 3px solid var(--primary-color);
             position: relative;
             overflow: hidden;
@@ -65,7 +67,6 @@
 
         .game-header {
             text-align: center;
-            margin-bottom: 20px;
         }
 
         h1 {
@@ -78,7 +79,8 @@
         .stats {
             display: flex;
             justify-content: space-around;
-            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
             gap: 10px;
         }
 
@@ -105,8 +107,8 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
-            margin: 20px auto;
-            max-width: 80%;
+            width: 100%;
+            max-width: 400px;
         }
 
         .hole {
@@ -148,8 +150,8 @@
         }
 
         .bunny-head {
-            width: 60px;
-            height: 50px;
+            width: 100%;
+            height: 100%;
             background: #f0f0f0;
             border-radius: 50% 50% 40% 40%;
             position: relative;
@@ -157,77 +159,77 @@
         }
 
         .bunny-ear {
-            width: 15px;
-            height: 30px;
+            width: 25%;
+            height: 50%;
             background: #f0f0f0;
             border-radius: 10px;
             position: absolute;
-            top: -20px;
+            top: -20%;
             border: 2px solid #333;
         }
 
         .bunny-ear.left {
-            left: 10px;
+            left: 10%;
             transform: rotate(-15deg);
         }
 
         .bunny-ear.right {
-            right: 10px;
+            right: 10%;
             transform: rotate(15deg);
         }
 
         .bunny-eye {
-            width: 8px;
-            height: 8px;
+            width: 15%;
+            height: 15%;
             background: #333;
             border-radius: 50%;
             position: absolute;
-            top: 20px;
+            top: 30%;
         }
 
         .bunny-eye.left {
-            left: 15px;
+            left: 25%;
         }
 
         .bunny-eye.right {
-            right: 15px;
+            right: 25%;
         }
 
         .bunny-eye-hit {
             display: none;
             font-size: 1.2rem;
             position: absolute;
-            top: 18px;
+            top: 28%;
             color: #333;
         }
 
         .bunny-eye-hit.left {
-            left: 15px;
+            left: 25%;
         }
 
         .bunny-eye-hit.right {
-            right: 15px;
+            right: 25%;
         }
 
         .bunny-nose {
-            width: 6px;
-            height: 6px;
+            width: 10%;
+            height: 10%;
             background: #ff69b4;
             border-radius: 50%;
             position: absolute;
-            top: 30px;
+            top: 50%;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .bunny-mouth {
-            width: 10px;
-            height: 5px;
+            width: 20%;
+            height: 10%;
             border: 2px solid #333;
             border-top: none;
             border-radius: 0 0 10px 10px;
             position: absolute;
-            top: 38px;
+            top: 65%;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -235,7 +237,6 @@
         .controls {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
         }
 
         button {
@@ -264,11 +265,9 @@
         @media (max-width: 600px) {
             .game-container {
                 padding: 10px;
-                max-width: 100%;
             }
 
             .game-board {
-                max-width: 100%;
                 gap: 10px;
             }
 
@@ -428,6 +427,7 @@
         }
 
         function initBoard() {
+            console.log("Initializing board...");
             const board = document.getElementById('gameBoard');
             board.innerHTML = '';
             for (let i = 0; i < 9; i++) {
@@ -436,13 +436,17 @@
                 const bunnyContainer = document.createElement('div');
                 createBunny(bunnyContainer);
                 hole.appendChild(bunnyContainer);
-                hole.addEventListener('click', () => whackBunny(hole));
+                hole.addEventListener('click', () => {
+                    console.log("Hole clicked:", hole);
+                    whackBunny(hole)
+                });
                 board.appendChild(hole);
             }
         }
 
         function whackBunny(hole) {
             const bunny = hole.querySelector('.bunny');
+            console.log("Whacking bunny:", bunny, bunny.classList);
             if (!bunny.classList.contains('up') || !isPlaying) return;
             
             let points = 10;
@@ -467,6 +471,7 @@
             const holes = document.querySelectorAll('.hole');
             const randomHole = holes[Math.floor(Math.random() * holes.length)];
             const bunny = randomHole.querySelector('.bunny');
+            console.log("Popping up bunny:", bunny);
             if (bunny && !bunny.classList.contains('up')) {
                 bunny.classList.add('up');
                 setTimeout(() => {
