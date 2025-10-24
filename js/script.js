@@ -25,6 +25,24 @@ const Game = {
         finalScore: null,
         finalHits: null,
         gameBoard: null,
+        gameContainer: null,
+    },
+
+    /**
+     * Shows a feedback animation.
+     * @param {string} text - The text to display.
+     * @param {HTMLElement} element - The element to attach the feedback to.
+     */
+    showFeedback(text, element) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-animation';
+        feedback.textContent = text;
+        element.style.position = 'relative';
+        element.appendChild(feedback);
+
+        setTimeout(() => {
+            feedback.remove();
+        }, 1000);
     },
 
     /**
@@ -70,50 +88,37 @@ const Game = {
     },
 
     /**
-     * Creates the bunny DOM structure.
+     * Creates the bunny SVG structure and appends it to the container.
      * @param {HTMLElement} bunnyContainer - The container for the bunny.
      */
     createBunny(bunnyContainer) {
-        bunnyContainer.className = 'bunny';
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("viewBox", "0 0 100 100");
+        svg.classList.add("bunny-svg");
 
-        const bunnyHead = document.createElement('div');
-        bunnyHead.className = 'bunny-head';
+        // Define SVG content using innerHTML for simplicity
+        svg.innerHTML = `
+            <g class="bunny-ears">
+                <path d="M30,50 C10,5 40,5 30,50" class="bunny-ear-left" />
+                <path d="M70,50 C90,5 60,5 70,50" class="bunny-ear-right" />
+            </g>
+            <g class="bunny-head-group">
+                <ellipse cx="50" cy="65" rx="35" ry="30" class="bunny-head" />
+                <g class="bunny-face">
+                    <circle cx="38" cy="60" r="5" class="bunny-eye bunny-eye-left" />
+                    <circle cx="62" cy="60" r="5" class="bunny-eye bunny-eye-right" />
+                    <path d="M48,68 Q50,72 52,68" class="bunny-nose" />
+                    <path d="M45,75 Q50,80 55,75" class="bunny-mouth" />
+                </g>
+                 <g class="bunny-face-hit">
+                    <path d="M33,55 L43,65 M43,55 L33,65" class="bunny-eye-hit bunny-eye-left-hit" />
+                    <path d="M57,55 L67,65 M67,55 L57,65" class="bunny-eye-hit bunny-eye-right-hit" />
+                </g>
+            </g>
+        `;
 
-        const leftEar = document.createElement('div');
-        leftEar.className = 'bunny-ear left';
-        bunnyHead.appendChild(leftEar);
-
-        const rightEar = document.createElement('div');
-        rightEar.className = 'bunny-ear right';
-        bunnyHead.appendChild(rightEar);
-
-        const leftEye = document.createElement('div');
-        leftEye.className = 'bunny-eye left';
-        bunnyHead.appendChild(leftEye);
-
-        const rightEye = document.createElement('div');
-        rightEye.className = 'bunny-eye right';
-        bunnyHead.appendChild(rightEye);
-
-        const leftEyeHit = document.createElement('div');
-        leftEyeHit.className = 'bunny-eye-hit left';
-        leftEyeHit.textContent = 'X';
-        bunnyHead.appendChild(leftEyeHit);
-
-        const rightEyeHit = document.createElement('div');
-        rightEyeHit.className = 'bunny-eye-hit right';
-        rightEyeHit.textContent = 'X';
-        bunnyHead.appendChild(rightEyeHit);
-
-        const nose = document.createElement('div');
-        nose.className = 'bunny-nose';
-        bunnyHead.appendChild(nose);
-
-        const mouth = document.createElement('div');
-        mouth.className = 'bunny-mouth';
-        bunnyHead.appendChild(mouth);
-
-        bunnyContainer.appendChild(bunnyHead);
+        bunnyContainer.appendChild(svg);
     },
 
     /**
@@ -155,12 +160,15 @@ const Game = {
         if (item.classList.contains('clock')) {
             this.state.time += 5;
             this.elements.time.textContent = this.state.time;
+            this.showFeedback('+5s', this.elements.time.parentElement);
         } else { // It's a bunny
             let points = 10;
             if (item.classList.contains('golden')) {
                 points = 50;
             } else if (item.classList.contains('bomb')) {
                 points = -25;
+                this.elements.gameContainer.classList.add('shake');
+                setTimeout(() => this.elements.gameContainer.classList.remove('shake'), 500);
             }
 
             this.state.score += points;
@@ -172,6 +180,7 @@ const Game = {
                 this.state.level++;
                 this.elements.level.textContent = this.state.level;
                 this.updateGameSpeed();
+                this.showFeedback('Level Up!', this.elements.level.parentElement);
             }
         }
 
@@ -304,6 +313,7 @@ const Game = {
         this.elements.finalScore = document.getElementById('finalScore');
         this.elements.finalHits = document.getElementById('finalHits');
         this.elements.gameBoard = document.getElementById('gameBoard');
+        this.elements.gameContainer = document.getElementById('gameContainer');
 
         // Load high score
         this.state.highScore = parseInt(localStorage.getItem('highScore')) || 0;
